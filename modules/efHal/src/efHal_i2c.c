@@ -70,7 +70,7 @@ extern void efHal_i2c_init(void)
     }
 }
 
-extern efHal_dh efHal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* param)
+extern efHal_dh_t efHal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* param)
 {
     i2c_dhD_t *ret;
 
@@ -85,7 +85,7 @@ extern efHal_dh efHal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* 
     return ret;
 }
 
-extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh dh, void *pTx, size_t sTx, void *pRx, size_t sRx)
+extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, void *pTx, size_t sTx, void *pRx, size_t sRx)
 {
     efHal_i2c_ec_t ret;
 

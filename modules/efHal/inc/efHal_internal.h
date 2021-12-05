@@ -57,7 +57,7 @@ typedef struct
 
 /*==================[external functions declaration]=========================*/
 
-extern efHal_dh efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length);
+extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

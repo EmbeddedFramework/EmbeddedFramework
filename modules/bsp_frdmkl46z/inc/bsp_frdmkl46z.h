@@ -32,12 +32,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef EF_HAL_I2C_H_
-#define EF_HAL_I2C_H_
+#ifndef BSP_FRDMKL46Z_H
+#define BSP_FRDMKL46Z_H
 
 /*==================[inclusions]=============================================*/
-#include "efHal.h"
-#include "stddef.h"
+#include "bsp_frdmkl46z_i2c.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -46,23 +45,10 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
-typedef enum
-{
-    EF_HAL_I2C_EC_NO_ERROR = 0,
-    EF_HAL_I2C_EC_INVALID_HANDLER,
-}efHal_i2c_ec_t;
-
-typedef efHal_i2c_ec_t (*efHal_i2c_deviceTransfer_t)(void* param, void *pTx, size_t sTx, void *pRx, size_t sRx);
-
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-
-extern void efHal_i2c_init(void);
-
-extern efHal_dh_t efHal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* param);
-
-extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, void *pTx, size_t sTx, void *pRx, size_t sRx);
+extern void bsp_frdmkl46z_init(void);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -70,4 +56,4 @@ extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, void *pTx, size_t sTx, v
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* EF_HAL_I2C_H_ */
+#endif /* BSP_FRDMKL46Z_H */

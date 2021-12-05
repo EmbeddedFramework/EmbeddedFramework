@@ -54,9 +54,9 @@ extern void efHal_init(void)
     efHal_i2c_init();
 }
 
-extern efHal_dh efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)
+extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)
 {
-    efHal_dh ret = NULL;
+    efHal_dh_t ret = NULL;
     int i;
 
     for (i = 0 ; i < length ; i++)

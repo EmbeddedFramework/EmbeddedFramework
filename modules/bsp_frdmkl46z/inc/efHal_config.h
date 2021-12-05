@@ -44,7 +44,7 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
-#define EF_HAL_I2C_TOTAL_DEVICES    2
+#define EF_HAL_I2C_TOTAL_DEVICES    1
 
 /*==================[external data declaration]==============================*/
 

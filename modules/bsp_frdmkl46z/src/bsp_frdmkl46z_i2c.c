@@ -32,42 +32,30 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef EF_HAL_I2C_H_
-#define EF_HAL_I2C_H_
 
 /*==================[inclusions]=============================================*/
-#include "efHal.h"
-#include "stddef.h"
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "bsp_frdmkl46z_i2c.h"
 
 /*==================[macros and typedef]=====================================*/
 
-typedef enum
+/*==================[internal functions declaration]=========================*/
+
+/*==================[internal data definition]===============================*/
+
+/*==================[external data definition]===============================*/
+efHal_dh_t efHal_dh_I2C0;
+
+/*==================[internal functions definition]==========================*/
+
+/*==================[external functions definition]==========================*/
+extern void bsp_frdmkl46z_i2c_init(void)
 {
-    EF_HAL_I2C_EC_NO_ERROR = 0,
-    EF_HAL_I2C_EC_INVALID_HANDLER,
-}efHal_i2c_ec_t;
 
-typedef efHal_i2c_ec_t (*efHal_i2c_deviceTransfer_t)(void* param, void *pTx, size_t sTx, void *pRx, size_t sRx);
-
-/*==================[external data declaration]==============================*/
-
-/*==================[external functions declaration]=========================*/
-
-extern void efHal_i2c_init(void);
-
-extern efHal_dh_t efHal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* param);
-
-extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, void *pTx, size_t sTx, void *pRx, size_t sRx);
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
 }
-#endif
+
+extern efHal_i2c_ec_t bsp_frdmkl46z_i2c_deviceTransfer(void* param, void *pTx, size_t sTx, void *pRx, size_t sRx)
+{
+    return EF_HAL_I2C_EC_NO_ERROR;
+}
 
 /*==================[end of file]============================================*/
-#endif /* EF_HAL_I2C_H_ */

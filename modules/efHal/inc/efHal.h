@@ -45,12 +45,13 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
-typedef void* efHal_dh; /* device handler */
+typedef void* efHal_dh_t; /* device handler */
 
 
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
+extern void efHal_init(void);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

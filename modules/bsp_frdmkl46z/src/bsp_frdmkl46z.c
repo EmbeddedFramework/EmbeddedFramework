@@ -2,10 +2,6 @@
 ###############################################################################
 #
 # Copyright 2021, Gustavo Muro
-# Copyright 2014, 2015, Mariano Cerdeiro
-# Copyright 2014, 2015, 2016, Juan Cecconi (Numetron, UTN-FRBA)
-# Copyright 2014, 2015, Esteban Volentini (LabMicro, UNT)
-# Copyright 2017, Gustavo Muro (DIGI CHECK)
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -38,7 +34,7 @@
 #                                                                             */
 
 /*==================[inclusions]=============================================*/
-#include "../inc/efHal_config.h"
+#include "bsp_frdmkl46z.h"
 
 /*==================[macros and typedef]=====================================*/
 
@@ -51,5 +47,9 @@
 /*==================[internal functions definition]==========================*/
 
 /*==================[external functions definition]==========================*/
+extern void bsp_frdmkl46z_init(void)
+{
+
+}
 
 /*==================[end of file]============================================*/
