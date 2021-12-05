@@ -1,4 +1,3 @@
-/*
 ###############################################################################
 #
 # Copyright 2021, Gustavo Muro
@@ -31,38 +30,17 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#                                                                             */
-#ifndef EF_HAL_INTERNAL_H_
-#define EF_HAL_INTERNAL_H_
+#
 
-/*==================[inclusions]=============================================*/
-#include "efHal.h"
-#include "efHal_config.h"
-#include "FreeRTOS.h"
-#include "semphr.h"
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/*==================[macros and typedef]=====================================*/
-
-typedef struct
-{
-    SemaphoreHandle_t mutex;
-}efHal_internal_dhD_t;
-
-/*==================[external data declaration]==============================*/
-
-/*==================[external functions declaration]=========================*/
-
-extern efHal_dh efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length);
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-}
-#endif
-
-/*==================[end of file]============================================*/
-#endif /* EF_HAL_INTERNAL_H_ */
+# library
+LIBS 				  += mod_bsp_frdmkl46z
+# version
+mod_bsp_frdmkl46z_VERSION    = 0.0.0
+# library path
+mod_bsp_frdmkl46z_PATH 		= $(ROOT_DIR)$(DS)modules$(DS)bsp_frdmkl46z
+# library source path
+mod_bsp_frdmkl46z_SRC_PATH 	= $(mod_bsp_frdmkl46z_PATH)$(DS)src
+# library include path
+mod_bsp_frdmkl46z_INC_PATH 	= $(mod_bsp_frdmkl46z_PATH)$(DS)inc
+# library source files
+mod_bsp_frdmkl46z_SRC_FILES 	= $(wildcard $(mod_bsp_frdmkl46z_SRC_PATH)$(DS)*.c)
