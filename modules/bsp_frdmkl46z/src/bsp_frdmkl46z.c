@@ -49,7 +49,7 @@
 /*==================[external functions definition]==========================*/
 extern void bsp_frdmkl46z_init(void)
 {
-
+    bsp_frdmkl46z_i2c_init();
 }
 
 /*==================[end of file]============================================*/

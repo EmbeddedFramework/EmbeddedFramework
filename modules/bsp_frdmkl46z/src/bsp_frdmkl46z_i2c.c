@@ -47,15 +47,16 @@ efHal_dh_t efHal_dh_I2C0;
 
 /*==================[internal functions definition]==========================*/
 
-/*==================[external functions definition]==========================*/
-extern void bsp_frdmkl46z_i2c_init(void)
-{
-
-}
-
-extern efHal_i2c_ec_t bsp_frdmkl46z_i2c_deviceTransfer(void* param, void *pTx, size_t sTx, void *pRx, size_t sRx)
+static efHal_i2c_ec_t bsp_frdmkl46z_i2c_deviceTransfer(void* param, void *pTx, size_t sTx, void *pRx, size_t sRx)
 {
     return EF_HAL_I2C_EC_NO_ERROR;
 }
+
+/*==================[external functions definition]==========================*/
+extern void bsp_frdmkl46z_i2c_init(void)
+{
+    efHal_dh_I2C0 = efHal_i2c_deviceReg(bsp_frdmkl46z_i2c_deviceTransfer, NULL);
+}
+
 
 /*==================[end of file]============================================*/

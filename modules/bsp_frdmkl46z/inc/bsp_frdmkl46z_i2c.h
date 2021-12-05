@@ -52,8 +52,6 @@ extern efHal_dh_t efHal_dh_I2C0;    /* used by MMA8451Q and MAG3110 */
 /*==================[external functions declaration]=========================*/
 extern void bsp_frdmkl46z_i2c_init(void);
 
-extern efHal_i2c_ec_t bsp_frdmkl46z_i2c_deviceTransfer(void* param, void *pTx, size_t sTx, void *pRx, size_t sRx);
-
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
 }

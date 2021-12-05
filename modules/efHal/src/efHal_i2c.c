@@ -74,13 +74,18 @@ extern efHal_dh_t efHal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void
 {
     i2c_dhD_t *ret;
 
+    taskENTER_CRITICAL();
+
     ret = efHal_internal_searchFreeSlot(&dhD[0].head, sizeof(i2c_dhD_t), EF_HAL_I2C_TOTAL_DEVICES);
 
     if (ret != NULL)
     {
+        ret->head.mutex = xSemaphoreCreateMutex();
         ret->cb = cb_devTra;
         ret->param = param;
     }
+
+    taskEXIT_CRITICAL();
 
     return ret;
 }
