@@ -32,36 +32,46 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef EF_HAL_INTERNAL_H_
-#define EF_HAL_INTERNAL_H_
 
 /*==================[inclusions]=============================================*/
-#include "efHal.h"
-#include "FreeRTOS.h"
-#include "semphr.h"
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "efHal_i2c.h"
+#include "efHal_internal.h"
 
 /*==================[macros and typedef]=====================================*/
 
-typedef struct
+/*==================[internal functions declaration]=========================*/
+
+/*==================[internal data definition]===============================*/
+
+/*==================[external data definition]===============================*/
+
+/*==================[internal functions definition]==========================*/
+
+/*==================[external functions definition]==========================*/
+
+extern void efHal_init(void)
 {
-    SemaphoreHandle_t mutex;
-}efHal_internal_dhD_t;
-
-/*==================[external data declaration]==============================*/
-
-/*==================[external functions declaration]=========================*/
-
-extern efHal_dh efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length);
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
+    efHal_i2c_init();
 }
-#endif
+
+extern efHal_dh efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)
+{
+    efHal_dh ret = NULL;
+    int i;
+
+    for (i = 0 ; i < length ; i++)
+    {
+        if (p_dhD->mutex == NULL)
+        {
+            ret = p_dhD;
+            break;
+        }
+
+        p_dhD += size;
+    }
+
+    return ret;
+}
+
 
 /*==================[end of file]============================================*/
-#endif /* EF_HAL_INTERNAL_H_ */

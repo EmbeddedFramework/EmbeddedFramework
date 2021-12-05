@@ -37,6 +37,7 @@
 
 /*==================[inclusions]=============================================*/
 #include "efHal.h"
+#include "stddef.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -45,15 +46,23 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
-typedef void (*efHal_i2c_deviceTransfer_t)(void* param, void *pTx, size_t sTx, void *pRx, size_t sRx);
+typedef enum
+{
+    EF_HAL_I2C_EC_NO_ERROR = 0,
+    EF_HAL_I2C_EC_INVALID_HANDLER,
+}efHal_i2c_ec_t;
+
+typedef efHal_i2c_ec_t (*efHal_i2c_deviceTransfer_t)(void* param, void *pTx, size_t sTx, void *pRx, size_t sRx);
 
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
 
+extern void efHal_i2c_init(void);
+
 extern efHal_dh efHal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* param);
 
-extern void efHal_i2c_transfer(efHal_dh dh, void *pTx, size_t sTx, void *pRx, size_t sRx);
+extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh dh, void *pTx, size_t sTx, void *pRx, size_t sRx);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

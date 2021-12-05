@@ -48,7 +48,6 @@ extern "C" {
 typedef void* efHal_dh; /* device handler */
 
 
-
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
