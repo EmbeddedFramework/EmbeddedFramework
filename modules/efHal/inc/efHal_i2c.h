@@ -50,9 +50,13 @@ typedef enum
 {
     EF_HAL_I2C_EC_NO_ERROR = 0,
     EF_HAL_I2C_EC_INVALID_HANDLER,
+    EF_HAL_I2C_EC_INVALID_PARAMS,
+    EF_HAL_I2C_EC_TRANSFER_UNSUPPORTED,
 }efHal_i2c_ec_t;
 
-typedef efHal_i2c_ec_t (*efHal_i2c_deviceTransfer_t)(void* param, void *pTx, size_t sTx, void *pRx, size_t sRx);
+typedef uint8_t efHal_i2c_devAdd_t;
+
+typedef efHal_i2c_ec_t (*efHal_i2c_deviceTransfer_t)(void* param, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx);
 
 /*==================[external data declaration]==============================*/
 
@@ -62,7 +66,7 @@ extern void efHal_i2c_init(void);
 
 extern efHal_dh_t efHal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* param);
 
-extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, void *pTx, size_t sTx, void *pRx, size_t sRx);
+extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

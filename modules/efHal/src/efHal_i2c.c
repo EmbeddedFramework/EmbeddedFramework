@@ -90,7 +90,7 @@ extern efHal_dh_t efHal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void
     return ret;
 }
 
-extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, void *pTx, size_t sTx, void *pRx, size_t sRx)
+extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx)
 {
     efHal_i2c_ec_t ret;
 
@@ -101,7 +101,7 @@ extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, void *pTx, size_t sTx, v
     else
     {
         xSemaphoreTake(p_dhD->head.mutex, portMAX_DELAY);
-        ret = p_dhD->cb(p_dhD->param, pTx, sTx, pRx, sRx);
+        ret = p_dhD->cb(p_dhD->param, da, pTx, sTx, pRx, sRx);
         xSemaphoreGive(p_dhD->head.mutex);
     }
 
