@@ -51,6 +51,7 @@ extern "C" {
 typedef struct
 {
     SemaphoreHandle_t mutex;
+    TaskHandle_t taskHadle;
 }efHal_internal_dhD_t;
 
 /*==================[external data declaration]==============================*/
@@ -58,6 +59,11 @@ typedef struct
 /*==================[external functions declaration]=========================*/
 
 extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length);
+
+
+/* I2C internal public functions */
+
+extern void efHal_internal_i2c_endOfTransfer(efHal_internal_dhD_t *p_dhD, efHal_i2c_ec_t ec);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

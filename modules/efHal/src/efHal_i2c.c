@@ -93,19 +93,29 @@ extern efHal_dh_t efHal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void
 extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx)
 {
     efHal_i2c_ec_t ret;
-
     i2c_dhD_t *p_dhD = dh;
+    uint32_t notifVal;
 
     if (p_dhD == NULL)
         ret = EF_HAL_I2C_EC_INVALID_HANDLER;
     else
     {
         xSemaphoreTake(p_dhD->head.mutex, portMAX_DELAY);
+
+        p_dhD->head.taskHadle = xTaskGetCurrentTaskHandle();
+        xTaskNotifyStateClear(p_dhD->head.taskHadle);
         ret = p_dhD->cb(p_dhD->param, da, pTx, sTx, pRx, sRx);
+        xTaskNotifyWait(0, 0, &notifVal, portMAX_DELAY);
+        ret = notifVal;
         xSemaphoreGive(p_dhD->head.mutex);
     }
 
     return ret;
+}
+
+extern void efHal_internal_i2c_endOfTransfer(efHal_internal_dhD_t *p_dhD, efHal_i2c_ec_t ec)
+{
+    xTaskNotify(p_dhD->taskHadle, ec, eSetValueWithOverwrite);
 }
 
 /*==================[end of file]============================================*/
