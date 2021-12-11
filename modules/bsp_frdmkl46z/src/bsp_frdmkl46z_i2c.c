@@ -36,6 +36,7 @@
 /*==================[inclusions]=============================================*/
 #include "bsp_frdmkl46z_i2c.h"
 #include "fsl_i2c.h"
+#include "efHal_internal.h"
 
 /*==================[macros and typedef]=====================================*/
 
@@ -112,14 +113,16 @@ static efHal_i2c_ec_t bsp_frdmkl46z_i2c_deviceTransfer(void* param, efHal_i2c_de
 
 static void i2c_master_callback(I2C_Type *base, i2c_master_handle_t *handle, status_t status, void *userData)
 {
-    if (status == kStatus_Success)
+    switch (status)
     {
-    //    completionFlag = true;
-    }
+        case kStatus_Success:
+            efHal_internal_i2c_endOfTransfer(userData, EF_HAL_I2C_EC_NO_ERROR);
+            break;
 
-    if ((status == kStatus_I2C_Nak) || (status == kStatus_I2C_Addr_Nak))
-    {
-     //   nakFlag = true;
+        case kStatus_I2C_Nak:
+        case kStatus_I2C_Addr_Nak:
+            efHal_internal_i2c_endOfTransfer(userData, EF_HAL_I2C_EC_NO_ERROR);
+            break;
     }
 }
 
