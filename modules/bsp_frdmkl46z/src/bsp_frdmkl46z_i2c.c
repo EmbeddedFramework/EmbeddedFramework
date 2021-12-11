@@ -113,17 +113,25 @@ static efHal_i2c_ec_t bsp_frdmkl46z_i2c_deviceTransfer(void* param, efHal_i2c_de
 
 static void i2c_master_callback(I2C_Type *base, i2c_master_handle_t *handle, status_t status, void *userData)
 {
+    efHal_i2c_ec_t ec;
+
     switch (status)
     {
         case kStatus_Success:
-            efHal_internal_i2c_endOfTransfer(userData, EF_HAL_I2C_EC_NO_ERROR);
+            ec = EF_HAL_I2C_EC_NO_ERROR;
             break;
 
         case kStatus_I2C_Nak:
         case kStatus_I2C_Addr_Nak:
-            efHal_internal_i2c_endOfTransfer(userData, EF_HAL_I2C_EC_NO_ERROR);
+            ec = EF_HAL_I2C_EC_NO_ERROR;
+            break;
+
+        default:
+            ec = EF_HAL_I2C_EC_UNKNOW;
             break;
     }
+
+    efHal_internal_i2c_endOfTransfer(userData, ec);
 }
 
 /*==================[external functions definition]==========================*/

@@ -53,6 +53,7 @@ typedef enum
     EF_HAL_I2C_EC_INVALID_PARAMS,
     EF_HAL_I2C_EC_TRANSFER_UNSUPPORTED,
     EF_HAL_I2C_EC_NAK,
+    EF_HAL_I2C_EC_UNKNOW,
 }efHal_i2c_ec_t;
 
 typedef uint8_t efHal_i2c_devAdd_t;
