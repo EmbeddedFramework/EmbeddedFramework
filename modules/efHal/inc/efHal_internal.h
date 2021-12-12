@@ -38,6 +38,8 @@
 /*==================[inclusions]=============================================*/
 #include "efHal.h"
 #include "efHal_config.h"
+#include "efHal_gpio.h"
+#include "efHal_i2c.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
 
@@ -54,14 +56,33 @@ typedef struct
     TaskHandle_t taskHadle;
 }efHal_internal_dhD_t;
 
+/******************************* GPIO ****************************************/
+
+typedef void (*efHal_gpio_setPin_t)(efHal_gpio_id_t id, bool state);
+typedef void (*efHal_gpio_togPin_t)(efHal_gpio_id_t id);
+typedef bool (*efHal_gpio_getPin_t)(efHal_gpio_id_t id);
+typedef void (*efHal_gpio_confInt_t)(efHal_gpio_id_t id, efHal_gpio_intType_t intType);
+
+typedef struct
+{
+    efHal_gpio_setPin_t setPin;
+    efHal_gpio_togPin_t togPin;
+    efHal_gpio_getPin_t getPin;
+    efHal_gpio_confInt_t confInt;
+}efHal_gpio_callBacks_t;
+
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
 
 extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length);
 
+/******************************* GPIO ****************************************/
 
-/* I2C internal public functions */
+extern void efHal_internal_gpio_setCallBacks(efHal_gpio_callBacks_t cb);
+
+
+/******************************* I2C *****************************************/
 
 extern void efHal_internal_i2c_endOfTransfer(efHal_internal_dhD_t *p_dhD, efHal_i2c_ec_t ec);
 

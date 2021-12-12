@@ -59,12 +59,12 @@ typedef enum
 
 typedef void (*efHal_gpio_callBackInt_t)(efHal_gpio_id_t id);
 
-
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
 extern void efHal_gpio_init(void);
 extern void efHal_gpio_setPin(efHal_gpio_id_t id, bool state);
+extern void efHal_gpio_togglePin(efHal_gpio_id_t id);
 extern bool efHal_gpio_getPin(efHal_gpio_id_t id);
 extern void efHal_gpio_confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType);
 extern bool efHal_gpio_waitForInt(efHal_gpio_id_t id, TickType_t xBlockTime);

@@ -35,12 +35,14 @@
 
 /*==================[inclusions]=============================================*/
 #include "efHal_gpio.h"
+#include "efHal_internal.h"
 
 /*==================[macros and typedef]=====================================*/
 
 /*==================[internal functions declaration]=========================*/
 
 /*==================[internal data definition]===============================*/
+static efHal_gpio_callBacks_t callBacks;
 
 /*==================[external data definition]===============================*/
 
@@ -55,6 +57,16 @@ extern void efHal_gpio_init(void)
 
 extern void efHal_gpio_setPin(efHal_gpio_id_t id, bool state)
 {
+    if (callBacks.setPin != NULL)
+        callBacks.setPin(id, state);
+    else
+    {
+        /* TODO ASSERT */
+    }
+}
+
+extern void efHal_gpio_togglePin(efHal_gpio_id_t id)
+{
 
 }
 
@@ -62,5 +74,11 @@ extern bool efHal_gpio_getPin(efHal_gpio_id_t id)
 {
 
 }
+
+extern void efHal_internal_gpio_setCallBacks(efHal_gpio_callBacks_t cb)
+{
+
+}
+
 
 /*==================[end of file]============================================*/

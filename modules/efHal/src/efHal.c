@@ -51,6 +51,7 @@
 
 extern void efHal_init(void)
 {
+    efHal_gpio_init();
     efHal_i2c_init();
 }
 
