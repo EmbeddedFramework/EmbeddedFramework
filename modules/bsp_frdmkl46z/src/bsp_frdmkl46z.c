@@ -36,6 +36,9 @@
 /*==================[inclusions]=============================================*/
 #include "bsp_frdmkl46z.h"
 
+#include "board.h"
+#include "pin_mux.h"
+
 /*==================[macros and typedef]=====================================*/
 
 /*==================[internal functions declaration]=========================*/
@@ -49,7 +52,17 @@
 /*==================[external functions definition]==========================*/
 extern void bsp_frdmkl46z_init(void)
 {
+    /* specific board init functions */
+    BOARD_InitPins();
+    BOARD_BootClockRUN();
+    BOARD_InitDebugConsole();
+
+    /* Embedded Framework HAL init */
+    efHal_init();
+
     bsp_frdmkl46z_i2c_init();
+
+    bsp_frdmkl46z_gpio_init();
 }
 
 /*==================[end of file]============================================*/

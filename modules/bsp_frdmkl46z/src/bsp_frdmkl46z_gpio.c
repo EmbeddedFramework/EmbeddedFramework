@@ -32,29 +32,53 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef BSP_FRDMKL46Z_H
-#define BSP_FRDMKL46Z_H
 
 /*==================[inclusions]=============================================*/
-#include "bsp_frdmkl46z_i2c.h"
 #include "bsp_frdmkl46z_gpio.h"
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "efHal_internal.h"
 
 /*==================[macros and typedef]=====================================*/
 
-/*==================[external data declaration]==============================*/
+/*==================[internal functions declaration]=========================*/
 
-/*==================[external functions declaration]=========================*/
-extern void bsp_frdmkl46z_init(void);
+/*==================[internal data definition]===============================*/
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
+/*==================[external data definition]===============================*/
+
+/*==================[internal functions definition]==========================*/
+
+static void setPin(efHal_gpio_id_t id, bool state)
+{
+
 }
-#endif
+
+static void togPin(efHal_gpio_id_t id)
+{
+
+}
+
+static bool getPin(efHal_gpio_id_t id)
+{
+
+}
+
+static void confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)
+{
+
+}
+
+
+/*==================[external functions definition]==========================*/
+extern void bsp_frdmkl46z_gpio_init(void)
+{
+    efHal_gpio_callBacks_t cb;
+
+    cb.setPin = setPin;
+    cb.togPin = togPin;
+    cb.getPin = getPin;
+    cb.confInt = confInt;
+
+    efHal_internal_gpio_setCallBacks(cb);
+}
 
 /*==================[end of file]============================================*/
-#endif /* BSP_FRDMKL46Z_H */

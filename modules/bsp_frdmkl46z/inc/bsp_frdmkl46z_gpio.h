@@ -32,12 +32,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef BSP_FRDMKL46Z_H
-#define BSP_FRDMKL46Z_H
+#ifndef BSP_FRDMKL46Z_GPIO_H
+#define BSP_FRDMKL46Z_GPIO_H
 
 /*==================[inclusions]=============================================*/
-#include "bsp_frdmkl46z_i2c.h"
-#include "bsp_frdmkl46z_gpio.h"
+#include "efHal_gpio.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -46,10 +45,16 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
+typedef enum
+{
+    EF_HAL_GPIO_LED_GREEN = 0,
+    EF_HAL_GPIO_LED_RED,
+}efHal_gpio_t;
+
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-extern void bsp_frdmkl46z_init(void);
+extern void bsp_frdmkl46z_gpio_init(void);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -57,4 +62,4 @@ extern void bsp_frdmkl46z_init(void);
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* BSP_FRDMKL46Z_H */
+#endif /* BSP_FRDMKL46Z_GPIO_H */
