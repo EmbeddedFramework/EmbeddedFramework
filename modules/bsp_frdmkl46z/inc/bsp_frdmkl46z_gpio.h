@@ -49,6 +49,8 @@ typedef enum
 {
     EF_HAL_GPIO_LED_GREEN = 0,
     EF_HAL_GPIO_LED_RED,
+    EF_HAL_GPIO_SW_1,
+    EF_HAL_GPIO_SW_3,
 }efHal_gpio_t;
 
 /*==================[external data declaration]==============================*/
