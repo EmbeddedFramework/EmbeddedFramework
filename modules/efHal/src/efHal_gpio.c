@@ -67,17 +67,35 @@ extern void efHal_gpio_setPin(efHal_gpio_id_t id, bool state)
 
 extern void efHal_gpio_togglePin(efHal_gpio_id_t id)
 {
-
+    if (callBacks.togPin != NULL)
+        callBacks.togPin(id);
+    else
+    {
+        bool state;
+        vPortEnterCritical();
+        state = efHal_gpio_getPin(id);
+        efHal_gpio_setPin(id, !state);
+        vPortExitCritical();
+    }
 }
 
 extern bool efHal_gpio_getPin(efHal_gpio_id_t id)
 {
+    bool ret = 0;
 
+    if (callBacks.getPin != NULL)
+        ret = callBacks.getPin(id);
+    else
+    {
+        /* TODO ASSERT */
+    }
+
+    return ret;
 }
 
 extern void efHal_internal_gpio_setCallBacks(efHal_gpio_callBacks_t cb)
 {
-
+    callBacks = cb;
 }
 
 

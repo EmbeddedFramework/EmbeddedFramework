@@ -57,6 +57,19 @@ typedef enum
     EF_HAL_GPIO_INT_TYPE_BOTH_EDGE,
 }efHal_gpio_intType_t;
 
+typedef enum
+{
+    EF_HAL_GPIO_PULL_DISABLE = 0,
+    EF_HAL_GPIO_PULL_UP,
+    EF_HAL_GPIO_PULL_DOWN,
+}efHal_gpio_pull_t;
+
+typedef enum
+{
+    EF_HAL_GPIO_INPUT = 0,
+    EF_HAL_GPIO_OUTPUT,
+}efHal_gpio_dir_t;
+
 typedef void (*efHal_gpio_callBackInt_t)(efHal_gpio_id_t id);
 
 /*==================[external data declaration]==============================*/
@@ -67,6 +80,7 @@ extern void efHal_gpio_setPin(efHal_gpio_id_t id, bool state);
 extern void efHal_gpio_togglePin(efHal_gpio_id_t id);
 extern bool efHal_gpio_getPin(efHal_gpio_id_t id);
 extern void efHal_gpio_confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType);
+extern void efHal_gpio_confDir(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull);
 extern bool efHal_gpio_waitForInt(efHal_gpio_id_t id, TickType_t xBlockTime);
 extern void efHal_gpio_setCallBackInt(efHal_gpio_id_t id, efHal_gpio_callBackInt_t cb);
 
