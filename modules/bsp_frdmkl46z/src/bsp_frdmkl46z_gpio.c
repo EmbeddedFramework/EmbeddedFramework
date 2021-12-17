@@ -107,12 +107,36 @@ static void confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)
         case EF_HAL_GPIO_INT_TYPE_DISABLE:
             portInt = kPORT_InterruptOrDMADisabled;
             break;
+
+        case EF_HAL_GPIO_INT_TYPE_RISING_EDGE:
+            portInt = kPORT_InterruptRisingEdge;
+            break;
+
+        case EF_HAL_GPIO_INT_TYPE_FALLING_EDGE:
+            portInt = kPORT_InterruptFallingEdge;
+            break;
+
+        case EF_HAL_GPIO_INT_TYPE_BOTH_EDGE:
+            portInt = kPORT_InterruptEitherEdge;
+            break;
+
+        default:
+            /* TODO ASSERT */
+            break;
     }
 
     PORT_SetPinInterruptConfig(gpioStruct[id].port, gpioStruct[id].pin, portInt);
 
-    NVIC_EnableIRQ(PORTC_PORTD_IRQn);
-    NVIC_SetPriority(PORTC_PORTD_IRQn, 0);
+    if (gpioStruct[id].port == PORTA)
+        NVIC_EnableIRQ(PORTA_IRQn);
+    else if (gpioStruct[id].port == PORTC)
+        NVIC_EnableIRQ(PORTC_PORTD_IRQn);
+    else if (gpioStruct[id].port == PORTD)
+        NVIC_EnableIRQ(PORTC_PORTD_IRQn);
+    else
+    {
+        /* TODO ASSERT */
+    }
 }
 
 static void confDir(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull, bool state)
@@ -163,7 +187,7 @@ extern void bsp_frdmkl46z_gpio_init(void)
     cb.togPin = togPin;
     cb.getPin = getPin;
     cb.confInt = confInt;
-    cb.confDir = confDir;
+    cb.confPin = confDir;
 
     efHal_internal_gpio_setCallBacks(cb);
 

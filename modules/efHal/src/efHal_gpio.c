@@ -93,6 +93,31 @@ extern bool efHal_gpio_getPin(efHal_gpio_id_t id)
     return ret;
 }
 
+extern void efHal_gpio_confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)
+{
+
+}
+
+extern void efHal_gpio_confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull, bool state)
+{
+    if (callBacks.confPin != NULL)
+        callBacks.confPin(id, dir, pull, state);
+    else
+    {
+        /* TODO ASSERT */
+    }
+}
+
+extern bool efHal_gpio_waitForInt(efHal_gpio_id_t id, TickType_t xBlockTime)
+{
+
+}
+
+extern void efHal_gpio_setCallBackInt(efHal_gpio_id_t id, efHal_gpio_callBackInt_t cb)
+{
+
+}
+
 extern void efHal_internal_gpio_setCallBacks(efHal_gpio_callBacks_t cb)
 {
     callBacks = cb;
