@@ -126,6 +126,14 @@ static void confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)
             portInt = kPORT_InterruptEitherEdge;
             break;
 
+        case EF_HAL_GPIO_INT_TYPE_LOW_LEVEL:
+            portInt = kPORT_InterruptLogicZero;
+            break;
+
+        case EF_HAL_GPIO_INT_TYPE_HIGH_LEVEL:
+            portInt = kPORT_InterruptLogicOne;
+            break;
+
         default:
             /* TODO ASSERT */
             break;
