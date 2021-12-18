@@ -82,6 +82,7 @@ extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, siz
 /******************************* GPIO ****************************************/
 
 extern void efHal_internal_gpio_setCallBacks(efHal_gpio_callBacks_t cb);
+extern void efHal_internal_gpio_InterruptRoutine(efHal_gpio_id_t id);
 
 
 /******************************* I2C *****************************************/

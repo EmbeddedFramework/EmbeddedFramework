@@ -123,5 +123,9 @@ extern void efHal_internal_gpio_setCallBacks(efHal_gpio_callBacks_t cb)
     callBacks = cb;
 }
 
+extern void efHal_internal_gpio_InterruptRoutine(efHal_gpio_id_t id)
+{
+
+}
 
 /*==================[end of file]============================================*/

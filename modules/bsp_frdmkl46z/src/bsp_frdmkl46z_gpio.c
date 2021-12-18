@@ -63,6 +63,8 @@ static const gpioStruct_t gpioStruct[] =
     {PORTC, GPIOC, 12, 0},     /* EF_HAL_GPIO_SW_3 */
 };
 
+#define TOTAL_GPIO   (sizeof(gpioStruct) / sizeof(gpioStruct[0]))
+
 static const efHal_gpio_t gpioOut[] =
 {
     EF_HAL_GPIO_LED_GREEN,
@@ -172,6 +174,19 @@ static void confDir(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t 
     GPIO_PinInit(gpioStruct[id].gpio, gpioStruct[id].pin, &gpio_pin_config);
 }
 
+static void identifyAndNotifyGpioHandler(GPIO_Type *gpio, int pin)
+{
+    int i;
+
+    for (i = 0 ; i < TOTAL_GPIO ; i++)
+    {
+        if (gpioStruct[i].gpio == gpio && gpioStruct[i].pin == pin)
+        {
+            efHal_internal_gpio_InterruptRoutine(i);
+        }
+    }
+}
+
 /*==================[external functions definition]==========================*/
 extern void bsp_frdmkl46z_gpio_init(void)
 {
@@ -197,5 +212,47 @@ extern void bsp_frdmkl46z_gpio_init(void)
     for (i = 0 ; i < TOTAL_INPUTS; i++)
         confDir(gpioIn[i], EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_DISABLE, 0);
 }
+
+void PORTC_PORTD_IRQHandler(void)
+{
+    uint32_t intFlags;
+    static GPIO_Type * const gpioArr[] =
+    {
+        GPIOC,
+        GPIOD,
+    };
+    static const int lengthGpioArr = sizeof(gpioArr) / sizeof(gpioArr[0]);
+    int i,j;
+
+    for (i = 0 ; i < lengthGpioArr ; i++)
+    {
+        for (j = 0 ; j < 32 ; j++)
+        {
+            intFlags = GPIO_PortGetInterruptFlags(gpioArr[i]);
+            if (intFlags | (1 << j))
+            {
+                identifyAndNotifyGpioHandler(gpioArr[i], j);
+                GPIO_PortClearInterruptFlags(gpioArr[i], 1 << j);
+            }
+        }
+    }
+}
+
+void PORTA_IRQHandler(void)
+{
+    uint32_t intFlags;
+    int j;
+
+    for (j = 0 ; j < 32 ; j++)
+    {
+        intFlags = GPIO_PortGetInterruptFlags(GPIOA);
+        if (intFlags | (1 << j))
+        {
+            identifyAndNotifyGpioHandler(GPIOA, j);
+            GPIO_PortClearInterruptFlags(GPIOA, 1 << j);
+        }
+    }
+}
+
 
 /*==================[end of file]============================================*/
