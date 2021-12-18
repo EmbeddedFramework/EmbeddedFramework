@@ -48,7 +48,6 @@ typedef struct
     PORT_Type *port;
     GPIO_Type *gpio;
     uint32_t pin;
-    bool state;
 }gpioStruct_t;
 
 /*==================[internal functions declaration]=========================*/
@@ -57,10 +56,10 @@ typedef struct
 
 static const gpioStruct_t gpioStruct[] =
 {
-    {PORTE, GPIOE, 29, 1},     /* EF_HAL_GPIO_LED_RED */
-    {PORTD, GPIOD, 5, 1},      /* EF_HAL_GPIO_LED_GREEN */
-    {PORTC, GPIOC, 3, 0},      /* EF_HAL_GPIO_SW_1 */
-    {PORTC, GPIOC, 12, 0},     /* EF_HAL_GPIO_SW_3 */
+    {PORTE, GPIOE, 29},     /* EF_HAL_GPIO_LED_RED */
+    {PORTD, GPIOD, 5},      /* EF_HAL_GPIO_LED_GREEN */
+    {PORTC, GPIOC, 3},      /* EF_HAL_GPIO_SW_1 */
+    {PORTC, GPIOC, 12},     /* EF_HAL_GPIO_SW_3 */
 };
 
 #define TOTAL_GPIO   (sizeof(gpioStruct) / sizeof(gpioStruct[0]))
@@ -70,6 +69,11 @@ static const efHal_gpio_t gpioOut[] =
     EF_HAL_GPIO_LED_GREEN,
     EF_HAL_GPIO_LED_RED,
 };
+
+static const uint32_t initialState = 0b0011;        /* initial pin state :
+                                                     * 1: EF_HAL_GPIO_LED_GREEN
+                                                     * 1: EF_HAL_GPIO_LED_RED
+                                                     */
 
 #define TOTAL_OUTPUTS   (sizeof(gpioOut) / sizeof(gpioOut[0]))
 
@@ -141,7 +145,7 @@ static void confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)
     }
 }
 
-static void confDir(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull, bool state)
+static void confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull, bool state)
 {
     gpio_pin_config_t gpio_pin_config;
 
@@ -202,15 +206,15 @@ extern void bsp_frdmkl46z_gpio_init(void)
     cb.togPin = togPin;
     cb.getPin = getPin;
     cb.confInt = confInt;
-    cb.confPin = confDir;
+    cb.confPin = confPin;
 
     efHal_internal_gpio_setCallBacks(cb);
 
     for (i = 0 ; i < TOTAL_OUTPUTS ; i++)
-        confDir(gpioOut[i], EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, gpioStruct[gpioOut[i]].state);
+        confPin(gpioOut[i], EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, (initialState >> i) & 1);
 
     for (i = 0 ; i < TOTAL_INPUTS; i++)
-        confDir(gpioIn[i], EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_DISABLE, 0);
+        confPin(gpioIn[i], EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_DISABLE, 0);
 }
 
 void PORTC_PORTD_IRQHandler(void)
