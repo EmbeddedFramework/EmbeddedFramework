@@ -63,10 +63,10 @@ endif
 
 # Default values in other case
 ARCH           ?= x86
-CPUTYPE        ?= ia32
+CPUTYPE        ?= ia64
 CPU            ?= none
 COMPILER       ?= gcc
-BOARD          ?= none
+BOARD          ?= pcSim
 
 # export defined vars to the environment
 export ARCH
@@ -162,7 +162,9 @@ BIN_DIR  = $(OUT_DIR)$(DS)bin
 ETC_DIR = $(OUT_DIR)$(DS)etc
 
 # include needed project
+ifneq ($(PROJECT_PATH),)
 include $(PROJECT_PATH)$(DS)mak$(DS)Makefile
+endif
 # base module is always needed and included
 MODS += modules$(DS)base
 # include needed modules
