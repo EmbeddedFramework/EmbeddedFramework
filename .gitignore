@@ -42,6 +42,7 @@ projects
 *.i*86
 *.x86_64
 *.hex
+out/ceedling/
 
 # Backup files
 *.bak
