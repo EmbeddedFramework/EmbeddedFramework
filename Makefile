@@ -64,7 +64,7 @@ endif
 # Default values in other case
 ARCH           ?= x86
 CPUTYPE        ?= ia64
-CPU            ?= none
+CPU            ?= pcCPU
 COMPILER       ?= gcc
 BOARD          ?= pcSim
 
@@ -265,7 +265,7 @@ ifneq ($(tst_file),)
 # definitions if to run only a specific unit test
 
 # include modules needed for this module
-include $(foreach mod,$($(tst_mod)_TST_MOD),modules$(DS)$(mod)$(DS)mak$(DS)Makefile)
+include $(foreach mod,$($(tst_mod)_TST_MOD),$(mod)$(DS)mak$(DS)Makefile)
 
 MTEST_SRC_FILES = $($(tst_mod)_PATH)$(DS)test$(DS)utest$(DS)src$(DS)test_$(tst_file).c
 
@@ -274,7 +274,7 @@ UNITY_INC = externals$(DS)ceedling$(DS)vendor$(DS)unity$(DS)src                 
             out$(DS)ceedling$(DS)mocks                                              \
             $(foreach mod,$($(tst_mod)_TST_MOD),$($(mod)_INC_PATH))                 \
             $($(tst_mod)_TST_INC_PATH)                                              \
-$($(tst_mod)_INC_PATH)
+			$($(tst_mod)_INC_PATH)
 
 UNITY_SRC = modules$(DS)$(tst_mod)$(DS)test$(DS)utest$(DS)src$(DS)test_$(tst_file).c \
             $(RUNNERS_OUT_DIR)$(DS)test_$(tst_file)_Runner.c                         \
@@ -543,6 +543,7 @@ info_$(info_mod) :
 	@echo Path........: $($(info_mod)_PATH)
 	@$(MULTILINE_ECHO) "Include path: \n $(foreach inc, $($(info_mod)_INC_PATH),     $(inc)\n)"
 	@echo Source path.: $($(info_mod)_SRC_PATH)
+	@echo $(INC_FILES)
 	@$(MULTILINE_ECHO) "Source files:\n $(foreach src, $($(info_mod)_SRC_FILES),     $(src)\n)"
 endif
 
