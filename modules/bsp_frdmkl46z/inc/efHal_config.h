@@ -44,7 +44,12 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
-#define EF_HAL_I2C_TOTAL_DEVICES    1
+#define EF_HAL_I2C_TOTAL_DEVICES        1
+
+#define EF_HAL_GPIO_TOTAL_CALL_BACK     5
+
+#define EF_HAL_GPIO_TOTAL_WAIT_FOR_INT  5
+
 
 /*==================[external data declaration]==============================*/
 

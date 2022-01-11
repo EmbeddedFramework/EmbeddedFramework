@@ -39,10 +39,24 @@
 
 /*==================[macros and typedef]=====================================*/
 
+typedef struct
+{
+    efHal_gpio_callBackInt_t cbInt;
+    efHal_gpio_id_t gpioId;
+}cb_gpio_t;
+
+typedef struct
+{
+    TaskHandle_t taskHandle;
+    efHal_gpio_id_t gpioId;
+}taskHandle_gpio_t;
+
 /*==================[internal functions declaration]=========================*/
 
 /*==================[internal data definition]===============================*/
 static efHal_gpio_callBacks_t callBacks;
+static cb_gpio_t cb_gpio[EF_HAL_GPIO_TOTAL_CALL_BACK];
+static taskHandle_gpio_t taskHandle_gpio[EF_HAL_GPIO_TOTAL_WAIT_FOR_INT];
 
 /*==================[external data definition]===============================*/
 
@@ -52,7 +66,12 @@ static efHal_gpio_callBacks_t callBacks;
 
 extern void efHal_gpio_init(void)
 {
-
+    int i;
+    for (i = 0 ; i < EF_HAL_GPIO_TOTAL_CALL_BACK ; i++)
+    {
+        cb_gpio[i].cbInt = NULL;
+        cb_gpio[i].gpioId = 0;
+    }
 }
 
 extern void efHal_gpio_setPin(efHal_gpio_id_t id, bool state)
@@ -95,7 +114,12 @@ extern bool efHal_gpio_getPin(efHal_gpio_id_t id)
 
 extern void efHal_gpio_confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)
 {
-
+    if (callBacks.confInt != NULL)
+        callBacks.confInt(id, intType);
+    else
+    {
+        /* TODO ASSERT */
+    }
 }
 
 extern void efHal_gpio_confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull, bool state)
@@ -110,12 +134,49 @@ extern void efHal_gpio_confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_g
 
 extern bool efHal_gpio_waitForInt(efHal_gpio_id_t id, TickType_t xBlockTime)
 {
+    int i;
+    bool ret = false;
 
+    for (i = 0 ; i < EF_HAL_GPIO_TOTAL_WAIT_FOR_INT ; i++)
+    {
+        if (taskHandle_gpio[i].taskHandle == NULL)
+        {
+            taskHandle_gpio[i].gpioId = id;
+            taskHandle_gpio[i].taskHandle = xTaskGetCurrentTaskHandle();
+            break;
+        }
+    }
+
+    /* check if no free slot error */
+    if (i >= EF_HAL_GPIO_TOTAL_WAIT_FOR_INT)
+    {
+        /* TODO ASSERT */
+    }
+
+    if (ulTaskNotifyTake(pdTRUE, xBlockTime))
+        ret = true;
+
+    return ret;
 }
 
 extern void efHal_gpio_setCallBackInt(efHal_gpio_id_t id, efHal_gpio_callBackInt_t cb)
 {
+    int i;
+    for (i = 0 ; i < EF_HAL_GPIO_TOTAL_CALL_BACK ; i++)
+    {
+        if (cb_gpio[i].cbInt == NULL)
+        {
+            cb_gpio[i].gpioId = id;
+            cb_gpio[i].cbInt = cb;
+            break;
+        }
+    }
 
+    /* check if no free slot error */
+    if (i >= EF_HAL_GPIO_TOTAL_CALL_BACK)
+    {
+        /* TODO ASSERT */
+    }
 }
 
 extern void efHal_internal_gpio_setCallBacks(efHal_gpio_callBacks_t cb)
@@ -125,7 +186,41 @@ extern void efHal_internal_gpio_setCallBacks(efHal_gpio_callBacks_t cb)
 
 extern void efHal_internal_gpio_InterruptRoutine(efHal_gpio_id_t id)
 {
+    int i;
 
+    for (i = 0 ; i < EF_HAL_GPIO_TOTAL_CALL_BACK ; i++)
+    {
+        if (cb_gpio[i].gpioId == id)
+        {
+            if (cb_gpio[i].cbInt != NULL)
+            {
+                cb_gpio[i].cbInt(id);
+            }
+            else
+            {
+                /* TODO ASSERT */
+            }
+
+            break;
+        }
+    }
+
+    for (i = 0 ; i < EF_HAL_GPIO_TOTAL_WAIT_FOR_INT ; i++)
+    {
+        if (taskHandle_gpio[i].gpioId == id)
+        {
+            if (taskHandle_gpio[i].taskHandle != NULL)
+            {
+                xTaskNotifyGive(taskHandle_gpio[i].taskHandle);
+            }
+            else
+            {
+                /* TODO ASSERT */
+            }
+
+            break;
+        }
+    }
 }
 
 /*==================[end of file]============================================*/

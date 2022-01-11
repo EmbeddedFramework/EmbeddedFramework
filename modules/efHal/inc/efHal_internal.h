@@ -73,6 +73,15 @@ typedef struct
     efHal_gpio_confPin_t confPin;
 }efHal_gpio_callBacks_t;
 
+#ifndef EF_HAL_GPIO_TOTAL_CALL_BACK
+#define EF_HAL_GPIO_TOTAL_CALL_BACK 1
+#endif
+
+#ifndef EF_HAL_GPIO_TOTAL_WAIT_FOR_INT
+#define EF_HAL_GPIO_TOTAL_WAIT_FOR_INT 1
+#endif
+
+
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
