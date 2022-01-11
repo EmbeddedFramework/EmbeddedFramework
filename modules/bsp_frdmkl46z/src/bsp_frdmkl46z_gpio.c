@@ -64,7 +64,7 @@ static const gpioStruct_t gpioStruct[] =
 
 #define TOTAL_GPIO   (sizeof(gpioStruct) / sizeof(gpioStruct[0]))
 
-static const efHal_gpio_t gpioOut[] =
+static const efHal_gpio_id_t gpioOut[] =
 {
     EF_HAL_GPIO_LED_GREEN,
     EF_HAL_GPIO_LED_RED,
@@ -77,7 +77,7 @@ static const uint32_t initialState = 0b0011;        /* initial pin state :
 
 #define TOTAL_OUTPUTS   (sizeof(gpioOut) / sizeof(gpioOut[0]))
 
-static const efHal_gpio_t gpioIn[] =
+static const efHal_gpio_id_t gpioIn[] =
 {
     EF_HAL_GPIO_SW_1,
     EF_HAL_GPIO_SW_3,
