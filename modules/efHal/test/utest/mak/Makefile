@@ -38,3 +38,5 @@ efHal_TST_INC_PATH  = $(efHal_PATH)$(DS)test$(DS)utest$(DS)inc
 # unit tests dependencies
 #efHal_TST_MOD	    = 
 
+efHal_TST_MOD	    = externals$(DS)freertos
+
