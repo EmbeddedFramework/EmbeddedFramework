@@ -248,7 +248,7 @@ void PORTC_PORTD_IRQHandler(void)
         for (j = 0 ; j < 32 ; j++)
         {
             intFlags = GPIO_PortGetInterruptFlags(gpioArr[i]);
-            if (intFlags | (1 << j))
+            if (intFlags & (1 << j))
             {
                 identifyAndNotifyGpioHandler(gpioArr[i], j);
                 GPIO_PortClearInterruptFlags(gpioArr[i], 1 << j);
