@@ -60,6 +60,8 @@ static const gpioStruct_t gpioStruct[] =
     {PORTD, GPIOD, 5},      /* EF_HAL_GPIO_LED_GREEN */
     {PORTC, GPIOC, 3},      /* EF_HAL_GPIO_SW_1 */
     {PORTC, GPIOC, 12},     /* EF_HAL_GPIO_SW_3 */
+    {PORTC, GPIOC, 5},      /* EF_HAL_INT1_ACCEL */
+    {PORTD, GPIOD, 1},      /* EF_HAL_INT2_ACCEL */
 };
 
 #define TOTAL_GPIO   (sizeof(gpioStruct) / sizeof(gpioStruct[0]))
@@ -81,6 +83,8 @@ static const efHal_gpio_id_t gpioIn[] =
 {
     EF_HAL_GPIO_SW_1,
     EF_HAL_GPIO_SW_3,
+    EF_HAL_INT1_ACCEL,
+    EF_HAL_INT2_ACCEL,
 };
 
 #define TOTAL_INPUTS   (sizeof(gpioIn) / sizeof(gpioIn[0]))
@@ -91,7 +95,10 @@ static const efHal_gpio_id_t gpioIn[] =
 
 static void setPin(efHal_gpio_id_t id, bool state)
 {
-    GPIO_PortSet(gpioStruct[id].gpio, 1<<gpioStruct[id].pin);
+    if (state)
+        GPIO_PortSet(gpioStruct[id].gpio, 1<<gpioStruct[id].pin);
+    else
+        GPIO_PortClear(gpioStruct[id].gpio, 1<<gpioStruct[id].pin);
 }
 
 static void togPin(efHal_gpio_id_t id)

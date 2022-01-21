@@ -51,6 +51,8 @@ enum efHal_gpio_id_t
     EF_HAL_GPIO_LED_RED,
     EF_HAL_GPIO_SW_1,
     EF_HAL_GPIO_SW_3,
+    EF_HAL_INT1_ACCEL,
+    EF_HAL_INT2_ACCEL,
 };
 
 /*==================[external data declaration]==============================*/
