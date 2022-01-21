@@ -112,6 +112,9 @@ extern void mma8451_init(efHal_dh_t dh);
 extern void mma8451_setDataRate(mma8451_DR_t rate);
 
 extern void mma8451_setCtrlReg1(mma8451_ctrlReg1_t reg1);
+extern void mma8451_setCtrlReg4(mma8451_ctrlReg4_t reg4);
+extern void mma8451_setCtrlReg5(mma8451_ctrlReg5_t reg5);
+
 
 extern mma8451_accIntCount_t mma8451_getAccIntCount(void);
 

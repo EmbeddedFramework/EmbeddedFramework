@@ -38,6 +38,7 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 #include "efHal_i2c.h"
+#include "stdbool.h"
 
 /*==================[macros and typedef]=====================================*/
 
@@ -59,6 +60,8 @@
 static efHal_dh_t i2c_dh;
 static SemaphoreHandle_t xMutexAcc;
 
+static mma8451_ctrlReg1_t reg1;
+
 /*==================[external data definition]===============================*/
 
 /*==================[internal functions definition]==========================*/
@@ -79,11 +82,30 @@ static void mma8451_read_regs(uint8_t addr, uint8_t *buf, size_t length)
     efHal_i2c_transfer(i2c_dh, MMA8451_I2C_ADDRESS, &addr, sizeof(addr), buf, length);
 }
 
+static void writeRegWithActiveLow(uint8_t addr, uint8_t data)
+{
+    bool prevActive = 0;
+    uint8_t *pTmp = (uint8_t*)&reg1;
+
+    if (reg1.ACTIVE)
+    {
+        prevActive = 1;
+        reg1.ACTIVE = 0;
+        mma8451_write_reg(CTRL_REG1_ADDRESS, *pTmp);
+    }
+
+    mma8451_write_reg(addr, data);
+
+    if (prevActive)
+    {
+        reg1.ACTIVE = 1;
+        mma8451_write_reg(CTRL_REG1_ADDRESS, *pTmp);
+    }
+}
+
 /*==================[external functions definition]==========================*/
 void mma8451_init(efHal_dh_t dh)
 {
-    mma8451_ctrlReg1_t reg1;
-
     i2c_dh = dh;
 
     xMutexAcc = xSemaphoreCreateMutex();
@@ -99,15 +121,36 @@ void mma8451_init(efHal_dh_t dh)
 
 void mma8451_setDataRate(mma8451_DR_t rate)
 {
+    reg1.DR = rate;
 
+    mma8451_setCtrlReg1(reg1);
 }
 
-extern void mma8451_setCtrlReg1(mma8451_ctrlReg1_t reg1)
+extern void mma8451_setCtrlReg1(mma8451_ctrlReg1_t reg)
 {
-    uint8_t *pTmp = (uint8_t*)&reg1;
+    uint8_t *pTmp = (uint8_t*)&reg;
 
     xSemaphoreTake(xMutexAcc, portMAX_DELAY);
-    mma8451_write_reg(CTRL_REG1_ADDRESS, *pTmp);
+    reg1 = reg;
+    writeRegWithActiveLow(CTRL_REG1_ADDRESS, *pTmp);
+    xSemaphoreGive(xMutexAcc);
+}
+
+extern void mma8451_setCtrlReg4(mma8451_ctrlReg4_t reg4)
+{
+    uint8_t *pTmp = (uint8_t*)&reg4;
+
+    xSemaphoreTake(xMutexAcc, portMAX_DELAY);
+    mma8451_write_reg(CTRL_REG4_ADDRESS, *pTmp);
+    xSemaphoreGive(xMutexAcc);
+}
+
+extern void mma8451_setCtrlReg5(mma8451_ctrlReg5_t reg5)
+{
+    uint8_t *pTmp = (uint8_t*)&reg5;
+
+    xSemaphoreTake(xMutexAcc, portMAX_DELAY);
+    writeRegWithActiveLow(CTRL_REG5_ADDRESS, *pTmp);
     xSemaphoreGive(xMutexAcc);
 }
 
