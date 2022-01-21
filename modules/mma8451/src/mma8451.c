@@ -141,7 +141,7 @@ extern void mma8451_setCtrlReg4(mma8451_ctrlReg4_t reg4)
     uint8_t *pTmp = (uint8_t*)&reg4;
 
     xSemaphoreTake(xMutexAcc, portMAX_DELAY);
-    mma8451_write_reg(CTRL_REG4_ADDRESS, *pTmp);
+    writeRegWithActiveLow(CTRL_REG4_ADDRESS, *pTmp);
     xSemaphoreGive(xMutexAcc);
 }
 
