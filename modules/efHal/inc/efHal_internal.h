@@ -40,6 +40,7 @@
 #include "efHal_config.h"
 #include "efHal_gpio.h"
 #include "efHal_i2c.h"
+#include "efHal_uart.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
 
@@ -81,6 +82,19 @@ typedef struct
 #define EF_HAL_GPIO_TOTAL_WAIT_FOR_INT 1
 #endif
 
+/******************************* UART ****************************************/
+
+typedef void (*efHal_uart_confCB_t)(efHal_dh_t dh, efHal_uart_conf_t const *cfg);
+typedef bool (*efHal_uart_sendCB_t)(efHal_dh_t dh, void *pBuf, int32_t size, TickType_t blockTime);
+typedef bool (*efHal_uart_recvCB_t)(efHal_dh_t dh, void *pBuf, int32_t size, TickType_t blockTime);
+
+typedef struct
+{
+    efHal_uart_confCB_t conf;
+    efHal_uart_sendCB_t send;
+    efHal_uart_recvCB_t recv;
+}efHal_uart_callBacks_t;
+
 
 /*==================[external data declaration]==============================*/
 
@@ -93,10 +107,14 @@ extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, siz
 extern void efHal_internal_gpio_setCallBacks(efHal_gpio_callBacks_t cb);
 extern void efHal_internal_gpio_InterruptRoutine(efHal_gpio_id_t id);
 
-
 /******************************* I2C *****************************************/
 
 extern void efHal_internal_i2c_endOfTransfer(efHal_internal_dhD_t *p_dhD, efHal_i2c_ec_t ec);
+extern efHal_dh_t efHal_internal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* param);
+
+/******************************* UART ****************************************/
+extern efHal_dh_t efHal_internal_uart_deviceReg(efHal_uart_callBacks_t cb, void* param);
+
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

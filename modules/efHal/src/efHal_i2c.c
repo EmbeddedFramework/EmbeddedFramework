@@ -70,26 +70,6 @@ extern void efHal_i2c_init(void)
     }
 }
 
-extern efHal_dh_t efHal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* param)
-{
-    i2c_dhD_t *ret;
-
-    taskENTER_CRITICAL();
-
-    ret = efHal_internal_searchFreeSlot(&dhD[0].head, sizeof(i2c_dhD_t), EF_HAL_I2C_TOTAL_DEVICES);
-
-    if (ret != NULL)
-    {
-        ret->head.mutex = xSemaphoreCreateMutex();
-        ret->cb = cb_devTra;
-        ret->param = param;
-    }
-
-    taskEXIT_CRITICAL();
-
-    return ret;
-}
-
 extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx)
 {
     efHal_i2c_ec_t ret;
@@ -116,6 +96,26 @@ extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, v
 extern void efHal_internal_i2c_endOfTransfer(efHal_internal_dhD_t *p_dhD, efHal_i2c_ec_t ec)
 {
     xTaskNotify(p_dhD->taskHadle, ec, eSetValueWithOverwrite);
+}
+
+extern efHal_dh_t efHal_internal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* param)
+{
+    i2c_dhD_t *ret;
+
+    taskENTER_CRITICAL();
+
+    ret = efHal_internal_searchFreeSlot(&dhD[0].head, sizeof(i2c_dhD_t), EF_HAL_I2C_TOTAL_DEVICES);
+
+    if (ret != NULL)
+    {
+        ret->head.mutex = xSemaphoreCreateMutex();
+        ret->cb = cb_devTra;
+        ret->param = param;
+    }
+
+    taskEXIT_CRITICAL();
+
+    return ret;
 }
 
 /*==================[end of file]============================================*/

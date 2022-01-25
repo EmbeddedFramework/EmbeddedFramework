@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2022, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,46 +32,21 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef EF_HAL_I2C_H_
-#define EF_HAL_I2C_H_
 
 /*==================[inclusions]=============================================*/
-#include "efHal.h"
-#include "stddef.h"
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "efHal_uart.h"
+#include "efHal_internal.h"
 
 /*==================[macros and typedef]=====================================*/
 
-typedef enum
-{
-    EF_HAL_I2C_EC_NO_ERROR = 0,
-    EF_HAL_I2C_EC_INVALID_HANDLER,
-    EF_HAL_I2C_EC_INVALID_PARAMS,
-    EF_HAL_I2C_EC_TRANSFER_UNSUPPORTED,
-    EF_HAL_I2C_EC_NAK,
-    EF_HAL_I2C_EC_UNKNOW,
-}efHal_i2c_ec_t;
+/*==================[internal functions declaration]=========================*/
 
-typedef uint8_t efHal_i2c_devAdd_t;
+/*==================[internal data definition]===============================*/
 
-typedef efHal_i2c_ec_t (*efHal_i2c_deviceTransfer_t)(void* param, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx);
+/*==================[external data definition]===============================*/
 
-/*==================[external data declaration]==============================*/
+/*==================[internal functions definition]==========================*/
 
-/*==================[external functions declaration]=========================*/
-
-extern void efHal_i2c_init(void);
-
-extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx);
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-}
-#endif
+/*==================[external functions definition]==========================*/
 
 /*==================[end of file]============================================*/
-#endif /* EF_HAL_I2C_H_ */

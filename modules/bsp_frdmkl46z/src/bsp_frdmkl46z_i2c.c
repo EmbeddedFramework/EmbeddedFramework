@@ -253,7 +253,7 @@ extern void bsp_frdmkl46z_i2c_init(void)
     i2c_configPins();
     i2c_config();
 
-    efHal_dh_I2C0 = efHal_i2c_deviceReg(bsp_frdmkl46z_i2c_deviceTransfer, I2C0);
+    efHal_dh_I2C0 = efHal_internal_i2c_deviceReg(bsp_frdmkl46z_i2c_deviceTransfer, I2C0);
 
     I2C_MasterTransferCreateHandle(I2C0, &m_handle, i2c_master_callback, efHal_dh_I2C0);
 }

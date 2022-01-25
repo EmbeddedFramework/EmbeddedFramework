@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2022, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,12 +32,13 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef EF_HAL_I2C_H_
-#define EF_HAL_I2C_H_
+#ifndef EF_HAL_UART_H_
+#define EF_HAL_UART_H_
 
 /*==================[inclusions]=============================================*/
 #include "efHal.h"
 #include "stddef.h"
+#include "FreeRTOS.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -48,25 +49,41 @@ extern "C" {
 
 typedef enum
 {
-    EF_HAL_I2C_EC_NO_ERROR = 0,
-    EF_HAL_I2C_EC_INVALID_HANDLER,
-    EF_HAL_I2C_EC_INVALID_PARAMS,
-    EF_HAL_I2C_EC_TRANSFER_UNSUPPORTED,
-    EF_HAL_I2C_EC_NAK,
-    EF_HAL_I2C_EC_UNKNOW,
-}efHal_i2c_ec_t;
+   EF_HAL_UART_DATA_BITS_7 = 0,
+   EF_HAL_UART_DATA_BITS_8,
+}efHal_uart_dataBits_t;
 
-typedef uint8_t efHal_i2c_devAdd_t;
+typedef enum
+{
+   EF_HAL_UART_PARITY_NONE = 0,
+   EF_HAL_UART_PARITY_EVEN,
+   EF_HAL_UART_PARITY_ODD,
+}efHal_uart_parity_t;
 
-typedef efHal_i2c_ec_t (*efHal_i2c_deviceTransfer_t)(void* param, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx);
+typedef enum
+{
+   EF_HAL_UART_STOP_BITS_1 = 0,
+   EF_HAL_UART_STOP_BITS_2,
+}efHal_uart_stopBits_t;
+
+typedef struct
+{
+   uint32_t baudrate;
+   efHal_uart_dataBits_t dataBits;
+   efHal_uart_parity_t parity;
+   efHal_uart_stopBits_t stopBits;
+}efHal_uart_conf_t;
 
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
 
-extern void efHal_i2c_init(void);
-
-extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx);
+extern void efHal_uart_init(void);
+extern void efHal_uart_conf(efHal_dh_t dh, efHal_uart_conf_t const *cfg);
+extern uint32_t efHal_uart_getBaud(efHal_dh_t dh);
+extern uint32_t efHal_uart_getDataLength(efHal_dh_t dh);
+extern int32_t efHal_uart_send(efHal_dh_t dh, void *pBuf, int32_t size, TickType_t blockTime);
+extern int32_t efHal_uart_recv(efHal_dh_t dh, void *pBuf, int32_t size, TickType_t blockTime);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -74,4 +91,4 @@ extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, v
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* EF_HAL_I2C_H_ */
+#endif /* EF_HAL_UART_H_ */
