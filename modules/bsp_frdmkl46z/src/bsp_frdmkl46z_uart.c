@@ -34,95 +34,92 @@
 #                                                                             */
 
 /*==================[inclusions]=============================================*/
-#include "efHal_uart.h"
+#include "bsp_frdmkl46z_uart.h"
 #include "efHal_internal.h"
+#include "fsl_uart.h"
+#include "fsl_port.h"
 
 /*==================[macros and typedef]=====================================*/
-typedef struct
-{
-    efHal_internal_dhD_t head;
-    efHal_uart_callBacks_t cb;
-    efHal_uart_conf_t conf;
-    void* param;
-}uart_dhD_t;
 
 /*==================[internal functions declaration]=========================*/
 
 /*==================[internal data definition]===============================*/
-static uart_dhD_t dhD[EF_HAL_UART_TOTAL_DEVICES];
 
 /*==================[external data definition]===============================*/
+efHal_dh_t efHal_dh_UART1;
 
 /*==================[internal functions definition]==========================*/
 
+static void uart_config(void)
+{
+    uart_config_t config;
+
+    /*
+     * config.baudRate_Bps = 115200U;
+     * config.parityMode = kUART_ParityDisabled;
+     * config.stopBitCount = kUART_OneStopBit;
+     * config.txFifoWatermark = 0;
+     * config.rxFifoWatermark = 1;
+     * config.enableTx = false;
+     * config.enableRx = false;
+     */
+    UART_GetDefaultConfig(&config);
+    config.baudRate_Bps = 115200;
+    config.enableTx = true;
+    config.enableRx = true;
+
+    UART_Init(UART1, &config, CLOCK_GetFreq(BUS_CLK));
+
+    /* Configura los pines RX y TX de la UART1 */
+    PORT_SetPinMux(PORTE, 0U, kPORT_MuxAlt3);
+    PORT_SetPinMux(PORTE, 1U, kPORT_MuxAlt3);
+
+    UART_EnableInterrupts(UART1, kUART_RxDataRegFullInterruptEnable);
+    UART_EnableInterrupts(UART1, kUART_TxDataRegEmptyInterruptEnable);
+    UART_EnableInterrupts(UART1, kUART_TransmissionCompleteInterruptEnable);
+
+    NVIC_EnableIRQ(UART1_IRQn);
+}
+
 /*==================[external functions definition]==========================*/
-extern void efHal_uart_init(void)
+extern void bsp_frdmkl46z_uart_init(void)
 {
-    int i;
+    efHal_uart_callBacks_t cb;
 
-    for (i = 0 ; i < EF_HAL_UART_TOTAL_DEVICES ; i++)
+    uart_config();
+
+    efHal_dh_UART1 = efHal_internal_uart_deviceReg(cb, UART1);
+}
+
+void UART1_IRQHandler(void)
+{
+    uint8_t data;
+
+    if ( (kUART_RxDataRegFullFlag)            & UART_GetStatusFlags(UART1) &&
+         (kUART_RxDataRegFullInterruptEnable) & UART_GetEnabledInterrupts(UART1) )
     {
-        dhD[i].head.mutex = NULL;
-        dhD[i].param = NULL;
-    }
-}
-
-extern void efHal_uart_conf(efHal_dh_t dh, efHal_uart_conf_t const *cfg)
-{
-
-}
-
-extern uint32_t efHal_uart_getBaud(efHal_dh_t dh)
-{
-    uart_dhD_t *dhD = dh;
-
-    return dhD->conf.baudrate;
-}
-
-extern uint32_t efHal_uart_getDataLength(efHal_dh_t dh)
-{
-
-}
-
-extern int32_t efHal_uart_send(efHal_dh_t dh, void *pBuf, int32_t size, TickType_t blockTime)
-{
-
-}
-
-extern int32_t efHal_uart_recv(efHal_dh_t dh, void *pBuf, int32_t size, TickType_t blockTime)
-{
-
-}
-
-extern efHal_dh_t efHal_internal_uart_deviceReg(efHal_uart_callBacks_t cb, void* param)
-{
-    uart_dhD_t *ret;
-
-    taskENTER_CRITICAL();
-
-    ret = efHal_internal_searchFreeSlot(&dhD[0].head, sizeof(uart_dhD_t), EF_HAL_UART_TOTAL_DEVICES);
-
-    if (ret != NULL)
-    {
-        ret->head.mutex = xSemaphoreCreateMutex();
-        ret->cb = cb;
-        ret->param = param;
+        data = UART_ReadByte(UART1);
+        efHal_internal_uart_putDataForRx(efHal_dh_UART1, &data);
     }
 
-    taskEXIT_CRITICAL();
+    if ( (kUART_TxDataRegEmptyFlag)            & UART_GetStatusFlags(UART1) &&
+         (kUART_TxDataRegEmptyInterruptEnable) & UART_GetEnabledInterrupts(UART1) )
+    {
+        while ((kUART_TxDataRegEmptyFlag) & UART_GetStatusFlags(UART1))
+        {
+            if (efHal_internal_uart_getDataForTx(efHal_dh_UART1, &data))
+                UART_WriteByte(UART1, data);
+            else
+                UART_DisableInterrupts(UART1, kUART_TxDataRegEmptyInterruptEnable);
+        }
+    }
 
-    return ret;
+    if ( (kUART_TransmissionCompleteFlag)            & UART_GetStatusFlags(UART1) &&
+         (kUART_TransmissionCompleteInterruptEnable) & UART_GetEnabledInterrupts(UART1) )
+    {
+        UART_DisableInterrupts(UART1, kUART_TransmissionCompleteInterruptEnable);
+        UART_ClearStatusFlags(UART1, kUART_TransmissionCompleteFlag);
+    }
 }
-
-extern void efHal_internal_uart_putDataForRx(efHal_dh_t dh, void *pData)
-{
-
-}
-
-extern bool efHal_internal_uart_getDataForTx(efHal_dh_t dh, void *pData)
-{
-
-}
-
 
 /*==================[end of file]============================================*/

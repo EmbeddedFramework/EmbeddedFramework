@@ -38,6 +38,7 @@
 /*==================[inclusions]=============================================*/
 #include "bsp_frdmkl46z_i2c.h"
 #include "bsp_frdmkl46z_gpio.h"
+#include "bsp_frdmkl46z_uart.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

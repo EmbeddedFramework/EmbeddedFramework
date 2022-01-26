@@ -95,7 +95,6 @@ typedef struct
     efHal_uart_recvCB_t recv;
 }efHal_uart_callBacks_t;
 
-
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
@@ -113,7 +112,10 @@ extern void efHal_internal_i2c_endOfTransfer(efHal_internal_dhD_t *p_dhD, efHal_
 extern efHal_dh_t efHal_internal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* param);
 
 /******************************* UART ****************************************/
+
 extern efHal_dh_t efHal_internal_uart_deviceReg(efHal_uart_callBacks_t cb, void* param);
+extern void efHal_internal_uart_putDataForRx(efHal_dh_t dh, void *pData);
+extern bool efHal_internal_uart_getDataForTx(efHal_dh_t dh, void *pData);
 
 
 /*==================[cplusplus]==============================================*/

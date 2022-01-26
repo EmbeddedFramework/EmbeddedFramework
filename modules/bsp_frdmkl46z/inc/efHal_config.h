@@ -50,6 +50,7 @@ extern "C" {
 
 #define EF_HAL_GPIO_TOTAL_WAIT_FOR_INT  5
 
+#define EF_HAL_UART_TOTAL_DEVICES   2
 
 /*==================[external data declaration]==============================*/
 
