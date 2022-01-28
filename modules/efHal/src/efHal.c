@@ -53,6 +53,7 @@ extern void efHal_init(void)
 {
     efHal_gpio_init();
     efHal_i2c_init();
+    efHal_uart_init();
 }
 
 extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)

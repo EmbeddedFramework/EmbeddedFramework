@@ -38,11 +38,24 @@
 #include "efHal_internal.h"
 
 /*==================[macros and typedef]=====================================*/
+
+#ifndef EF_HAL_UART_QUEUE_SEND_LENGTH
+#define EF_HAL_UART_QUEUE_SEND_LENGTH 16
+#endif
+
+#ifndef EF_HAL_UART_QUEUE_RECV_LENGTH
+#define EF_HAL_UART_QUEUE_RECV_LENGTH 16
+#endif
+
+
 typedef struct
 {
     efHal_internal_dhD_t head;
     efHal_uart_callBacks_t cb;
     efHal_uart_conf_t conf;
+    QueueHandle_t qSend;
+    QueueHandle_t qRecv;
+    bool txHasEnded;
     void* param;
 }uart_dhD_t;
 
@@ -86,12 +99,45 @@ extern uint32_t efHal_uart_getDataLength(efHal_dh_t dh)
 
 extern int32_t efHal_uart_send(efHal_dh_t dh, void *pBuf, int32_t size, TickType_t blockTime)
 {
+    uart_dhD_t *dhD = dh;
+    int32_t ret = 0;
 
+    while (ret < size)
+    {
+        if (xQueueSend(dhD->qSend, pBuf, blockTime) == pdTRUE)
+        {
+            if (dhD->txHasEnded)
+            {
+                dhD->txHasEnded = false;
+                dhD->cb.dataReadyTx(dhD->param);
+            }
+            pBuf++;
+            ret++;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    return ret;
 }
 
 extern int32_t efHal_uart_recv(efHal_dh_t dh, void *pBuf, int32_t size, TickType_t blockTime)
 {
+    uart_dhD_t *dhD = dh;
 
+    int32_t ret = 0;
+
+    while ((ret < size) &&
+           (xQueueReceive( dhD->qRecv, pBuf, blockTime) == pdTRUE) )
+    {
+        ret++;
+        pBuf++;
+        blockTime = 0;
+    }
+
+    return ret;
 }
 
 extern efHal_dh_t efHal_internal_uart_deviceReg(efHal_uart_callBacks_t cb, void* param)
@@ -107,6 +153,8 @@ extern efHal_dh_t efHal_internal_uart_deviceReg(efHal_uart_callBacks_t cb, void*
         ret->head.mutex = xSemaphoreCreateMutex();
         ret->cb = cb;
         ret->param = param;
+        ret->qSend = xQueueCreate(EF_HAL_UART_QUEUE_SEND_LENGTH, sizeof(uint8_t));
+        ret->qRecv = xQueueCreate(EF_HAL_UART_QUEUE_RECV_LENGTH, sizeof(uint8_t));
     }
 
     taskEXIT_CRITICAL();
@@ -121,7 +169,25 @@ extern void efHal_internal_uart_putDataForRx(efHal_dh_t dh, void *pData)
 
 extern bool efHal_internal_uart_getDataForTx(efHal_dh_t dh, void *pData)
 {
+    uint8_t data;
+    uart_dhD_t *dhD = dh;
+    BaseType_t xHigherPriorityTaskWoken = false;
+    bool ret;
 
+    if (xQueueReceiveFromISR( dhD->qSend,(void *) &data, &xHigherPriorityTaskWoken) == pdTRUE)
+    {
+        *(uint8_t*)pData = data;
+        ret = true;
+    }
+    else
+    {
+        dhD->txHasEnded = true;
+        ret = false;
+    }
+
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+
+    return ret;
 }
 
 

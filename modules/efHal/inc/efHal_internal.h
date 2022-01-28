@@ -84,15 +84,13 @@ typedef struct
 
 /******************************* UART ****************************************/
 
-typedef void (*efHal_uart_confCB_t)(efHal_dh_t dh, efHal_uart_conf_t const *cfg);
-typedef bool (*efHal_uart_sendCB_t)(efHal_dh_t dh, void *pBuf, int32_t size, TickType_t blockTime);
-typedef bool (*efHal_uart_recvCB_t)(efHal_dh_t dh, void *pBuf, int32_t size, TickType_t blockTime);
+typedef void (*efHal_uart_confCB_t)(void *param, efHal_uart_conf_t const *cfg);
+typedef void (*efHal_uart_dataReadyTxCB_t)(void *param);
 
 typedef struct
 {
     efHal_uart_confCB_t conf;
-    efHal_uart_sendCB_t send;
-    efHal_uart_recvCB_t recv;
+    efHal_uart_dataReadyTxCB_t dataReadyTx;
 }efHal_uart_callBacks_t;
 
 /*==================[external data declaration]==============================*/

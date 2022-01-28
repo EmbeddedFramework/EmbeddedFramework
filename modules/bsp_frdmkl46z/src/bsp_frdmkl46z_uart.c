@@ -81,12 +81,26 @@ static void uart_config(void)
     NVIC_EnableIRQ(UART1_IRQn);
 }
 
+static void confCB(void *param, efHal_uart_conf_t const *cfg)
+{
+
+}
+
+static void dataReadyTx(void *param)
+{
+    UART_EnableInterrupts(param, kUART_TxDataRegEmptyInterruptEnable);
+}
+
+
 /*==================[external functions definition]==========================*/
 extern void bsp_frdmkl46z_uart_init(void)
 {
     efHal_uart_callBacks_t cb;
 
     uart_config();
+
+    cb.conf = confCB;
+    cb.dataReadyTx = dataReadyTx;
 
     efHal_dh_UART1 = efHal_internal_uart_deviceReg(cb, UART1);
 }
