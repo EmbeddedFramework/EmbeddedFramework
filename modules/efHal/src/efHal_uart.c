@@ -167,6 +167,7 @@ extern efHal_dh_t efHal_internal_uart_deviceReg(efHal_uart_callBacks_t cb, void*
 extern void efHal_internal_uart_putDataForRx(efHal_dh_t dh, void *pData)
 {
     BaseType_t xHigherPriorityTaskWoken = false;
+    uart_dhD_t *dhD = dh;
 
     xQueueSendFromISR( dhD->qRecv, pData, &xHigherPriorityTaskWoken );
 
