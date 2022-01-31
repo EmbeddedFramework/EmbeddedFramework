@@ -65,6 +65,7 @@ extern void bsp_frdmkl46z_init(void)
     bsp_frdmkl46z_gpio_init();
 
     bsp_frdmkl46z_uart_init();
+    bsp_frdmkl46z_lpsci_init();
 }
 
 /*==================[end of file]============================================*/
