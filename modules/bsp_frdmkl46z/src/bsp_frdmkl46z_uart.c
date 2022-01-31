@@ -131,12 +131,12 @@ extern void bsp_frdmkl46z_uart_init(void)
 {
     efHal_uart_callBacks_t cb;
 
-    uart_init();
+    efHal_dh_UART1 = efHal_internal_uart_deviceReg(cb, UART1);
 
     cb.conf = confCB;
     cb.dataReadyTx = dataReadyTx;
 
-    efHal_dh_UART1 = efHal_internal_uart_deviceReg(cb, UART1);
+    uart_init();
 }
 
 void UART1_IRQHandler(void)
@@ -158,7 +158,10 @@ void UART1_IRQHandler(void)
             if (efHal_internal_uart_getDataForTx(efHal_dh_UART1, &data))
                 UART_WriteByte(UART1, data);
             else
+            {
                 UART_DisableInterrupts(UART1, kUART_TxDataRegEmptyInterruptEnable);
+                break;
+            }
         }
     }
 

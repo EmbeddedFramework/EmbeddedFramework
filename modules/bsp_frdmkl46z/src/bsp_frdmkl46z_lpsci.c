@@ -54,25 +54,27 @@ static void lpsci_init(void)
 {
     lpsci_config_t config;
 
+    CLOCK_SetLpsci0Clock(0x1U);
+
+    /* PORTA1 (pin 35) is configured as UART0_RX */
+    PORT_SetPinMux(PORTA, 1U, kPORT_MuxAlt2);
+    /* PORTA2 (pin 36) is configured as UART0_TX */
+    PORT_SetPinMux(PORTA, 2U, kPORT_MuxAlt2);
+
     /*
-     * config.baudRate_Bps = 115200U;
-     * config.parityMode = kUART_ParityDisabled;
-     * config.stopBitCount = kUART_OneStopBit;
-     * config.txFifoWatermark = 0;
-     * config.rxFifoWatermark = 1;
+     * config.parityMode = kLPSCI_ParityDisabled;
+     * config.stopBitCount = kLPSCI_OneStopBit;
      * config.enableTx = false;
      * config.enableRx = false;
      */
     LPSCI_GetDefaultConfig(&config);
     config.baudRate_Bps = 115200;
+    config.parityMode = kLPSCI_ParityDisabled;
+    config.stopBitCount = kLPSCI_OneStopBit;
     config.enableTx = true;
     config.enableRx = true;
 
-    LPSCI_Init(UART0, &config, CLOCK_GetFreq(BUS_CLK));
-
-    /* Configura los pines RX y TX de la UART0 */
-    PORT_SetPinMux(PORTE, 0U, kPORT_MuxAlt3);
-    PORT_SetPinMux(PORTE, 1U, kPORT_MuxAlt3);
+    LPSCI_Init(UART0, &config, CLOCK_GetFreq(kCLOCK_CoreSysClk));
 
     LPSCI_EnableInterrupts(UART0, kLPSCI_RxDataRegFullInterruptEnable);
     LPSCI_EnableInterrupts(UART0, kLPSCI_TxDataRegEmptyInterruptEnable);
@@ -131,12 +133,12 @@ extern void bsp_frdmkl46z_lpsci_init(void)
 {
     efHal_uart_callBacks_t cb;
 
-    lpsci_init();
+    efHal_dh_UART0 = efHal_internal_uart_deviceReg(cb, UART0);
 
     cb.conf = confCB;
     cb.dataReadyTx = dataReadyTx;
 
-    efHal_dh_UART0 = efHal_internal_uart_deviceReg(cb, UART0);
+    lpsci_init();
 }
 
 void UART0_IRQHandler(void)
@@ -158,7 +160,10 @@ void UART0_IRQHandler(void)
             if (efHal_internal_uart_getDataForTx(efHal_dh_UART0, &data))
                 LPSCI_WriteByte(UART0, data);
             else
+            {
                 LPSCI_DisableInterrupts(UART0, kLPSCI_TxDataRegEmptyInterruptEnable);
+                break;
+            }
         }
     }
 
