@@ -82,7 +82,9 @@ extern void efHal_uart_init(void)
 
 extern void efHal_uart_conf(efHal_dh_t dh, efHal_uart_conf_t const *cfg)
 {
+    uart_dhD_t *dhD = dh;
 
+    dhD->cb.conf(dhD->param, cfg);
 }
 
 extern uint32_t efHal_uart_getBaud(efHal_dh_t dh)
@@ -164,7 +166,11 @@ extern efHal_dh_t efHal_internal_uart_deviceReg(efHal_uart_callBacks_t cb, void*
 
 extern void efHal_internal_uart_putDataForRx(efHal_dh_t dh, void *pData)
 {
+    BaseType_t xHigherPriorityTaskWoken = false;
 
+    xQueueSendFromISR( dhD->qRecv, pData, &xHigherPriorityTaskWoken );
+
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 extern bool efHal_internal_uart_getDataForTx(efHal_dh_t dh, void *pData)

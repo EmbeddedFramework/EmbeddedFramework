@@ -50,7 +50,7 @@ efHal_dh_t efHal_dh_UART1;
 
 /*==================[internal functions definition]==========================*/
 
-static void uart_config(void)
+static void uart_init(void)
 {
     uart_config_t config;
 
@@ -83,7 +83,41 @@ static void uart_config(void)
 
 static void confCB(void *param, efHal_uart_conf_t const *cfg)
 {
+    uart_config_t config;
 
+    UART_GetDefaultConfig(&config);
+    config.baudRate_Bps = cfg->baudrate;
+
+    switch (cfg->parity)
+    {
+        case EF_HAL_UART_PARITY_NONE:
+            config.parityMode = kUART_ParityDisabled;
+            break;
+
+        case EF_HAL_UART_PARITY_EVEN:
+            config.parityMode = kUART_ParityEven;
+            break;
+
+        case EF_HAL_UART_PARITY_ODD:
+            config.parityMode = kUART_ParityOdd;
+            break;
+    }
+
+    if (cfg->stopBits == EF_HAL_UART_STOP_BITS_2)
+        config.stopBitCount = kUART_TwoStopBit;
+    else
+        config.stopBitCount = kUART_OneStopBit;
+
+    if (cfg->dataBits == EF_HAL_UART_DATA_BITS_7)
+    {
+        /* This uC doesn't support 7 data bits */
+        /* TODO: evaluate to use 8 data bits and add parity bit by software */
+    }
+
+    config.enableTx = true;
+    config.enableRx = true;
+
+    UART_Init(UART1, &config, CLOCK_GetFreq(BUS_CLK));
 }
 
 static void dataReadyTx(void *param)
@@ -97,7 +131,7 @@ extern void bsp_frdmkl46z_uart_init(void)
 {
     efHal_uart_callBacks_t cb;
 
-    uart_config();
+    uart_init();
 
     cb.conf = confCB;
     cb.dataReadyTx = dataReadyTx;
