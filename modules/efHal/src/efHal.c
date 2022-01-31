@@ -59,6 +59,7 @@ extern void efHal_init(void)
 extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)
 {
     efHal_dh_t ret = NULL;
+    uint8_t *pTemp = (uint8_t*)p_dhD;
     int i;
 
     for (i = 0 ; i < length ; i++)
@@ -69,7 +70,8 @@ extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, siz
             break;
         }
 
-        p_dhD += size;
+        pTemp += size;
+        p_dhD = (efHal_internal_dhD_t*)pTemp;
     }
 
     return ret;
