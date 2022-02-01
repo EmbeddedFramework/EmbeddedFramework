@@ -103,9 +103,7 @@ endef
 define cp4c
 $(if $(findstring tst_,$(MAKECMDGOALS)),$(1),$(call cyg2win,$(1)))
 endef
-# Libraries group linker parameters
-START_GROUP       = -Xlinker --start-group
-END_GROUP         = -Xlinker --end-group
+
 else
 # NON WINDOWS OS
 # Command line separator
@@ -118,34 +116,13 @@ endef
 define cp4c
 $(1)
 endef
-UNAME_S           := $(shell uname -s)
-ifeq ($(UNAME_S),Linux)
-# LINUX
+endif
+
+
 # Libraries group linker parameters
 START_GROUP       = -Xlinker --start-group
 END_GROUP         = -Xlinker --end-group
-endif
-ifeq ($(UNAME_S),Darwin)
-# MACOS
-# Determine wich FTDI Drivers are loaded
-ifeq ($(FTDI_KEXT),)
-FTDI_KEXT := $(shell kextstat | grep -o com.apple.driver.AppleUSBFTDI )
-FTDI_KEXT += $(shell kextstat | grep -o com.FTDI.driver.FTDIUSBSerialDriver )
-endif
-# Compile in 32 bits mode
-ifeq ($(ARCH),x86)
-CFLAGS            += -m32 -Wno-typedef-redefinition
-# 32 bits non relocable excutable image
-LFLAGS            += -m32 -Xlinker -no_pie
-# Libraries group linker parameters
-START_GROUP       = -all_load
-END_GROUP         =
-else
-START_GROUP       = -Xlinker --start-group
-END_GROUP         = -Xlinker --end-group
-endif
-endif
-endif
+
 
 ###############################################################################
 # get root dir
@@ -174,10 +151,7 @@ include $(foreach module, $(MODS), $(module)$(DS)mak$(DS)Makefile)
 
 # add include files
 INCLUDE += $(foreach LIB, $(LIBS), $($(LIB)_INC_PATH))
-#Adds include project file if We wanto to do a project build
-ifneq ($(findstring tst_, $(MAKECMDGOALS)),tst_)
 CFLAGS  += $(foreach inc, $(INC_FILES), -I$(call cp4c,$(inc)))
-endif
 CFLAGS  += $(foreach inc, $(INCLUDE), -I$(inc))
 CFLAGS  += -DARCH=$(ARCH) -DCPUTYPE=$(CPUTYPE) -DCPU=$(CPU) -DBOARD=$(BOARD)
 TARGET_NAME ?= $(BIN_DIR)$(DS)$(PROJECT_NAME)
@@ -216,14 +190,14 @@ $(foreach LIB, $(LIBS), $(eval $(call librule, $(LIB), $($(LIB)_OBJ_FILES))) )
 
 $(foreach LIB, $(LIBS), $(eval $(LIB) : $(LIB_DIR)$(DS)$(LIB).a ) )
 
-###################### START UNIT TEST PART OF MAKE FILE ######################
+
 # Gets all Modules Names
 DIRS := $(sort $(dir $(wildcard modules$(DS)*$(DS))))
 ALL_MODS := $(subst modules, , $(DIRS))
 ALL_MODS := $(subst $(DS), , $(ALL_MODS))
 
-MOCKS_OUT_DIR = $(OUT_DIR)$(DS)ceedling$(DS)mocks
-RUNNERS_OUT_DIR = $(OUT_DIR)$(DS)ceedling$(DS)runners
+
+###################### START UNIT TEST PART OF MAKE FILE ######################
 
 FILES_TO_MOCK = $(foreach DIR, $(DIRS), $(wildcard $(DIR)inc$(DS)*.h))
 
@@ -473,7 +447,7 @@ $(eval $(MAKE_ARGS):;@:)
 ###############################################################################
 # version
 ifeq ($(MAKECMDGOALS),version)
-include $(foreach module, $(ALL_MODS), modules$(DS)$(module)$(DS)mak$(DS)Makefile)
+#include $(foreach module, $(ALL_MODS), modules$(DS)$(module)$(DS)mak$(DS)Makefile)
 endif
 version:
 	@echo EmbeddedFirmware version: $(EMBEDDED_FRAMEWORK_VER)
@@ -591,24 +565,14 @@ info:
 # clean
 .PHONY: clean all
 clean:
-	@echo Removing libraries
-	@rm -rf $(LIB_DIR)$(DS)*
-	@echo Removing bin files
-	@rm -rf $(BIN_DIR)$(DS)*
-	@echo Removing mocks
-	@rm -rf $(MOCKS_OUT_DIR)$(DS)*
-	@echo Removing Unity Runners files
-	@rm -rf $(RUNNERS_OUT_DIR)$(DS)*
-	@echo Removing doxygen files
-	@rm -rf $(OUT_DIR)$(DS)doc$(DS)*
-	@echo Removing ci outputs
-	@rm -rf $(OUT_DIR)$(DS)ci$(DS)*
-	@echo Removing coverage
-	@rm -rf $(OUT_DIR)$(DS)coverage$(DS)*
-	@echo Removing object files
-	@rm -rf $(OBJ_DIR)$(DS)*
-	@echo Removing Download files
-	@rm -rf $(OUT_DIR)$(DS)download
+ifeq ($(OUT_DIR),)
+	@echo ERROR: OUT_DIR cannot be empty
+else
+	@rm -rf $(OUT_DIR)
+	@mkdir -p $(LIB_DIR)
+	@mkdir -p $(BIN_DIR)
+	@mkdir -p $(OBJ_DIR)
+endif
 
 ###############################################################################
 # Incremental Build (IDE: Build)
