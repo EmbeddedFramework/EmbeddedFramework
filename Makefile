@@ -190,170 +190,11 @@ $(foreach LIB, $(LIBS), $(eval $(call librule, $(LIB), $($(LIB)_OBJ_FILES))) )
 
 $(foreach LIB, $(LIBS), $(eval $(LIB) : $(LIB_DIR)$(DS)$(LIB).a ) )
 
-
 # Gets all Modules Names
 DIRS := $(sort $(dir $(wildcard modules$(DS)*$(DS))))
 ALL_MODS := $(subst modules, , $(DIRS))
 ALL_MODS := $(subst $(DS), , $(ALL_MODS))
 
-
-###################### START UNIT TEST PART OF MAKE FILE ######################
-
-FILES_TO_MOCK = $(foreach DIR, $(DIRS), $(wildcard $(DIR)inc$(DS)*.h))
-
-FILES_MOCKED = $(foreach MOCKED, $(FILES_TO_MOCK), $(MOCKS_OUT_DIR)$(DS)mock_$(notdir $(MOCKED)))
-
-
-###############################################################################
-# rule for tst_<mod>[_file]
-ifeq ($(findstring tst_, $(MAKECMDGOALS)),tst_)
-
-# get module to be tested and store it in tst_mod variable
-tst_mod = $(firstword $(filter-out tst,$(subst _, ,$(MAKECMDGOALS))))
-
-# get file to be tested (if present) and store it in tst_file
-# this shall be done multiple times, one time for each possible _, no 3 _ are supported in the test file name
-tst_file := $(word 2,$(filter-out tst,$(subst _, ,$(MAKECMDGOALS))))
-ifneq ($(word 3,$(filter-out tst,$(subst _, ,$(MAKECMDGOALS)))),)
-tst_file := $(join $(tst_file),_$(word 3,$(filter-out tst,$(subst _, ,$(MAKECMDGOALS)))))
-endif
-ifneq ($(word 4,$(filter-out tst,$(subst _, ,$(MAKECMDGOALS)))),)
-tst_file := $(join $(tst_file),_$(word 4,$(filter-out tst,$(subst _, ,$(MAKECMDGOALS)))))
-endif
-ifneq ($(word 5,$(filter-out tst,$(subst _, ,$(MAKECMDGOALS)))),)
-tst_file := $(join $(tst_file),_$(word 5,$(filter-out tst,$(subst _, ,$(MAKECMDGOALS)))))
-endif
-
-# if tst_file is all the variable shall be reset and all tests shall be executed
-ifeq ($(tst_file),all)
-tst_file :=
-endif
-
-# include corresponding makefile
-include modules$(DS)$(tst_mod)$(DS)mak$(DS)Makefile
-# include test makefile
-include modules$(DS)$(tst_mod)$(DS)test$(DS)utest$(DS)mak$(DS)Makefile
-
-# get list of unit test sources
-ifneq ($(tst_file),)
-# definitions if to run only a specific unit test
-
-# include modules needed for this module
-include $(foreach mod,$($(tst_mod)_TST_MOD),$(mod)$(DS)mak$(DS)Makefile)
-
-MTEST_SRC_FILES = $($(tst_mod)_PATH)$(DS)test$(DS)utest$(DS)src$(DS)test_$(tst_file).c
-
-UNITY_INC = externals$(DS)ceedling$(DS)vendor$(DS)unity$(DS)src                     \
-            externals$(DS)ceedling$(DS)vendor$(DS)cmock$(DS)src                     \
-            out$(DS)ceedling$(DS)mocks                                              \
-            $(foreach mod,$($(tst_mod)_TST_MOD),$($(mod)_INC_PATH))                 \
-            $($(tst_mod)_TST_INC_PATH)                                              \
-			$($(tst_mod)_INC_PATH)
-
-UNITY_SRC = modules$(DS)$(tst_mod)$(DS)test$(DS)utest$(DS)src$(DS)test_$(tst_file).c \
-            $(RUNNERS_OUT_DIR)$(DS)test_$(tst_file)_Runner.c                         \
-            modules$(DS)$(tst_mod)$(DS)src$(DS)$(tst_file).c                         \
-            externals$(DS)ceedling$(DS)vendor$(DS)unity$(DS)src$(DS)unity.c          \
-            externals$(DS)ceedling$(DS)vendor$(DS)cmock$(DS)src$(DS)cmock.c          \
-            $(foreach file,$(filter-out $(tst_file).c,$(notdir $($(tst_mod)_SRC_FILES))), out$(DS)ceedling$(DS)mocks$(DS)mock_$(file)) \
-            $(foreach mods,$($(tst_mod)_TST_MOD), $(foreach files, $(notdir $($(mods)_SRC_FILES)), out$(DS)ceedling$(DS)mocks$(DS)mock_$(files))) \
-            $(foreach tst_mocks, $($(tst_mod)_TST_MOCKS), out$(DS)ceedling$(DS)mocks$(DS)mock_$(tst_mocks))
-# Needed Unity Obj files
-UNITY_OBJ = $(notdir $(UNITY_SRC:.c=.o))
-# Add the search patterns
-$(foreach U_SRC, $(sort $(dir $(UNITY_SRC))), $(eval vpath %.c $(U_SRC)))
-
-CFLAGS  += -ggdb -c #-Wall -Werror #see issue #28
-CFLAGS  += $(foreach inc, $(UNITY_INC), -I$(inc))
-CFLAGS  += -DARCH=$(ARCH) -DCPUTYPE=$(CPUTYPE) -DCPU=$(CPU) -DUNITY_EXCLUDE_STDINT_H -DCIAA_UNIT_TEST --coverage
-
-else
-# get all test target for the selected module
-MTEST := $(notdir $(wildcard $($(tst_mod)_PATH)$(DS)test$(DS)utest$(DS)src$(DS)test_*.c))
-MTEST := $(subst test_,,$(MTEST))
-MTEST := $(subst .c,,$(MTEST))
-MTEST := $(foreach tst, $(MTEST),tst_$(tst_mod)_$(tst))
-
-
-endif
-
-tst_link: $(UNITY_OBJ)
-	@echo ' '
-	@echo ===============================================================================
-	@echo Linking Test
-	gcc $(addprefix $(OBJ_DIR)$(DS),$(UNITY_OBJ)) -lgcov -o out$(DS)bin$(DS)$(tst_file).bin
-
-# rule for tst_<mod>_<file>
-tst_$(tst_mod)_$(tst_file): $(RUNNERS_OUT_DIR)$(DS)$(notdir $(MTEST_SRC_FILES:.c=_Runner.c)) tst_link
-	@echo ' '
-	@echo ===============================================================================
-	@echo Testing from module $(tst_mod) the file $(tst_file)
-	@echo === CEEDLING START ====
-	$(BIN_DIR)$(DS)$(tst_file).bin
-	@echo === CEEDLING END ===
-	gcov -abclu modules$(DS)$(tst_mod)$(DS)src$(DS)$(tst_file).c -o out$(DS)obj$(DS)
-
-# rule for tst_<mod>
-tst_$(tst_mod)_all:
-	@echo ' '
-	@echo ===============================================================================
-	@echo Testing the module $(tst_mod)
-	@echo Testing $(MTEST)
-	$(foreach tst,$(MTEST),make $(tst) $(CS))
-
-tst_$(tst_mod):
-	@echo ' '
-	@echo ===============================================================================
-	@echo For the module $(tst_mod) following units can be tested:
-	@$(MULTILINE_ECHO) " $(foreach unit, $(MTEST),     $(unit)\n)"
-
-
-#tst_$(tst_mod): $(MTEST_SRC_FILES:.c=_Runner.c) tst_link
-#	@echo ===============================================================================
-#	@echo Testing the module $(tst_mod)
-#	@$(MULTILINE_ECHO) "Testing following .c Files: \n $(foreach src, $($(tst_mod)_SRC_FILES),     $(src)\n)"
-#	@$(MULTILINE_ECHO) "Following Unity Test found: \n $(foreach src, $(MTEST_SRC_FILES),     $(src)\n)"
-#	out/bin/test.bin
-
-endif
-
-results:
-	externals$(DS)lcov$(DS)bin$(DS)lcov -c -d . -o coverage.info -b .
-	externals$(DS)lcov$(DS)bin$(DS)genhtml coverage.info --output-directory $(OUT_DIR)$(DS)coverage
-
-###############################################################################
-# rule to generate the mocks
-mocks:
-	@echo ' '
-	@echo ===============================================================================
-	@$(MULTILINE_ECHO) "Creating Mocks for: \n $(foreach mock, $(FILES_TO_MOCK),     $(mock)\n)"
-	ruby externals$(DS)ceedling$(DS)vendor$(DS)cmock$(DS)lib$(DS)cmock.rb -omodules$(DS)tools$(DS)ceedling$(DS)project.yml $(FILES_TO_MOCK)
-
-###############################################################################
-# rule to check trailing spaces
-code_sanity:
-	@echo ' '
-	@echo ===============================================================================
-	@echo Checking for trailing spaces
-	@./modules/tools/scripts/check_trailing_spaces.sh
-
-###############################################################################
-# rule to inform about all available tests
-tst:
-	@echo "+-----------------------------------------------------------------------------+"
-	@echo "|               Unit Tests                                                    |"
-	@echo "+-----------------------------------------------------------------------------+"
-	@$(MULTILINE_ECHO) "Following tst rules have been created:\n $(foreach TST,$(ALL_MODS),     tst_$(TST): run unit tests of $(TST)\n)"
-
-
-$(RUNNERS_OUT_DIR)$(DS)test_%_Runner.c : test_%.c
-	@echo ' '
-	@echo ===============================================================================
-	@echo Creating Runner for $<
-	@echo "                 in $(RUNNERS_OUT_DIR)$(DS)$(notdir $@)"
-	ruby externals$(DS)ceedling$(DS)vendor$(DS)unity$(DS)auto$(DS)generate_test_runner.rb $< $(RUNNERS_OUT_DIR)$(DS)$(notdir $@) modules$(DS)tools$(DS)ceedling$(DS)project.yml
-
-###################### ENDS UNIT TEST PART OF MAKE FILE #######################
 
 ###############################################################################
 
@@ -406,7 +247,7 @@ $(foreach LIB, $(LIBS), $(eval -include $(addprefix $(OBJ_DIR)$(DS),$(OBJ_FILES:
 # libs with contains sources
 LIBS_WITH_SRC	= $(foreach LIB, $(LIBS), $(if $(filter %.c,$($(LIB)_SRC_FILES)),$(LIB)))
 
-$(PROJECT_NAME) : $(rtos_GENERATED_FILES) $(LIBS_WITH_SRC) $(OBJ_FILES)
+$(PROJECT_NAME) : $(LIBS_WITH_SRC) $(OBJ_FILES)
 	@echo ' '
 	@echo ===============================================================================
 	@echo Linking file: $(LD_TARGET)
@@ -418,31 +259,6 @@ $(PROJECT_NAME) : $(rtos_GENERATED_FILES) $(LIBS_WITH_SRC) $(OBJ_FILES)
 	@echo ' '
 	$(POST_BUILD)
 
-###############################################################################
-# debug rule
--include modules$(DS)tools$(DS)gdb$(DS)mak$(DS)Makefile
-debug: $(PROJECT_NAME)
-# if CPU is not entered shows an error
-ifeq ($(CPU),)
-	@echo ERROR: The CPU variable of your makefile is empty.
-else
-	@echo ===============================================================================
-	@echo Starting GDB...
-	@echo ' '
-	$(GDB) $(GDB_FLAGS)
-endif
-
-###############################################################################
-# doxygen
-doxygen:
-	@echo running doxygen
-	doxygen modules$(DS)tools$(DS)doxygen$(DS)doxygen.cnf
-
-###############################################################################
-# Take make arguments into MAKE_ARGS variable
-MAKE_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-# ...and turn them into do-nothing targets
-$(eval $(MAKE_ARGS):;@:)
 
 ###############################################################################
 # version
