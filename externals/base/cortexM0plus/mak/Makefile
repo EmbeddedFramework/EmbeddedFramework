@@ -43,6 +43,7 @@ NM = arm-none-eabi-nm
 
 # library include path
 ext_base_INC_PATH   += $(ext_base_PATH)$(DS)$(ARCH)$(DS)cmsis$(DS)inc
+ext_base_INC_PATH   += $(ext_base_PATH)$(DS)redlib$(DS)include
 
 EXTERN_LIBS += $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)cmsis$(DS)lib$(DS)*.a)
 
