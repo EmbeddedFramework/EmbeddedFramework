@@ -15,6 +15,9 @@
 # Own projects
 projects
 
+# Own modules
+oModules
+
 # Docbook
 *.fo
 
