@@ -26,8 +26,6 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
-#include "osal_config.h"
-
 #if defined(__ICCARM__)||defined(__CC_ARM)||defined(__GNUC__)
     /* Clock manager provides in this variable system core clock frequency */
     #include <stdint.h>
@@ -50,7 +48,7 @@
 #define configUSE_TICKLESS_IDLE                 0
 #define configCPU_CLOCK_HZ                      (SystemCoreClock)
 #define configTICK_RATE_HZ                      ((TickType_t)1000)
-#define configMAX_PRIORITIES                    ( OSAL_TOTAL_PRIORITIES )
+#define configMAX_PRIORITIES                    5
 #define configMINIMAL_STACK_SIZE                ((unsigned short)90)
 #define configMAX_TASK_NAME_LEN                 10
 #define configUSE_16_BIT_TICKS                  0
@@ -71,7 +69,7 @@
 /* Memory allocation related definitions. */
 #define configSUPPORT_STATIC_ALLOCATION         0
 #define configSUPPORT_DYNAMIC_ALLOCATION        1
-#define configTOTAL_HEAP_SIZE                   ( ( size_t ) OSAL_HEAP_SIZE )
+#define configTOTAL_HEAP_SIZE                   ((size_t)(10 * 1024))
 #define configAPPLICATION_ALLOCATED_HEAP        0
 
 /* Hook function related definitions. */
