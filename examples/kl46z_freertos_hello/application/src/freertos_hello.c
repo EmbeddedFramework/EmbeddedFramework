@@ -89,3 +89,8 @@ static void hello_task(void *pvParameters)
         vTaskSuspend(NULL);
     }
 }
+
+extern void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
+{
+    while (1);
+}

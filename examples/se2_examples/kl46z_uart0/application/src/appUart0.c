@@ -80,4 +80,9 @@ int main(void)
     for (;;);
 }
 
+extern void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
+{
+    while (1);
+}
+
 /*==================[end of file]============================================*/
