@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2022, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,22 +32,13 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-LINKER_SCRIPT ?= linkerScript.ld
-LFLAGS += -T "$(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)linker$(DS)$(LINKER_SCRIPT)"
-LFLAGS += -nostdlib -mcpu=cortex-m0plus -mthumb -Wl,-Map="$(TARGET_NAME).map" -Wl,-gc-sections -Xlinker -print-memory-usage
+# library
+LIBS 				    += ext_redlib
 
-ifeq ($(CPU),MKL46Z256VLL4)
-CFLAGS += -std=gnu99 -mcpu=cortex-m0plus -mthumb -fstack-usage
-CFLAGS += -O0 -fno-common -g -Wall -c -ffunction-sections -fdata-sections -ffreestanding -fno-builtin -fmerge-constants
-CFLAGS += -D__REDLIB__ -DCPU_MKL46Z256VLL4_cm0plus -DCPU_MKL46Z256VLL4 -DFRDM_KL46Z -DFREEDOM -DFSL_RTOS_FREE_RTOS -DSDK_DEBUGCONSOLE=0 
-CFLAGS += -DCR_INTEGER_PRINTF -DPRINTF_FLOAT_ENABLE=0 -D__MCUXPRESSO -D__USE_CMSIS -DDEBUG 
-AFLAGS += -c -x assembler-with-cpp -g3 -mcpu=cortex-m0plus -mthumb
-AFLAGS += -D__REDLIB__ 
-endif
+# library path
+ext_redlib_PATH 	     = $(ROOT_DIR)$(DS)externals$(DS)redlib
 
-ext_base_INC_PATH  += $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)inc
+# library include path
+ext_redlib_INC_PATH  += $(ext_redlib_PATH)$(DS)inc
 
-ext_base_SRC_FILES += $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.c) \
-					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.s) \
-					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.S)
-						
+

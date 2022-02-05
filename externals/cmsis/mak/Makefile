@@ -1,10 +1,9 @@
 ###############################################################################
 #
-# Copyright 2014, ACSE & CADIEEL
-#    ACSE   : http://www.sase.com.ar/asociacion-civil-sistemas-embebidos/ciaa/
-#    CADIEEL: http://www.cadieel.org.ar
+# Copyright 2022, Gustavo Muro
+# All rights reserved
 #
-# This file is part of Embedded Firmware.
+# This file is part of EmbeddedFirmware.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -32,32 +31,16 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-###############################################################################
-# TOOLCHAIN
-CC = gcc
-LD = gcc
-CPP = g++
-AR = ar
-AS = as
-GDB = gdb
-NM = nm
-# COMPILER,  LINKER, AND DEBUGGER OPTIONS
-CFLAGS += -c -Wall -ggdb3
-LFLAGS += $(LINKSCRIPT) -lpthread
-GFLAGS += -silent -batch
-# Optional POST BUILD
-POST_BUILD +=
 
-# this file needs to be compiled separated and not added to a library
-# TODO this is not nice
-SRC_FILES                  +=
-# indicate that the paths needs to be converted for the compiler
-# this only affects native tools on windows. This is useless
-# for "cygwin - gcc"
-CONVERT_PATHS_4_COMPILER    = 0
+# library
+LIBS 				    += ext_cmsis
 
-# define linker extension
-LD_EXTENSION                = exe
+# library path
+ext_cmsis_PATH 	     = $(ROOT_DIR)$(DS)externals$(DS)cmsis
 
-# gdb Flag
-GDB_FLAGS 		   = $(LD_TARGET)
+# library include path
+ext_cmsis_INC_PATH  += $(ext_cmsis_PATH)$(DS)inc
+
+ifeq ($(ARCH),cortexM0plus)
+EXTERN_LIBS += $(ext_cmsis_PATH)$(DS)lib$(DS)libarm_cortexM0l_math.a
+endif

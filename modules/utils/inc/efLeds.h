@@ -65,7 +65,7 @@ typedef enum
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-extern void efLeds_init(efLeds_conf_t *conf, int totalLeds);
+extern void efLeds_init(efLeds_conf_t const *conf, int totalLeds);
 
 extern void efLeds_msg(efLeds_id_t id, efLeds_msg_t msg);
 

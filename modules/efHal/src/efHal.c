@@ -52,8 +52,14 @@
 extern void efHal_init(void)
 {
     efHal_gpio_init();
+
+#if EF_HAL_I2C_TOTAL_DEVICES > 0
     efHal_i2c_init();
+#endif
+#if EF_HAL_UART_TOTAL_DEVICES > 0
     efHal_uart_init();
+#endif
+
 }
 
 extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)

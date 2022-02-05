@@ -61,7 +61,7 @@ typedef struct
 
 /*==================[internal data definition]===============================*/
 
-static efLeds_conf_t *conf;
+static efLeds_conf_t const *conf;
 static int totalLeds;
 static ledState_t *pLedState;
 
@@ -135,7 +135,7 @@ static void vCB_leds( TimerHandle_t xTimer )
 }
 
 /*==================[external functions definition]==========================*/
-extern void efLeds_init(efLeds_conf_t *cf, int tl)
+extern void efLeds_init(efLeds_conf_t const *cf, int tl)
 {
     int i;
     TimerHandle_t xTimer;
