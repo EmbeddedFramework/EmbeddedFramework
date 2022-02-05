@@ -49,11 +49,13 @@ INC_FILES            += $(PROJECT_PATH)$(DS)application$(DS)inc \
 						
 
 # Modules needed for this project
-MODS 						+= externals$(DS)drivers \
-							   externals$(DS)board \
-							   modules$(DS)efHal \
-							   modules$(DS)bsp_$(BOARD) \
-							   modules$(DS)mma8451 \
-							   externals$(DS)freertos
+MODS += externals$(DS)drivers
+MODS += externals$(DS)board
+MODS += externals$(DS)freertos
+MODS += externals$(DS)cmsis
+
+MODS += modules$(DS)efHal
+MODS += modules$(DS)bsp_$(BOARD)
+MODS += modules$(DS)mma8451
 
 							   
