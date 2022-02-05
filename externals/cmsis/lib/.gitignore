@@ -1,0 +1,6 @@
+
+# Libraries
+!*.lib
+!*.a
+
+
