@@ -43,7 +43,8 @@ AFLAGS += -c -x assembler-with-cpp -g3 -mcpu=cortex-m0plus -mthumb
 AFLAGS += -D__REDLIB__ 
 endif
 
-LFLAGS += -T "$(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)linker$(DS)$(LINKER_SCRIPT)"
+LFLAGS += -L "$(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)linker$(DS)"
+LFLAGS += -T "$(LINKER_SCRIPT)"
 LFLAGS += -nostdlib -mcpu=cortex-m0plus -mthumb -Wl,-Map="$(TARGET_NAME).map" -Wl,-gc-sections -Xlinker -print-memory-usage
 
 

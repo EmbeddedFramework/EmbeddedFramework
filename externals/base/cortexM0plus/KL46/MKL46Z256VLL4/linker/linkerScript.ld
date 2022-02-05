@@ -9,8 +9,8 @@
  * MCUXpresso IDE v11.2.0 [Build 4120] [2020-07-09] on 04/12/2021 09:20:44
  */
 
-INCLUDE "externals/base/cortexM0plus/KL46/MKL46Z256VLL4/linker/library.ld"
-INCLUDE "externals/base/cortexM0plus/KL46/MKL46Z256VLL4/linker/memory.ld"
+INCLUDE "library.ld"
+INCLUDE "memory.ld"
 
 ENTRY(ResetISR)
 

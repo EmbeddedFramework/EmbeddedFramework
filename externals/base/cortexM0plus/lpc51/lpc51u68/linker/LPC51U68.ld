@@ -8,8 +8,8 @@
  * Using Freemarker v2.3.23
  * MCUXpresso IDE v11.2.1 [Build 4149] [2020-10-07] on 02/01/2021 11:02:27
  */
-INCLUDE "externals/base/cortexM0plus/lpc51/lpc51u68/linker/LPC51U68_library.ld"
-INCLUDE "externals/base/cortexM0plus/lpc51/lpc51u68/linker/LPC51U68_memory.ld"
+INCLUDE "LPC51U68_library.ld"
+INCLUDE "LPC51U68_memory.ld"
 
 
 ENTRY(ResetISR)
