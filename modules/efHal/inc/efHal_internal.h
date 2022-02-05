@@ -93,6 +93,17 @@ typedef struct
     efHal_uart_dataReadyTxCB_t dataReadyTx;
 }efHal_uart_callBacks_t;
 
+/******************************* SPI *****************************************/
+
+typedef void (*efHal_spi_confCB_t)(void *param, efHal_uart_conf_t const *cfg);
+typedef void (*efHal_spi_transferCB_t)(void* param, void *pTx, void *pRx, size_t length);
+
+typedef struct
+{
+    efHal_spi_confCB_t conf;
+    efHal_spi_transferCB_t transfer;
+}efHal_spi_callBacks_t;
+
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
@@ -115,6 +126,9 @@ extern efHal_dh_t efHal_internal_uart_deviceReg(efHal_uart_callBacks_t cb, void*
 extern void efHal_internal_uart_putDataForRx(efHal_dh_t dh, void *pData);
 extern bool efHal_internal_uart_getDataForTx(efHal_dh_t dh, void *pData);
 
+/******************************* SPI ****************************************/
+
+extern efHal_dh_t efHal_internal_spi_deviceReg(efHal_spi_callBacks_t cb, void* param);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

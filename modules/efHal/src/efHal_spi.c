@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2022, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -34,11 +34,16 @@
 #                                                                             */
 
 /*==================[inclusions]=============================================*/
-#include "efHal_i2c.h"
 #include "efHal_spi.h"
 #include "efHal_internal.h"
 
 /*==================[macros and typedef]=====================================*/
+typedef struct
+{
+    efHal_internal_dhD_t head;
+    efHal_spi_deviceTransfer_t cb;
+    void* param;
+}spi_dhD_t;
 
 /*==================[internal functions declaration]=========================*/
 
@@ -48,45 +53,59 @@
 
 /*==================[internal functions definition]==========================*/
 
+static spi_dhD_t dhD[EF_HAL_SPI_TOTAL_DEVICES];
+
+
 /*==================[external functions definition]==========================*/
 
-extern void efHal_init(void)
+extern void efHal_spi_init(void)
 {
-    efHal_gpio_init();
-
-#if EF_HAL_I2C_TOTAL_DEVICES > 0
-    efHal_i2c_init();
-#endif
-#if EF_HAL_UART_TOTAL_DEVICES > 0
-    efHal_uart_init();
-#endif
-
-#if EF_HAL_SPI_TOTAL_DEVICES > 0
-    efHal_spi_init();
-#endif
-
-}
-
-extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)
-{
-    efHal_dh_t ret = NULL;
-    uint8_t *pTemp = (uint8_t*)p_dhD;
     int i;
 
-    for (i = 0 ; i < length ; i++)
+    for (i = 0 ; i < EF_HAL_SPI_TOTAL_DEVICES ; i++)
     {
-        if (p_dhD->mutex == NULL)
-        {
-            ret = p_dhD;
-            break;
-        }
-
-        pTemp += size;
-        p_dhD = (efHal_internal_dhD_t*)pTemp;
+        dhD[i].head.mutex = NULL;
+        dhD[i].cb = NULL;
+        dhD[i].param = NULL;
     }
+}
+
+extern void efHal_spi_transfer(efHal_dh_t dh, void *pTx, void *pRx, size_t length)
+{
+    spi_dhD_t *p_dhD = dh;
+
+    xSemaphoreTake(p_dhD->head.mutex, portMAX_DELAY);
+
+    p_dhD->head.taskHadle = xTaskGetCurrentTaskHandle();
+    xTaskNotifyStateClear(p_dhD->head.taskHadle);
+    p_dhD->cb(p_dhD->param, pTx, pRx, length);
+    xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+    xSemaphoreGive(p_dhD->head.mutex);
+}
+
+extern void efHal_internal_spi_endOfTransfer(efHal_internal_dhD_t *p_dhD)
+{
+    xTaskNotify(p_dhD->taskHadle, 0, eNoAction);
+}
+
+extern efHal_dh_t efHal_internal_spi_deviceReg(efHal_spi_deviceTransfer_t cb_devTra, void* param)
+{
+    spi_dhD_t *ret;
+
+    taskENTER_CRITICAL();
+
+    ret = efHal_internal_searchFreeSlot(&dhD[0].head, sizeof(spi_dhD_t), EF_HAL_SPI_TOTAL_DEVICES);
+
+    if (ret != NULL)
+    {
+        ret->head.mutex = xSemaphoreCreateMutex();
+        ret->cb = cb_devTra;
+        ret->param = param;
+    }
+
+    taskEXIT_CRITICAL();
 
     return ret;
 }
-
 
 /*==================[end of file]============================================*/
