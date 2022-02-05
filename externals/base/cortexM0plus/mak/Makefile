@@ -32,18 +32,20 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-# TOOLCHAIN
 CC = arm-none-eabi-gcc
 LD = arm-none-eabi-gcc
 AR = arm-none-eabi-ar
 GDB = arm-none-eabi-gdb
 NM = arm-none-eabi-nm
 
+# POST BUILD
+# Generates a .bin image file
+POST_BUILD += arm-none-eabi-objcopy -v -O binary $(LD_TARGET) $(TARGET_NAME).bin
+
+# define linker extension
+LD_EXTENSION = axf
+
 -include $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)mak$(DS)Makefile
 
-# library include path
-ext_base_INC_PATH   += $(ext_base_PATH)$(DS)$(ARCH)$(DS)cmsis$(DS)inc
-ext_base_INC_PATH   += $(ext_base_PATH)$(DS)redlib$(DS)include
 
-EXTERN_LIBS += $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)cmsis$(DS)lib$(DS)*.a)
 

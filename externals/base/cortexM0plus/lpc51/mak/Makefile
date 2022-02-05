@@ -32,10 +32,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-LINKER_SCRIPT ?= LPC51U68.ld
-LFLAGS += -T "$(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)linker$(DS)$(LINKER_SCRIPT)"
 
 ifeq ($(CPU),lpc51u68)
+LINKER_SCRIPT ?= LPC51U68.ld
 CFLAGS += -std=gnu99 -mcpu=cortex-m0plus -mthumb -fstack-usage
 CFLAGS += -O0 -fno-common -g -Wall -c -ffunction-sections -fdata-sections -ffreestanding -fno-builtin -fmerge-constants
 CFLAGS += -D__REDLIB__ -DCPU_LPC51U68JBD48_cm0plus -DCPU_LPC51U68JBD48 -DFSL_RTOS_FREE_RTOS -DSDK_DEBUGCONSOLE=0 
@@ -44,10 +43,15 @@ AFLAGS += -c -x assembler-with-cpp -g3 -mcpu=cortex-m0plus -mthumb
 AFLAGS += -D__REDLIB__ 
 endif
 
+LFLAGS += -T "$(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)linker$(DS)$(LINKER_SCRIPT)"
+LFLAGS += -nostdlib -mcpu=cortex-m0plus -mthumb -Wl,-Map="$(TARGET_NAME).map" -Wl,-gc-sections -Xlinker -print-memory-usage
+
+
 ext_base_INC_PATH  += $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)inc
 
 ext_base_SRC_FILES += $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.c) \
 					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.s) \
 					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.S)
 						
-EXTERN_LIBS += $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)lib$(DS)*.a)
+EXTERN_LIBS += $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)lib$(DS)*.a)
+

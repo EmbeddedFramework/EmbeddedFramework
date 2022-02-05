@@ -143,7 +143,7 @@ ifneq ($(PROJECT_PATH),)
 include $(PROJECT_PATH)$(DS)mak$(DS)Makefile
 endif
 # base module is always needed and included
-MODS += modules$(DS)base
+MODS += externals$(DS)base
 # include needed modules
 include $(foreach module, $(MODS), $(module)$(DS)mak$(DS)Makefile)
 
