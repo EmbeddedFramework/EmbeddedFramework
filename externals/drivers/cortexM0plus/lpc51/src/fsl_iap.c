@@ -64,9 +64,9 @@ static inline status_t translate_iap_status(uint32_t status)
 
 static inline void iap_entry(uint32_t *cmd_param, uint32_t *status_result)
 {
-    __disable_irq();
+    //__disable_irq();
     ((IAP_ENTRY_T)FSL_FEATURE_SYSCON_IAP_ENTRY_LOCATION)(cmd_param, status_result);
-    __enable_irq();
+    //__enable_irq();
 }
 
 /*!
@@ -132,17 +132,21 @@ void IAP_ReinvokeISP(uint8_t ispType, uint32_t *status)
 {
     uint32_t command[5] = {0x00U};
     uint32_t result[5]  = {0x00U};
-    uint8_t ispParameterArray[8];
+    //uint8_t ispParameterArray[8];
 
     command[0] = (uint32_t)kIapCmd_IAP_ReinvokeISP;
-    (void)memset(ispParameterArray, 0, sizeof(uint8_t) * 8U);
-    ispParameterArray[1] = ispType;
-    ispParameterArray[7] = ispParameterArray[0] ^ ispParameterArray[1] ^ ispParameterArray[2] ^ ispParameterArray[3] ^
-                           ispParameterArray[4] ^ ispParameterArray[5] ^ ispParameterArray[6];
-    command[1] = (uint32_t)ispParameterArray;
+    // Note: Error in V2.8.2 SDK has wrong parameters here
+    // ISP Type is passed in 2nd byte of command, not in parameter Array
+    //(void)memset(ispParameterArray, 0, sizeof(uint8_t) * 8U);
+    //ispParameterArray[1] = ispType;
+    //ispParameterArray[7] = ispParameterArray[0] ^ ispParameterArray[1] ^ ispParameterArray[2] ^ ispParameterArray[3] ^
+    //                       ispParameterArray[4] ^ ispParameterArray[5] ^ ispParameterArray[6];
+    //command[1] = (uint32_t)ispParameterArray;
+    command[1] =ispType;
     iap_entry(command, result);
     *status = (uint32_t)translate_iap_status(result[0]);
 }
+
 
 /*!
  * @brief Read unique identification.
