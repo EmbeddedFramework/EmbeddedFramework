@@ -41,6 +41,7 @@
 #include "efHal_gpio.h"
 #include "efHal_i2c.h"
 #include "efHal_uart.h"
+#include "efHal_spi.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
 
@@ -82,6 +83,10 @@ typedef struct
 #define EF_HAL_GPIO_TOTAL_WAIT_FOR_INT 1
 #endif
 
+#ifndef EF_HAL_SPI_TOTAL_DEVICES
+#define EF_HAL_SPI_TOTAL_DEVICES 0
+#endif
+
 /******************************* UART ****************************************/
 
 typedef void (*efHal_uart_confCB_t)(void *param, efHal_uart_conf_t const *cfg);
@@ -95,7 +100,7 @@ typedef struct
 
 /******************************* SPI *****************************************/
 
-typedef void (*efHal_spi_confCB_t)(void *param, efHal_uart_conf_t const *cfg);
+typedef void (*efHal_spi_confCB_t)(void *param, int32_t clockFrec, efHal_spi_mode_t mode);
 typedef void (*efHal_spi_transferCB_t)(void* param, void *pTx, void *pRx, size_t length);
 
 typedef struct
@@ -128,7 +133,7 @@ extern bool efHal_internal_uart_getDataForTx(efHal_dh_t dh, void *pData);
 
 /******************************* SPI ****************************************/
 
-extern efHal_dh_t efHal_internal_spi_deviceReg(efHal_spi_callBacks_t cb, void* param);
+extern efHal_dh_t efHal_internal_spi_deviceReg(efHal_spi_callBacks_t cb_dev, void* param);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

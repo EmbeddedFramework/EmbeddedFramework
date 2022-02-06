@@ -41,7 +41,7 @@
 typedef struct
 {
     efHal_internal_dhD_t head;
-    efHal_spi_deviceTransfer_t cb;
+    efHal_spi_callBacks_t cb;
     void* param;
 }spi_dhD_t;
 
@@ -65,9 +65,17 @@ extern void efHal_spi_init(void)
     for (i = 0 ; i < EF_HAL_SPI_TOTAL_DEVICES ; i++)
     {
         dhD[i].head.mutex = NULL;
-        dhD[i].cb = NULL;
         dhD[i].param = NULL;
     }
+}
+
+extern void efHal_spi_config(efHal_dh_t dh, int32_t clockFrec, efHal_spi_mode_t mode)
+{
+    spi_dhD_t *p_dhD = dh;
+
+    xSemaphoreTake(p_dhD->head.mutex, portMAX_DELAY);
+    p_dhD->cb.conf(p_dhD->param, clockFrec, mode);
+    xSemaphoreGive(p_dhD->head.mutex);
 }
 
 extern void efHal_spi_transfer(efHal_dh_t dh, void *pTx, void *pRx, size_t length)
@@ -78,7 +86,7 @@ extern void efHal_spi_transfer(efHal_dh_t dh, void *pTx, void *pRx, size_t lengt
 
     p_dhD->head.taskHadle = xTaskGetCurrentTaskHandle();
     xTaskNotifyStateClear(p_dhD->head.taskHadle);
-    p_dhD->cb(p_dhD->param, pTx, pRx, length);
+    p_dhD->cb.transfer(p_dhD->param, pTx, pRx, length);
     xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
     xSemaphoreGive(p_dhD->head.mutex);
 }
@@ -88,7 +96,7 @@ extern void efHal_internal_spi_endOfTransfer(efHal_internal_dhD_t *p_dhD)
     xTaskNotify(p_dhD->taskHadle, 0, eNoAction);
 }
 
-extern efHal_dh_t efHal_internal_spi_deviceReg(efHal_spi_deviceTransfer_t cb_devTra, void* param)
+extern efHal_dh_t efHal_internal_spi_deviceReg(efHal_spi_callBacks_t cb_dev, void* param)
 {
     spi_dhD_t *ret;
 
@@ -99,7 +107,7 @@ extern efHal_dh_t efHal_internal_spi_deviceReg(efHal_spi_deviceTransfer_t cb_dev
     if (ret != NULL)
     {
         ret->head.mutex = xSemaphoreCreateMutex();
-        ret->cb = cb_devTra;
+        ret->cb = cb_dev;
         ret->param = param;
     }
 

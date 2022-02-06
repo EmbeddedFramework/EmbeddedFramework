@@ -46,11 +46,21 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
+typedef enum
+{
+    EF_HAL_SPI_CPOL_0_CPHA_O = 0,
+    EF_HAL_SPI_CPOL_0_CPHA_1,
+    EF_HAL_SPI_CPOL_1_CPHA_O,
+    EF_HAL_SPI_CPOL_1_CPHA_1,
+}efHal_spi_mode_t;
+
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
 
 extern void efHal_spi_init(void);
+
+extern void efHal_spi_config(efHal_dh_t dh, int32_t clockFrec, efHal_spi_mode_t mode);
 
 extern void efHal_spi_transfer(efHal_dh_t dh, void *pTx, void *pRx, size_t length);
 
