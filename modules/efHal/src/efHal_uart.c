@@ -96,7 +96,23 @@ extern uint32_t efHal_uart_getBaud(efHal_dh_t dh)
 
 extern uint32_t efHal_uart_getDataLength(efHal_dh_t dh)
 {
+    uart_dhD_t *dhD = dh;
+    uint32_t ret = 1;   /* one start bit */
 
+    if (dhD->conf.dataBits == EF_HAL_UART_DATA_BITS_8)
+        ret += 8;
+    else
+        ret += 7;
+
+    if (dhD->conf.parity != EF_HAL_UART_PARITY_NONE)
+        ret += 1;
+
+    if (dhD->conf.stopBits == EF_HAL_UART_STOP_BITS_2)
+        ret += 2;
+    else
+        ret += 1;
+
+    return ret;
 }
 
 extern int32_t efHal_uart_send(efHal_dh_t dh, void *pBuf, int32_t size, TickType_t blockTime)
