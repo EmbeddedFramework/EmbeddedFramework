@@ -143,6 +143,7 @@ extern bool efHal_gpio_waitForInt(efHal_gpio_id_t id, TickType_t xBlockTime)
         {
             taskHandle_gpio[i].gpioId = id;
             taskHandle_gpio[i].taskHandle = xTaskGetCurrentTaskHandle();
+            xTaskNotifyStateClear(taskHandle_gpio[i].taskHandle);
             break;
         }
     }
@@ -155,6 +156,8 @@ extern bool efHal_gpio_waitForInt(efHal_gpio_id_t id, TickType_t xBlockTime)
 
     if (ulTaskNotifyTake(pdTRUE, xBlockTime))
         ret = true;
+
+    taskHandle_gpio[i].taskHandle = NULL;
 
     return ret;
 }
