@@ -133,6 +133,7 @@ extern bool efHal_internal_uart_getDataForTx(efHal_dh_t dh, void *pData);
 
 /******************************* SPI ****************************************/
 
+extern void efHal_internal_spi_endOfTransfer(efHal_internal_dhD_t *p_dhD);
 extern efHal_dh_t efHal_internal_spi_deviceReg(efHal_spi_callBacks_t cb_dev, void* param);
 
 /*==================[cplusplus]==============================================*/
