@@ -38,8 +38,8 @@ LINKER_SCRIPT ?= LPC51U68.ld
 CFLAGS += -std=gnu99 -mcpu=cortex-m0plus -mthumb -fstack-usage
 CFLAGS += -O0 -fno-common -g -Wall -c -ffunction-sections -fdata-sections -ffreestanding -fno-builtin -fmerge-constants
 CFLAGS += -D__REDLIB__ -DCPU_LPC51U68JBD48_cm0plus -DCPU_LPC51U68JBD48 -DFSL_RTOS_FREE_RTOS -DSDK_DEBUGCONSOLE=0 
-CFLAGS += -DCR_INTEGER_PRINTF -DPRINTF_FLOAT_ENABLE=0 -D__MCUXPRESSO -D__USE_CMSIS -DDEBUG 
-AFLAGS += -c -x assembler-with-cpp -g3 -mcpu=cortex-m0plus -mthumb
+CFLAGS += -DCR_INTEGER_PRINTF -DPRINTF_FLOAT_ENABLE=0 -D__MCUXPRESSO -D__USE_CMSIS -DDEBUG -DARM_MATH_CM0PLUS
+AFLAGS += -c -x assembler-with-cpp -g3 -mcpu=cortex-m0plus -mthumb -DARM_MATH_CM0PLUS
 AFLAGS += -D__REDLIB__ 
 endif
 
