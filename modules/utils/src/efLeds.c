@@ -39,7 +39,7 @@
 
 /*==================[macros and typedef]=====================================*/
 
-#define TIME_BASE   20 // 20 ms
+#define TIME_BASE   10 // 10 ms
 
 #define toTimeBase(time)    (time / TIME_BASE)
 
@@ -70,8 +70,8 @@ static const secuence_t blinkySec =
     .repeat = true,
     .time =
     {
-        toTimeBase(400),
-        toTimeBase(400),
+        toTimeBase(500),
+        toTimeBase(500),
         0,
     },
 };
@@ -94,8 +94,8 @@ static const secuence_t pulseSec =
     .repeat = false,
     .time =
     {
-        toTimeBase(300),
-        toTimeBase(200),
+        toTimeBase(40),
+        toTimeBase(10),
         0,
     },
 };
@@ -128,6 +128,11 @@ static void vCB_leds( TimerHandle_t xTimer )
                 {
                     efHal_gpio_togglePin(conf[i].gpioId);
                     pLedState[i].timOut = pLedState[i].pSec->time[pLedState[i].secIndex];
+                }
+                else
+                {
+                    pLedState[i].secIndex = 0;
+                    pLedState[i].pSec = NULL;
                 }
             }
         }
@@ -188,10 +193,13 @@ extern void efLeds_msg(efLeds_id_t id, efLeds_msg_t msg)
             break;
 
         case EF_LEDS_MSG_PULSE:
-            pLedState[id].timOut = pulseSec.time[0];
-            pLedState[id].secIndex = 0;
-            efHal_gpio_setPin(conf[id].gpioId, conf[id].onState);
-            pLedState[id].pSec = &pulseSec;
+            if (pLedState[id].pSec !=  &pulseSec)
+            {
+                pLedState[id].timOut = pulseSec.time[0];
+                pLedState[id].secIndex = 0;
+                efHal_gpio_setPin(conf[id].gpioId, conf[id].onState);
+                pLedState[id].pSec = &pulseSec;
+            }
             break;
     }
 }
