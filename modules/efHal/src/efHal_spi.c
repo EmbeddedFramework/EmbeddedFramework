@@ -93,7 +93,11 @@ extern void efHal_spi_transfer(efHal_dh_t dh, void *pTx, void *pRx, size_t lengt
 
 extern void efHal_internal_spi_endOfTransfer(efHal_internal_dhD_t *p_dhD)
 {
-    xTaskNotify(p_dhD->taskHadle, 0, eNoAction);
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+    xTaskNotifyFromISR(p_dhD->taskHadle, 0, eNoAction, &xHigherPriorityTaskWoken);
+
+    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 }
 
 extern efHal_dh_t efHal_internal_spi_deviceReg(efHal_spi_callBacks_t cb_dev, void* param)

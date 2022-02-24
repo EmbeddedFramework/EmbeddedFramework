@@ -190,6 +190,7 @@ extern void efHal_internal_gpio_setCallBacks(efHal_gpio_callBacks_t cb)
 extern void efHal_internal_gpio_InterruptRoutine(efHal_gpio_id_t id)
 {
     int i;
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
     for (i = 0 ; i < EF_HAL_GPIO_TOTAL_CALL_BACK ; i++)
     {
@@ -214,7 +215,7 @@ extern void efHal_internal_gpio_InterruptRoutine(efHal_gpio_id_t id)
         {
             if (taskHandle_gpio[i].taskHandle != NULL)
             {
-                xTaskNotifyGive(taskHandle_gpio[i].taskHandle);
+                vTaskNotifyGiveFromISR(taskHandle_gpio[i].taskHandle, &xHigherPriorityTaskWoken);
             }
             else
             {
@@ -224,6 +225,8 @@ extern void efHal_internal_gpio_InterruptRoutine(efHal_gpio_id_t id)
             break;
         }
     }
+
+    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 }
 
 /*==================[end of file]============================================*/

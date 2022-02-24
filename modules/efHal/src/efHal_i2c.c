@@ -95,7 +95,11 @@ extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, v
 
 extern void efHal_internal_i2c_endOfTransfer(efHal_internal_dhD_t *p_dhD, efHal_i2c_ec_t ec)
 {
-    xTaskNotify(p_dhD->taskHadle, ec, eSetValueWithOverwrite);
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+    xTaskNotifyFromISR(p_dhD->taskHadle, ec, eSetValueWithOverwrite, &xHigherPriorityTaskWoken);
+
+    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 }
 
 extern efHal_dh_t efHal_internal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* param)
