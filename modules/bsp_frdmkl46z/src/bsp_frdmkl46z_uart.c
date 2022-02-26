@@ -135,6 +135,7 @@ extern void bsp_frdmkl46z_uart_init(void)
 
     cb.conf = confCB;
     cb.dataReadyTx = dataReadyTx;
+    cb.sendBuffer = NULL;
 
     uart_init();
 }

@@ -137,6 +137,7 @@ extern void bsp_frdmkl46z_lpsci_init(void)
 
     cb.conf = confCB;
     cb.dataReadyTx = dataReadyTx;
+    cb.sendBuffer = NULL;
 
     lpsci_init();
 }
