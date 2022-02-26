@@ -91,11 +91,13 @@ typedef struct
 
 typedef void (*efHal_uart_confCB_t)(void *param, efHal_uart_conf_t const *cfg);
 typedef void (*efHal_uart_dataReadyTxCB_t)(void *param);
+typedef void (*efHal_uart_sendBufferCB_t)(void *param, void *pBuf, int32_t size, TickType_t blockTime);
 
 typedef struct
 {
     efHal_uart_confCB_t conf;
     efHal_uart_dataReadyTxCB_t dataReadyTx;
+    efHal_uart_sendBufferCB_t sendBuffer;
 }efHal_uart_callBacks_t;
 
 /******************************* SPI *****************************************/

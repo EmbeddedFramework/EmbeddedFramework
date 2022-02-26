@@ -120,21 +120,28 @@ extern int32_t efHal_uart_send(efHal_dh_t dh, void *pBuf, int32_t size, TickType
     uart_dhD_t *dhD = dh;
     int32_t ret = 0;
 
-    while (ret < size)
+    if (dhD->cb.sendBuffer != NULL)
     {
-        if (xQueueSend(dhD->qSend, pBuf, blockTime) == pdTRUE)
+        dhD->cb.sendBuffer(dhD->param, pBuf, size, blockTime);
+    }
+    else
+    {
+        while (ret < size)
         {
-            if (dhD->txHasEnded)
+            if (xQueueSend(dhD->qSend, pBuf, blockTime) == pdTRUE)
             {
-                dhD->txHasEnded = false;
-                dhD->cb.dataReadyTx(dhD->param);
+                if (dhD->txHasEnded)
+                {
+                    dhD->txHasEnded = false;
+                    dhD->cb.dataReadyTx(dhD->param);
+                }
+                pBuf++;
+                ret++;
             }
-            pBuf++;
-            ret++;
-        }
-        else
-        {
-            break;
+            else
+            {
+                break;
+            }
         }
     }
 
