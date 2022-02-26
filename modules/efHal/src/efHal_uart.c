@@ -122,7 +122,7 @@ extern int32_t efHal_uart_send(efHal_dh_t dh, void *pBuf, int32_t size, TickType
 
     if (dhD->cb.sendBuffer != NULL)
     {
-        dhD->cb.sendBuffer(dhD->param, pBuf, size, blockTime);
+        ret = dhD->cb.sendBuffer(dhD->param, pBuf, size, blockTime);
     }
     else
     {
