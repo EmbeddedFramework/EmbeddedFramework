@@ -84,6 +84,7 @@ extern void efHal_uart_conf(efHal_dh_t dh, efHal_uart_conf_t const *cfg)
 {
     uart_dhD_t *dhD = dh;
 
+    dhD->conf = *cfg;
     dhD->cb.conf(dhD->param, cfg);
 }
 
