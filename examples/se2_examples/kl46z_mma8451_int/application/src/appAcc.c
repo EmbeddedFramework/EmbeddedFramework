@@ -57,7 +57,7 @@ static void acc_task(void *pvParameters)
 
     for (;;)
     {
-        efHal_gpio_waitForInt(EF_HAL_INT1_ACCEL, portMAX_DELAY);
+        efHal_gpio_waitForInt(EF_HAL_INT1_ACCEL, 100 / portTICK_PERIOD_MS);
 
         accIntCount = mma8451_getAccIntCount();
 
@@ -76,7 +76,7 @@ static void acc_task(void *pvParameters)
 /*==================[external functions definition]==========================*/
 int main(void)
 {
-    if (xTaskCreate(acc_task, "acc_task", 100, NULL, 0, NULL) != pdPASS)
+    if (xTaskCreate(acc_task, "acc_task", 200, NULL, 0, NULL) != pdPASS)
     {
         while (1);
     }
