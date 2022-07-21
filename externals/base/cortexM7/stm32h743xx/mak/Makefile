@@ -40,10 +40,9 @@ CFLAGS += -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-d16 -D$(CPUTYPE) -
 LFLAGS += -mcpu=cortex-m7 -T "externals/base/cortexM7/stm32h743xx/stm32h743vi/linker/$(LINKER_SCRIPT)" --specs=nosys.specs -Wl,-Map="$(TARGET_NAME).map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -lc -lm
 CFLAGS += -DUSE_HAL_DRIVER -DSTM32H743xx
 
-CFLAGS += -std=gnu11 -g3 -DDEBUG
+#CFLAGS += -DDEBUG
+#CFLAGS += -std=gnu11
 endif
-
-#LFLAGS += -print-memory-usage
 
 ext_base_INC_PATH  += $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)inc
 
