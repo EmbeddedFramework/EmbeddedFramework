@@ -46,5 +46,5 @@ EXTERN_LIBS += $(ext_cmsis_PATH)$(DS)lib$(DS)libarm_cortexM0l_math.a
 endif
 
 ifeq ($(ARCH),cortexM7)
-EXTERN_LIBS += $(ext_cmsis_PATH)$(DS)lib$(DS)libarm_cortexM7l_math.a
+EXTERN_LIBS += $(ext_cmsis_PATH)$(DS)lib$(DS)libarm_cortexM7lfsp_math.a
 endif
