@@ -132,6 +132,7 @@ extern efHal_dh_t efHal_internal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_dev
 extern efHal_dh_t efHal_internal_uart_deviceReg(efHal_uart_callBacks_t cb, void* param);
 extern void efHal_internal_uart_putDataForRx(efHal_dh_t dh, void *pData);
 extern bool efHal_internal_uart_getDataForTx(efHal_dh_t dh, void *pData);
+extern void* efHal_internal_uart_getParam(efHal_dh_t dh);
 
 /******************************* SPI ****************************************/
 
