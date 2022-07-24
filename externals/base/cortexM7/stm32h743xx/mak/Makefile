@@ -37,7 +37,7 @@ ifeq ($(CPU),stm32h743vi)
 LINKER_SCRIPT ?= stm32h743vit_FLASH.ld
 AFLAGS += -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-d16 -g3 -c -x assembler-with-cpp -MMD --specs=nano.specs
 CFLAGS += -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-d16 -D$(CPUTYPE) -DARM_MATH_CM7 -D__FPU_PRESENT=1 -O0 -g3 -ffunction-sections -fdata-sections -Wall -fstack-usage -c --specs=nano.specs
-LFLAGS += -mcpu=cortex-m7 -T "externals/base/cortexM7/stm32h743xx/stm32h743vi/linker/$(LINKER_SCRIPT)" --specs=nosys.specs -Wl,-Map="$(TARGET_NAME).map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -lc -lm
+LFLAGS += -mcpu=cortex-m7 -T "externals/base/cortexM7/stm32h743xx/stm32h743vi/linker/$(LINKER_SCRIPT)" --specs=nosys.specs -Wl,-Map="$(TARGET_NAME).map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -lc -lm -Wl,--print-memory-usage
 CFLAGS += -DUSE_HAL_DRIVER -DSTM32H743xx
 
 #CFLAGS += -DDEBUG
