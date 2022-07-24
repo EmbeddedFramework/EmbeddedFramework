@@ -164,7 +164,8 @@ SECTIONS
   } >RAM_D1
 
   /* Modification start */
-  .lwip_sec (NOLOAD) : {
+  .lwip_sec (NOLOAD) :
+  {
     . = ABSOLUTE(0x30040000);
     *(.RxDecripSection) 
     
