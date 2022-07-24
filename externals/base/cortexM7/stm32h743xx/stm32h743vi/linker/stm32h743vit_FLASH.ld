@@ -163,19 +163,21 @@ SECTIONS
     . = ALIGN(8);
   } >RAM_D1
 
-  /* Modification start */
-  .lwip_sec (NOLOAD) :
+  /* ETHERNET DMA DATA: */
+  .RxDecripSection 0x30040000 :
   {
-    . = ABSOLUTE(0x30040000);
-    *(.RxDecripSection) 
-    
-    . = ABSOLUTE(0x30040060);
-    *(.TxDecripSection)
-    
-    . = ABSOLUTE(0x30040200);
-    *(.RxArraySection) 
-  } >RAM_D2
-  /* Modification end */
+    KEEP(*(.RxDecripSection)) /* keep my variable even if not referenced */
+  } > RAM_D2
+ 
+ .TxDecripSection 0x30040060 :
+  {
+    KEEP(*(.TxDecripSection)) /* keep my variable even if not referenced */
+  } > RAM_D2
+  
+  .RxArraySection 0x30040200 :
+  {
+    KEEP(*(.RxArraySection)) /* keep my variable even if not referenced */
+  } > RAM_D2
 
   /* Remove information from the standard libraries */
   /DISCARD/ :
