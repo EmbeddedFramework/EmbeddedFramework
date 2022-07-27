@@ -163,22 +163,13 @@ SECTIONS
     . = ALIGN(8);
   } >RAM_D1
 
-  /* ETHERNET DMA DATA: */
-  .RxDecripSection 0x30040000 :
+  /* ETHERNET DATA: */
+  .D2_domain_AHB_SRAM :
   {
-    KEEP(*(.RxDecripSection)) /* keep my variable even if not referenced */
-  } > RAM_D2
- 
- .TxDecripSection 0x30040060 :
-  {
-    KEEP(*(.TxDecripSection)) /* keep my variable even if not referenced */
+    . = ALIGN(4); 
   } > RAM_D2
   
-  .RxArraySection 0x30040200 :
-  {
-    KEEP(*(.RxArraySection)) /* keep my variable even if not referenced */
-  } > RAM_D2
-
+  
   /* Remove information from the standard libraries */
   /DISCARD/ :
   {
