@@ -55,5 +55,6 @@ MODS += externals$(DS)freertos
 MODS += externals$(DS)cmsis
 
 MODS += modules$(DS)efHal
+MODS += modules$(DS)efErrorHdl
 MODS += modules$(DS)bsp_$(BOARD)
 
