@@ -80,7 +80,7 @@ extern void efHal_gpio_setPin(efHal_gpio_id_t id, bool state)
         callBacks.setPin(id, state);
     else
     {
-        /* TODO ASSERT */
+        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "callBacks.setPin");
     }
 }
 
