@@ -49,6 +49,7 @@ typedef enum
 {
     EF_ERROR_HDL_NO_ERROR = 0,
     EF_ERROR_HDL_NULL_POINTER,
+    EF_ERROR_HDL_NO_FREE_SLOT,
 }efErrorHdlType_t;
 
 #define EF_ERROR_HDL_STR_FUNC_LENGTH    16
@@ -72,7 +73,8 @@ extern void efErrorHdl_init(void);
 extern void efErrorHdl_errorFull(efErrorHdlType_t type, char *msg,
         const char func[], int line);
 
-extern efErrorHdlType_t efErrirHdl_getErrorType(void);
+extern efErrorHdlType_t efErrorHdl_getErrorType(void);
+extern efErrorHdlInfo_t* efErrorHdl_getErrorInfo(void);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
