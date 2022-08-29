@@ -77,6 +77,7 @@ extern void efHal_uart_init(void)
     {
         dhD[i].head.mutex = NULL;
         dhD[i].param = NULL;
+        dhD[i].txHasEnded = true;
     }
 }
 
