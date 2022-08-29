@@ -77,6 +77,7 @@ extern void efHal_uart_init(void)
     {
         dhD[i].head.mutex = NULL;
         dhD[i].param = NULL;
+        dhD[i].txHasEnded = true;
     }
 }
 
@@ -221,5 +222,10 @@ extern bool efHal_internal_uart_getDataForTx(efHal_dh_t dh, void *pData)
     return ret;
 }
 
+extern void* efHal_internal_uart_getParam(efHal_dh_t dh)
+{
+    uart_dhD_t *dhD = dh;
+    return dhD->param;
+}
 
 /*==================[end of file]============================================*/

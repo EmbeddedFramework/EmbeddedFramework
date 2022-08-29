@@ -32,14 +32,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 # library
-LIBS 				  += utils
+LIBS 				  += module_utils
 # version
-utils_VERSION      = 0.0.0
+module_utils_VERSION      = 0.0.0
 # library path
-utils_PATH 			= $(ROOT_DIR)$(DS)modules$(DS)utils
+module_utils_PATH 			= $(ROOT_DIR)$(DS)modules$(DS)utils
 # library source path
-utils_SRC_PATH 	= $(utils_PATH)$(DS)src
+module_utils_SRC_PATH 	= $(module_utils_PATH)$(DS)src
 # library include path
-utils_INC_PATH 	= $(utils_PATH)$(DS)inc
+module_utils_INC_PATH 	= $(module_utils_PATH)$(DS)inc
 # library source files
-utils_SRC_FILES 	= $(wildcard $(utils_SRC_PATH)$(DS)*.c)
+module_utils_SRC_FILES 	= $(wildcard $(module_utils_SRC_PATH)$(DS)*.c)
