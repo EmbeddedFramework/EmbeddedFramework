@@ -54,6 +54,8 @@ extern void efHal_init(void)
 {
     efHal_gpio_init();
 
+    efHal_pwm_init();
+
 #if EF_HAL_I2C_TOTAL_DEVICES > 0
     efHal_i2c_init();
 #endif
