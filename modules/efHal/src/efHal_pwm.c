@@ -54,6 +54,7 @@ typedef struct
 /*==================[internal functions declaration]=========================*/
 
 /*==================[internal data definition]===============================*/
+static efHal_pwm_callBacks_t callBacks;
 static cb_pwm_t cb_pwm[EF_HAL_PWM_TOTAL_CALL_BACK];
 static taskHandle_pwm_t taskHandle_pwm[EF_HAL_PWM_TOTAL_WAIT_FOR_INT];
 
@@ -70,6 +71,49 @@ extern void efHal_pwm_init(void)
     {
         cb_pwm[i].cbInt = NULL;
         cb_pwm[i].pwmId = 0;
+    }
+}
+
+extern void efHal_pwm_setDuty(efHal_pwm_id_t id, uint32_t duty, efHal_pwm_dutyUnit_t dutyUnit)
+{
+    uint32_t periodNs;
+
+    if (callBacks.getPeriodCount == NULL || callBacks.setDuty || callBacks.getPeriodNs)
+    {
+        /* handle error */
+    }
+    else
+    {
+        switch (dutyUnit)
+        {
+            case EF_HAL_PWM_DUTY_PERCENT:
+                duty = duty * callBacks.getPeriodCount(id);
+                duty = duty / 100;
+                break;
+
+            case EF_HAL_PWM_DUTY_COUNT:
+                break;
+
+            case EF_HAL_PWM_DUTY_NS:
+                duty = duty * callBacks.getPeriodCount(id);
+                periodNs = callBacks.getPeriodNs(id);
+                if (periodNs > 0)
+                    duty = duty / periodNs;
+                else
+                {
+                    /* handle error */
+                }
+                break;
+
+            default:
+                /* handle error */
+                break;
+        }
+
+        if (callBacks.setDuty(id, duty) == false)
+        {
+            /* handle error */
+        }
     }
 }
 
@@ -121,6 +165,11 @@ extern void efHal_pwm_setCallBackInt(efHal_pwm_id_t id, efHal_pwm_callBackInt_t 
     {
         /* TODO ASSERT */
     }
+}
+
+extern void efHal_internal_pwm_setCallBacks(efHal_pwm_callBacks_t cb)
+{
+    callBacks = cb;
 }
 
 extern void efHal_internal_pwm_InterruptRoutine(efHal_pwm_id_t id)

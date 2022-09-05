@@ -38,6 +38,7 @@
 /*==================[inclusions]=============================================*/
 #include "stdint.h"
 #include "stdbool.h"
+#include "FreeRTOS.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -53,7 +54,7 @@ typedef enum
     EF_HAL_PWM_DUTY_PERCENT = 0,
     EF_HAL_PWM_DUTY_COUNT,
     EF_HAL_PWM_DUTY_NS,
-}efHal_pwm_duty_t;
+}efHal_pwm_dutyUnit_t;
 
 typedef void (*efHal_pwm_callBackInt_t)(efHal_pwm_id_t id);
 
@@ -61,7 +62,7 @@ typedef void (*efHal_pwm_callBackInt_t)(efHal_pwm_id_t id);
 
 /*==================[external functions declaration]=========================*/
 extern void efHal_pwm_init(void);
-extern void efHal_pwm_setDuty(efHal_pwm_id_t id, uint32_t duty, efHal_pwm_duty_t uint32_t);
+extern void efHal_pwm_setDuty(efHal_pwm_id_t id, uint32_t duty, efHal_pwm_dutyUnit_t dutyUnit);
 extern void efHal_pwm_setPeriod(efHal_pwm_id_t id, uint32_t period_nS);
 extern void efHal_pwm_confIntCount(efHal_pwm_id_t id, uint32_t count);
 extern bool efHal_pwm_waitForInt(efHal_pwm_id_t id, TickType_t xBlockTime);
