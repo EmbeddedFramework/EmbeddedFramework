@@ -117,6 +117,16 @@ extern void efHal_pwm_setDuty(efHal_pwm_id_t id, uint32_t duty, efHal_pwm_dutyUn
     }
 }
 
+extern void efHal_pwm_setPeriod(efHal_pwm_id_t id, uint32_t period_nS)
+{
+    if (callBacks.setPeriod != NULL)
+        callBacks.setPeriod (id, period_nS);
+    else
+    {
+        /* handle error */
+    }
+}
+
 extern bool efHal_pwm_waitForInt(efHal_pwm_id_t id, TickType_t xBlockTime)
 {
     int i;
