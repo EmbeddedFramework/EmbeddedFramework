@@ -78,7 +78,7 @@ extern void efHal_pwm_setDuty(efHal_pwm_id_t id, uint32_t duty, efHal_pwm_dutyUn
 {
     uint32_t periodNs;
 
-    if (callBacks.getPeriodCount == NULL || callBacks.setDuty || callBacks.getPeriodNs)
+    if (callBacks.getPeriodCount == NULL || callBacks.setDuty == NULL || callBacks.getPeriodNs == NULL)
     {
         /* handle error */
     }
@@ -87,8 +87,9 @@ extern void efHal_pwm_setDuty(efHal_pwm_id_t id, uint32_t duty, efHal_pwm_dutyUn
         switch (dutyUnit)
         {
             case EF_HAL_PWM_DUTY_PERCENT:
-                duty = duty * callBacks.getPeriodCount(id);
+                duty = duty * (callBacks.getPeriodCount(id)-1);
                 duty = duty / 100;
+                duty = duty;
                 break;
 
             case EF_HAL_PWM_DUTY_COUNT:
