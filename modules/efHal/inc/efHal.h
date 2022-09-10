@@ -47,6 +47,8 @@ extern "C" {
 
 typedef void* efHal_dh_t; /* device handler */
 
+#define EF_HAL_INVALID_HANDLER  (NULL)
+#define EF_HAL_INVALID_ID       (-1)
 
 /*==================[external data declaration]==============================*/
 
