@@ -45,10 +45,6 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 
-#ifdef EF_ERROR_HDL_ENABLE
-#include "efErrorHdl.h"
-#endif
-
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
 extern "C" {
@@ -141,11 +137,6 @@ extern bool efHal_internal_uart_getDataForTx(efHal_dh_t dh, void *pData);
 
 extern void efHal_internal_spi_endOfTransfer(efHal_internal_dhD_t *p_dhD);
 extern efHal_dh_t efHal_internal_spi_deviceReg(efHal_spi_callBacks_t cb_dev, void* param);
-
-/******************************* ERROR HANDLING******************************/
-#ifndef EF_ERROR_HDL_ENABLE
-#define efErrorHdl_error(type, msg)
-#endif
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
