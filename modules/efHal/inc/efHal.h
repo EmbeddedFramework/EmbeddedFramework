@@ -37,6 +37,7 @@
 
 /*==================[inclusions]=============================================*/
 #include "stdint.h"
+#include "../../efErrorHdl/inc/efErrorHdl.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
