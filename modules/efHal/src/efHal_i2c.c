@@ -77,7 +77,10 @@ extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, v
     uint32_t notifVal;
 
     if (p_dhD == NULL)
+    {
+        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "p_dhD");
         ret = EF_HAL_I2C_EC_INVALID_HANDLER;
+    }
     else
     {
         xSemaphoreTake(p_dhD->head.mutex, portMAX_DELAY);
