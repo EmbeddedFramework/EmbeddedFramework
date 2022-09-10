@@ -119,6 +119,10 @@ extern efHal_dh_t efHal_internal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_dev
         ret->cb = cb_devTra;
         ret->param = param;
     }
+    else
+    {
+        efErrorHdl_error(EF_ERROR_HDL_NO_FREE_SLOT, "deviceReg");
+    }
 
     taskEXIT_CRITICAL();
 
