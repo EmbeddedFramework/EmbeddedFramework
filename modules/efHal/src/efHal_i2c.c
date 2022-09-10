@@ -88,8 +88,17 @@ extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, v
         p_dhD->head.taskHadle = xTaskGetCurrentTaskHandle();
         xTaskNotifyStateClear(p_dhD->head.taskHadle);
         ret = p_dhD->cb(p_dhD->param, da, pTx, sTx, pRx, sRx);
-        xTaskNotifyWait(0, 0, &notifVal, portMAX_DELAY);
-        ret = notifVal;
+        if (ret == EF_HAL_I2C_EC_NO_ERROR)
+        {
+            xTaskNotifyWait(0, 0, &notifVal, portMAX_DELAY);
+            ret = notifVal;
+        }
+
+        if (ret != EF_HAL_I2C_EC_NO_ERROR)
+        {
+            efErrorHdl_error(ret, "I2C:ret");
+        }
+
         xSemaphoreGive(p_dhD->head.mutex);
     }
 
