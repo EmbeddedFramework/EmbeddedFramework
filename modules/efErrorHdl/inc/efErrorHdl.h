@@ -49,6 +49,7 @@ typedef enum
 {
     EF_ERROR_HDL_NO_ERROR = 0,
     EF_ERROR_HDL_NULL_POINTER,
+    EF_ERROR_HDL_ASSERT,
     EF_ERROR_HDL_NO_FREE_SLOT,
 }efErrorHdlType_t;
 
@@ -69,6 +70,9 @@ typedef struct
 extern void efErrorHdl_init(void);
 
 #define efErrorHdl_error(type, msg)     efErrorHdl_errorFull(type, msg, __FUNCTION__, __LINE__)
+
+#define efErrorHdl_assert(expr) \
+    ((expr) ? (void)0 : efErrorHdl_errorFull(EF_ERROR_HDL_ASSERT, "", __FUNCTION__, __LINE__)
 
 extern void efErrorHdl_errorFull(efErrorHdlType_t type, char *msg,
         const char func[], int line);
