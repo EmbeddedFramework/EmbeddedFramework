@@ -114,6 +114,10 @@ extern efHal_dh_t efHal_internal_spi_deviceReg(efHal_spi_callBacks_t cb_dev, voi
         ret->cb = cb_dev;
         ret->param = param;
     }
+    else
+    {
+        efErrorHdl_error(EF_ERROR_HDL_NO_FREE_SLOT, "deviceReg");
+    }
 
     taskEXIT_CRITICAL();
 
