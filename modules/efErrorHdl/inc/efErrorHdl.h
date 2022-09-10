@@ -36,7 +36,6 @@
 #define EF_ERROR_HDL_H_
 
 /*==================[inclusions]=============================================*/
-#include "efErrorHdl.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -52,7 +51,11 @@ typedef enum
     EF_ERROR_HDL_ASSERT,
     EF_ERROR_HDL_NO_FREE_SLOT,
     EF_ERROR_HDL_INVALID_PARAMETER,
-    EF_ERROR_HDL_APPLICATION = 100,
+
+    EF_ERROR_HDL_I2C = 100,
+
+    EF_ERROR_HDL_APPLICATION = 1000,
+
 }efErrorHdlType_t;
 
 #define EF_ERROR_HDL_STR_FUNC_LENGTH    16
@@ -69,6 +72,7 @@ typedef struct
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
+#ifdef EF_ERROR_HDL_ENABLE
 extern void efErrorHdl_init(void);
 
 #define efErrorHdl_error(type, msg)     efErrorHdl_errorFull(type, msg, __FUNCTION__, __LINE__)
@@ -81,6 +85,10 @@ extern void efErrorHdl_errorFull(efErrorHdlType_t type, char *msg,
 
 extern efErrorHdlType_t efErrorHdl_getErrorType(void);
 extern efErrorHdlInfo_t* efErrorHdl_getErrorInfo(void);
+
+#else
+#define efErrorHdl_error(type, msg)
+#endif
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
