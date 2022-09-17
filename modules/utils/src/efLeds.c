@@ -155,6 +155,8 @@ extern void efLeds_init(efLeds_conf_t const *cf, int tl)
         pLedState[i].pSec = NULL;
 
         efHal_gpio_confPin(conf[i].gpioId, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, !conf[i].onState);
+
+        efLeds_msg(i, EF_LEDS_MSG_OFF);
     }
 
     xTimer = xTimerCreate("efLeds",

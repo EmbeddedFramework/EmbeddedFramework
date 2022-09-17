@@ -39,6 +39,7 @@
 #include "efHal.h"
 #include "efHal_config.h"
 #include "efHal_gpio.h"
+#include "efHal_pwm.h"
 #include "efHal_i2c.h"
 #include "efHal_uart.h"
 #include "efHal_spi.h"
@@ -87,6 +88,31 @@ typedef struct
 #define EF_HAL_SPI_TOTAL_DEVICES 0
 #endif
 
+/******************************* PWM ****************************************/
+
+typedef bool (*efHal_pwm_setDuty_t)(efHal_pwm_id_t id, uint32_t dutyCount);
+typedef bool (*efHal_pwm_setPeriod_t)(efHal_pwm_id_t id, uint32_t period_nS);
+typedef uint32_t (*efHal_pwm_getPeriodCount_t)(efHal_pwm_id_t id);
+typedef uint32_t (*efHal_pwm_getPeriodNs_t)(efHal_pwm_id_t id);
+typedef void (*efHal_pwm_confIntCount_t)(efHal_pwm_id_t id, uint32_t count);
+
+typedef struct
+{
+    efHal_pwm_setDuty_t setDuty;
+    efHal_pwm_setPeriod_t setPeriod;
+    efHal_pwm_getPeriodCount_t getPeriodCount;
+    efHal_pwm_getPeriodNs_t getPeriodNs;
+    efHal_pwm_confIntCount_t confIntCount;
+}efHal_pwm_callBacks_t;
+
+#ifndef EF_HAL_PWM_TOTAL_CALL_BACK
+#define EF_HAL_PWM_TOTAL_CALL_BACK 1
+#endif
+
+#ifndef EF_HAL_PWM_TOTAL_WAIT_FOR_INT
+#define EF_HAL_PWM_TOTAL_WAIT_FOR_INT 1
+#endif
+
 /******************************* UART ****************************************/
 
 typedef void (*efHal_uart_confCB_t)(void *param, efHal_uart_conf_t const *cfg);
@@ -121,6 +147,9 @@ extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, siz
 
 extern void efHal_internal_gpio_setCallBacks(efHal_gpio_callBacks_t cb);
 extern void efHal_internal_gpio_InterruptRoutine(efHal_gpio_id_t id);
+
+/******************************* GPIO ****************************************/
+extern void efHal_internal_pwm_setCallBacks(efHal_pwm_callBacks_t cb);
 
 /******************************* I2C *****************************************/
 

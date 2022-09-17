@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2022, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,63 +32,46 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
+#ifndef EF_HAL_PWM_H_
+#define EF_HAL_PWM_H_
 
 /*==================[inclusions]=============================================*/
-#include "efHal_i2c.h"
-#include "efHal_spi.h"
-#include "efHal_internal.h"
+#include "stdint.h"
+#include "stdbool.h"
+#include "FreeRTOS.h"
+
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*==================[macros and typedef]=====================================*/
 
-/*==================[internal functions declaration]=========================*/
+typedef int32_t efHal_pwm_id_t;
 
-/*==================[internal data definition]===============================*/
-
-/*==================[external data definition]===============================*/
-
-/*==================[internal functions definition]==========================*/
-
-/*==================[external functions definition]==========================*/
-
-extern void efHal_init(void)
+typedef enum
 {
-    efHal_gpio_init();
+    EF_HAL_PWM_DUTY_PERCENT = 0,
+    EF_HAL_PWM_DUTY_COUNT,
+    EF_HAL_PWM_DUTY_NS,
+}efHal_pwm_dutyUnit_t;
 
-    efHal_pwm_init();
+typedef void (*efHal_pwm_callBackInt_t)(efHal_pwm_id_t id);
 
-#if EF_HAL_I2C_TOTAL_DEVICES > 0
-    efHal_i2c_init();
-#endif
-#if EF_HAL_UART_TOTAL_DEVICES > 0
-    efHal_uart_init();
-#endif
+/*==================[external data declaration]==============================*/
 
-#if EF_HAL_SPI_TOTAL_DEVICES > 0
-    efHal_spi_init();
-#endif
+/*==================[external functions declaration]=========================*/
+extern void efHal_pwm_init(void);
+extern void efHal_pwm_setDuty(efHal_pwm_id_t id, uint32_t duty, efHal_pwm_dutyUnit_t dutyUnit);
+extern void efHal_pwm_setPeriod(efHal_pwm_id_t id, uint32_t period_nS);
+extern void efHal_pwm_confIntCount(efHal_pwm_id_t id, uint32_t count);
+extern bool efHal_pwm_waitForInt(efHal_pwm_id_t id, TickType_t xBlockTime);
+extern void efHal_pwm_setCallBackInt(efHal_pwm_id_t id, efHal_pwm_callBackInt_t cb);
 
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
 }
-
-extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)
-{
-    efHal_dh_t ret = NULL;
-    uint8_t *pTemp = (uint8_t*)p_dhD;
-    int i;
-
-    for (i = 0 ; i < length ; i++)
-    {
-        if (p_dhD->mutex == NULL)
-        {
-            ret = p_dhD;
-            break;
-        }
-
-        pTemp += size;
-        p_dhD = (efHal_internal_dhD_t*)pTemp;
-    }
-
-    return ret;
-}
-
+#endif
 
 /*==================[end of file]============================================*/
+#endif /* EF_HAL_PWM_H_ */
