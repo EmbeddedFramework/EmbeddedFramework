@@ -72,6 +72,12 @@ extern void efHal_gpio_init(void)
         cb_gpio[i].cbInt = NULL;
         cb_gpio[i].gpioId = EF_HAL_INVALID_ID;
     }
+
+    for (i = 0 ; i < EF_HAL_GPIO_TOTAL_WAIT_FOR_INT ; i++)
+    {
+        taskHandle_gpio[i].taskHandle = NULL;
+        cb_gpio[i].gpioId = EF_HAL_INVALID_ID;
+    }
 }
 
 extern void efHal_gpio_setPin(efHal_gpio_id_t id, bool state)
@@ -153,11 +159,13 @@ extern bool efHal_gpio_waitForInt(efHal_gpio_id_t id, TickType_t xBlockTime)
     {
         efErrorHdl_error(EF_ERROR_HDL_NO_FREE_SLOT, "waitForInt");
     }
+    else
+    {
+        if (ulTaskNotifyTake(pdTRUE, xBlockTime))
+            ret = true;
 
-    if (ulTaskNotifyTake(pdTRUE, xBlockTime))
-        ret = true;
-
-    taskHandle_gpio[i].taskHandle = NULL;
+        taskHandle_gpio[i].taskHandle = NULL;
+    }
 
     return ret;
 }
