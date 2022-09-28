@@ -47,8 +47,8 @@ extern "C" {
 
 enum efHal_gpio_id_t
 {
-    EF_HAL_GPIO_LED_GREEN = 0,
-    EF_HAL_GPIO_LED_RED,
+    EF_HAL_GPIO_LED_RED = 0,
+    EF_HAL_GPIO_LED_GREEN,
     EF_HAL_GPIO_SW_1,
     EF_HAL_GPIO_SW_3,
     EF_HAL_INT1_ACCEL,
