@@ -230,6 +230,9 @@ extern void bsp_frdmkl46z_gpio_init(void)
 
     for (i = 0 ; i < TOTAL_INPUTS; i++)
         confPin(gpioIn[i], EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_DISABLE, 0);
+
+    confPin(EF_HAL_GPIO_SW_1, EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_UP, 0);
+    confPin(EF_HAL_GPIO_SW_3, EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_UP, 0);
 }
 
 void PORTC_PORTD_IRQHandler(void)
