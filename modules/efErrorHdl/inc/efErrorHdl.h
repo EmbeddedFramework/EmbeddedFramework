@@ -69,6 +69,40 @@ typedef struct
     char msg[EF_ERROR_HDL_STR_MSG_LENGTH];
 }efErrorHdlInfo_t;
 
+/* try catch
+ * example:
+ * EF_TRY
+ * {
+ *     sentence1();
+ *     EF_CHECK;
+ *     sentence1();
+ *     EF_CHECK;
+ * }
+ * EF_CATCH
+ * {
+ *      efErrorHdlInfo_t* errorInfo;
+ *      errorInfo = efErrorHdl_getErrorInfo();
+ *      yourCode();
+ * }
+ * EF_ENDTRY;
+ */
+
+#define EF_TRY      \
+{                   \
+    int ef_hadError = 0;    \
+    do{                 \
+        if (ef_hadError == 0)   \
+        {
+
+#define EF_CATCH  }else
+
+#define EF_ENDTRY       \
+        ef_hadError = 0;    \
+    }while (ef_hadError);       \
+}
+
+#define EF_CHECK if (efErrorHdl_getErrorType() != EF_ERROR_HDL_NO_ERROR) {ef_hadError = 1; continue;}
+
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
