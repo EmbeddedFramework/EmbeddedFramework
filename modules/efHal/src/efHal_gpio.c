@@ -164,6 +164,7 @@ extern bool efHal_gpio_waitForInt(efHal_gpio_id_t id, TickType_t xBlockTime)
         if (ulTaskNotifyTake(pdTRUE, xBlockTime))
             ret = true;
 
+        taskHandle_gpio[i].gpioId = EF_HAL_INVALID_ID;
         taskHandle_gpio[i].taskHandle = NULL;
     }
 
