@@ -183,6 +183,10 @@ extern efHal_dh_t efHal_internal_uart_deviceReg(efHal_uart_callBacks_t cb, void*
         ret->qSend = xQueueCreate(EF_HAL_UART_QUEUE_SEND_LENGTH, sizeof(uint8_t));
         ret->qRecv = xQueueCreate(EF_HAL_UART_QUEUE_RECV_LENGTH, sizeof(uint8_t));
     }
+    else
+    {
+        efErrorHdl_error(EF_ERROR_HDL_NO_FREE_SLOT, "deviceReg");
+    }
 
     taskEXIT_CRITICAL();
 

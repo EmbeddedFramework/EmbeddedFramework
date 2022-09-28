@@ -1,7 +1,6 @@
-/*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2022, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -31,47 +30,20 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#                                                                             */
-#ifndef EF_HAL_I2C_H_
-#define EF_HAL_I2C_H_
+#
 
-/*==================[inclusions]=============================================*/
-#include "efHal.h"
-#include "stddef.h"
+# library
+LIBS 				  += mod_efErrorHdl
+# version
+mod_efErrorHdl_VERSION    = 0.0.0
+# library path
+mod_efErrorHdl_PATH 		= $(ROOT_DIR)$(DS)modules$(DS)efErrorHdl
+# library source path
+mod_efErrorHdl_SRC_PATH 	= $(mod_efErrorHdl_PATH)$(DS)src
+# library include path
+mod_efErrorHdl_INC_PATH 	= $(mod_efErrorHdl_PATH)$(DS)inc
+# library source files
+mod_efErrorHdl_SRC_FILES 	= $(wildcard $(mod_efErrorHdl_SRC_PATH)$(DS)*.c)
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+CFLAGS += -DEF_ERROR_HDL_ENABLE
 
-/*==================[macros and typedef]=====================================*/
-
-typedef enum
-{
-    EF_HAL_I2C_EC_NO_ERROR = EF_ERROR_HDL_NO_ERROR,
-    EF_HAL_I2C_EC_INVALID_HANDLER = EF_ERROR_HDL_NULL_POINTER,
-    EF_HAL_I2C_EC_INVALID_PARAMS = EF_ERROR_HDL_INVALID_PARAMETER,
-    EF_HAL_I2C_EC_TRANSFER_UNSUPPORTED,
-    EF_HAL_I2C_EC_NAK,
-    EF_HAL_I2C_EC_UNKNOW,
-}efHal_i2c_ec_t;
-
-typedef uint8_t efHal_i2c_devAdd_t;
-
-typedef efHal_i2c_ec_t (*efHal_i2c_deviceTransfer_t)(void* param, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx);
-
-/*==================[external data declaration]==============================*/
-
-/*==================[external functions declaration]=========================*/
-
-extern void efHal_i2c_init(void);
-
-extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx);
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-}
-#endif
-
-/*==================[end of file]============================================*/
-#endif /* EF_HAL_I2C_H_ */

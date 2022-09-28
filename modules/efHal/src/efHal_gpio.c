@@ -70,7 +70,13 @@ extern void efHal_gpio_init(void)
     for (i = 0 ; i < EF_HAL_GPIO_TOTAL_CALL_BACK ; i++)
     {
         cb_gpio[i].cbInt = NULL;
-        cb_gpio[i].gpioId = 0;
+        cb_gpio[i].gpioId = EF_HAL_INVALID_ID;
+    }
+
+    for (i = 0 ; i < EF_HAL_GPIO_TOTAL_WAIT_FOR_INT ; i++)
+    {
+        taskHandle_gpio[i].taskHandle = NULL;
+        cb_gpio[i].gpioId = EF_HAL_INVALID_ID;
     }
 }
 
@@ -80,7 +86,7 @@ extern void efHal_gpio_setPin(efHal_gpio_id_t id, bool state)
         callBacks.setPin(id, state);
     else
     {
-        /* TODO ASSERT */
+        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "callBacks.setPin");
     }
 }
 
@@ -106,7 +112,7 @@ extern bool efHal_gpio_getPin(efHal_gpio_id_t id)
         ret = callBacks.getPin(id);
     else
     {
-        /* TODO ASSERT */
+        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "callBacks.getPin");
     }
 
     return ret;
@@ -118,7 +124,7 @@ extern void efHal_gpio_confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)
         callBacks.confInt(id, intType);
     else
     {
-        /* TODO ASSERT */
+        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "callBacks.confInt");
     }
 }
 
@@ -128,7 +134,7 @@ extern void efHal_gpio_confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_g
         callBacks.confPin(id, dir, pull, state);
     else
     {
-        /* TODO ASSERT */
+        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "callBacks.confPin");
     }
 }
 
@@ -151,13 +157,15 @@ extern bool efHal_gpio_waitForInt(efHal_gpio_id_t id, TickType_t xBlockTime)
     /* check if no free slot error */
     if (i >= EF_HAL_GPIO_TOTAL_WAIT_FOR_INT)
     {
-        /* TODO ASSERT */
+        efErrorHdl_error(EF_ERROR_HDL_NO_FREE_SLOT, "waitForInt");
     }
+    else
+    {
+        if (ulTaskNotifyTake(pdTRUE, xBlockTime))
+            ret = true;
 
-    if (ulTaskNotifyTake(pdTRUE, xBlockTime))
-        ret = true;
-
-    taskHandle_gpio[i].taskHandle = NULL;
+        taskHandle_gpio[i].taskHandle = NULL;
+    }
 
     return ret;
 }
@@ -178,7 +186,7 @@ extern void efHal_gpio_setCallBackInt(efHal_gpio_id_t id, efHal_gpio_callBackInt
     /* check if no free slot error */
     if (i >= EF_HAL_GPIO_TOTAL_CALL_BACK)
     {
-        /* TODO ASSERT */
+        efErrorHdl_error(EF_ERROR_HDL_NO_FREE_SLOT, "setCallBackInt");
     }
 }
 
@@ -202,9 +210,8 @@ extern void efHal_internal_gpio_InterruptRoutine(efHal_gpio_id_t id)
             }
             else
             {
-                /* TODO ASSERT */
+                efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "cbInt");
             }
-
             break;
         }
     }
@@ -219,9 +226,8 @@ extern void efHal_internal_gpio_InterruptRoutine(efHal_gpio_id_t id)
             }
             else
             {
-                /* TODO ASSERT */
+                efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "taskHandle");
             }
-
             break;
         }
     }

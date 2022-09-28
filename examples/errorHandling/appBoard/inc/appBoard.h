@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2022, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,12 +32,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef EF_HAL_I2C_H_
-#define EF_HAL_I2C_H_
+#ifndef APP_BOARD_H_
+#define APP_BOARD_H_
 
 /*==================[inclusions]=============================================*/
-#include "efHal.h"
-#include "stddef.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -46,27 +44,14 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
-typedef enum
-{
-    EF_HAL_I2C_EC_NO_ERROR = EF_ERROR_HDL_NO_ERROR,
-    EF_HAL_I2C_EC_INVALID_HANDLER = EF_ERROR_HDL_NULL_POINTER,
-    EF_HAL_I2C_EC_INVALID_PARAMS = EF_ERROR_HDL_INVALID_PARAMETER,
-    EF_HAL_I2C_EC_TRANSFER_UNSUPPORTED,
-    EF_HAL_I2C_EC_NAK,
-    EF_HAL_I2C_EC_UNKNOW,
-}efHal_i2c_ec_t;
-
-typedef uint8_t efHal_i2c_devAdd_t;
-
-typedef efHal_i2c_ec_t (*efHal_i2c_deviceTransfer_t)(void* param, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx);
+#if BOARD == frdmkl46z
+#include "bsp_frdmkl46z.h"
+#endif
 
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-
-extern void efHal_i2c_init(void);
-
-extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx);
+extern void appBoard_init(void);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -74,4 +59,4 @@ extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, v
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* EF_HAL_I2C_H_ */
+#endif /* APP_BOARD_H_ */

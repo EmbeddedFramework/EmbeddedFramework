@@ -34,16 +34,12 @@
 #                                                                             */
 
 /*==================[inclusions]=============================================*/
-#include "efHal_i2c.h"
-#include "efHal_internal.h"
+#include "appBoard.h"
+#include "efHal_gpio.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 /*==================[macros and typedef]=====================================*/
-typedef struct
-{
-    efHal_internal_dhD_t head;
-    efHal_i2c_deviceTransfer_t cb;
-    void* param;
-}i2c_dhD_t;
 
 /*==================[internal functions declaration]=========================*/
 
@@ -53,89 +49,73 @@ typedef struct
 
 /*==================[internal functions definition]==========================*/
 
-static i2c_dhD_t dhD[EF_HAL_I2C_TOTAL_DEVICES];
+static void gpio_callBackInt(efHal_gpio_id_t id)
+{
+    switch (id)
+    {
+        case EF_HAL_GPIO_SW_1:
+            efHal_gpio_setPin(EF_HAL_GPIO_LED_RED, false);
+            break;
 
+        case EF_HAL_GPIO_SW_3:
+            efHal_gpio_setPin(EF_HAL_GPIO_LED_RED, true);
+            break;
+    }
+
+}
+
+static void blinky_task(void *pvParameters)
+{
+    efHal_gpio_confInt(EF_HAL_GPIO_SW_1, EF_HAL_GPIO_INT_TYPE_FALLING_EDGE);
+    efHal_gpio_confInt(EF_HAL_GPIO_SW_3, EF_HAL_GPIO_INT_TYPE_FALLING_EDGE);
+
+    EF_TRY
+    {
+        efHal_gpio_setCallBackInt(EF_HAL_GPIO_SW_1, gpio_callBackInt);
+        EF_CHECK;
+        efHal_gpio_setCallBackInt(EF_HAL_GPIO_SW_1, gpio_callBackInt);
+        EF_CHECK;
+        efHal_gpio_setCallBackInt(EF_HAL_GPIO_SW_1, gpio_callBackInt);
+        EF_CHECK;
+
+        efHal_gpio_setCallBackInt(EF_HAL_GPIO_SW_3, gpio_callBackInt);
+        EF_CHECK;
+        efHal_gpio_setCallBackInt(EF_HAL_GPIO_SW_3, gpio_callBackInt);
+        EF_CHECK;
+        efHal_gpio_setCallBackInt(EF_HAL_GPIO_SW_3, gpio_callBackInt);
+        EF_CHECK;
+    }
+    EF_CATCH
+    {
+        efHal_gpio_setPin(EF_HAL_GPIO_LED_RED, false);
+    }
+    EF_ENDTRY;
+
+
+    for (;;)
+    {
+        vTaskDelay(500 / portTICK_PERIOD_MS);
+        efHal_gpio_togglePin(EF_HAL_GPIO_LED_GREEN);
+    }
+}
 
 /*==================[external functions definition]==========================*/
-
-extern void efHal_i2c_init(void)
+int main(void)
 {
-    int i;
+    appBoard_init();
 
-    for (i = 0 ; i < EF_HAL_I2C_TOTAL_DEVICES ; i++)
+    if (xTaskCreate(blinky_task, "blinky_task", 100, NULL, 0, NULL) != pdPASS)
     {
-        dhD[i].head.mutex = NULL;
-        dhD[i].cb = NULL;
-        dhD[i].param = NULL;
+        while (1);
     }
+
+    vTaskStartScheduler();
+    for (;;);
 }
 
-extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx)
+extern void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
 {
-    efHal_i2c_ec_t ret;
-    i2c_dhD_t *p_dhD = dh;
-    uint32_t notifVal;
-
-    if (p_dhD == NULL)
-    {
-        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "p_dhD");
-        ret = EF_HAL_I2C_EC_INVALID_HANDLER;
-    }
-    else
-    {
-        xSemaphoreTake(p_dhD->head.mutex, portMAX_DELAY);
-
-        p_dhD->head.taskHadle = xTaskGetCurrentTaskHandle();
-        xTaskNotifyStateClear(p_dhD->head.taskHadle);
-        ret = p_dhD->cb(p_dhD->param, da, pTx, sTx, pRx, sRx);
-        if (ret == EF_HAL_I2C_EC_NO_ERROR)
-        {
-            xTaskNotifyWait(0, 0, &notifVal, portMAX_DELAY);
-            ret = notifVal;
-        }
-
-        if (ret != EF_HAL_I2C_EC_NO_ERROR)
-        {
-            efErrorHdl_error(ret, "I2C:ret");
-        }
-
-        xSemaphoreGive(p_dhD->head.mutex);
-    }
-
-    return ret;
-}
-
-extern void efHal_internal_i2c_endOfTransfer(efHal_internal_dhD_t *p_dhD, efHal_i2c_ec_t ec)
-{
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
-    xTaskNotifyFromISR(p_dhD->taskHadle, ec, eSetValueWithOverwrite, &xHigherPriorityTaskWoken);
-
-    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
-}
-
-extern efHal_dh_t efHal_internal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* param)
-{
-    i2c_dhD_t *ret;
-
-    taskENTER_CRITICAL();
-
-    ret = efHal_internal_searchFreeSlot(&dhD[0].head, sizeof(i2c_dhD_t), EF_HAL_I2C_TOTAL_DEVICES);
-
-    if (ret != NULL)
-    {
-        ret->head.mutex = xSemaphoreCreateMutex();
-        ret->cb = cb_devTra;
-        ret->param = param;
-    }
-    else
-    {
-        efErrorHdl_error(EF_ERROR_HDL_NO_FREE_SLOT, "deviceReg");
-    }
-
-    taskEXIT_CRITICAL();
-
-    return ret;
+    while (1);
 }
 
 /*==================[end of file]============================================*/

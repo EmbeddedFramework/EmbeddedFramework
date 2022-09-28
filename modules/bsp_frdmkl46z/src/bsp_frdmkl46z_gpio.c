@@ -142,7 +142,7 @@ static void confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)
             break;
 
         default:
-            /* TODO ASSERT */
+            efErrorHdl_error(EF_ERROR_HDL_INVALID_PARAMETER, "intType");
             break;
     }
 
@@ -156,7 +156,7 @@ static void confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)
         NVIC_EnableIRQ(PORTC_PORTD_IRQn);
     else
     {
-        /* TODO ASSERT */
+        efErrorHdl_error(EF_ERROR_HDL_INVALID_PARAMETER, "port");
     }
 }
 

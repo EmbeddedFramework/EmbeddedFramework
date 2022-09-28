@@ -75,7 +75,10 @@ static efHal_i2c_ec_t bsp_frdmkl46z_i2c_deviceTransfer(void* param, efHal_i2c_de
     if (sRx == 0 || pRx == NULL)
     {
         if (pTx == NULL || sTx == 0)
+        {
+            efErrorHdl_error(EF_ERROR_HDL_INVALID_PARAMETER, "pTx == NULL || sTx == 0");
             ret = EF_HAL_I2C_EC_INVALID_PARAMS;
+        }
         else
         {
             masterXfer.direction = kI2C_Write;
@@ -90,7 +93,10 @@ static efHal_i2c_ec_t bsp_frdmkl46z_i2c_deviceTransfer(void* param, efHal_i2c_de
         masterXfer.direction = kI2C_Read;
 
         if (sTx > sizeof(masterXfer.subaddress))
+        {
+            efErrorHdl_error(EF_HAL_I2C_EC_TRANSFER_UNSUPPORTED, "sTx > sizeof(masterXfer.subaddress)");
             ret = EF_HAL_I2C_EC_TRANSFER_UNSUPPORTED;
+        }
         else if (pTx != NULL && sTx > 0)
         {
             int i;

@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2022, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -34,108 +34,120 @@
 #                                                                             */
 
 /*==================[inclusions]=============================================*/
-#include "efHal_i2c.h"
-#include "efHal_internal.h"
+#include "efErrorHdl.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "string.h"
 
 /*==================[macros and typedef]=====================================*/
-typedef struct
-{
-    efHal_internal_dhD_t head;
-    efHal_i2c_deviceTransfer_t cb;
-    void* param;
-}i2c_dhD_t;
+
+#ifndef EF_ERROR_HDL_TOTAL_ERROR_TASK
+#define EF_ERROR_HDL_TOTAL_ERROR_TASK   2
+#endif
+
+#define INDEX_LOCAL_STORAGE             0
 
 /*==================[internal functions declaration]=========================*/
 
 /*==================[internal data definition]===============================*/
 
+static efErrorHdlInfo_t efErrorHdlInfo[EF_ERROR_HDL_TOTAL_ERROR_TASK];
+
+
 /*==================[external data definition]===============================*/
 
 /*==================[internal functions definition]==========================*/
 
-static i2c_dhD_t dhD[EF_HAL_I2C_TOTAL_DEVICES];
-
-
-/*==================[external functions definition]==========================*/
-
-extern void efHal_i2c_init(void)
+static int getSlot(void)
 {
     int i;
 
-    for (i = 0 ; i < EF_HAL_I2C_TOTAL_DEVICES ; i++)
+    for (i = 0 ; i < EF_ERROR_HDL_TOTAL_ERROR_TASK ; i++)
     {
-        dhD[i].head.mutex = NULL;
-        dhD[i].cb = NULL;
-        dhD[i].param = NULL;
+        if (efErrorHdlInfo[i].type == EF_ERROR_HDL_NO_ERROR)
+            break;
+    }
+
+    if (i >= EF_ERROR_HDL_TOTAL_ERROR_TASK)
+        i = -1;
+
+    return i;
+}
+
+/*==================[external functions definition]==========================*/
+
+extern void efErrorHdl_init(void)
+{
+    int i;
+
+    for (i = 0 ; i < EF_ERROR_HDL_TOTAL_ERROR_TASK ; i++)
+    {
+        efErrorHdlInfo[i].type = EF_ERROR_HDL_NO_ERROR;
     }
 }
 
-extern efHal_i2c_ec_t efHal_i2c_transfer(efHal_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx)
+extern void efErrorHdl_errorFull(efErrorHdlType_t type, char *msg,
+        const char func[], int line)
 {
-    efHal_i2c_ec_t ret;
-    i2c_dhD_t *p_dhD = dh;
-    uint32_t notifVal;
+    int slot;
 
-    if (p_dhD == NULL)
+    vPortEnterCritical();
+
+    slot = getSlot();
+
+    if (slot < 0)
     {
-        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "p_dhD");
-        ret = EF_HAL_I2C_EC_INVALID_HANDLER;
+        type = EF_ERROR_HDL_NO_FREE_SLOT;
+        msg = "No free slot for Error";
+        slot = 0;
     }
     else
     {
-        xSemaphoreTake(p_dhD->head.mutex, portMAX_DELAY);
-
-        p_dhD->head.taskHadle = xTaskGetCurrentTaskHandle();
-        xTaskNotifyStateClear(p_dhD->head.taskHadle);
-        ret = p_dhD->cb(p_dhD->param, da, pTx, sTx, pRx, sRx);
-        if (ret == EF_HAL_I2C_EC_NO_ERROR)
-        {
-            xTaskNotifyWait(0, 0, &notifVal, portMAX_DELAY);
-            ret = notifVal;
-        }
-
-        if (ret != EF_HAL_I2C_EC_NO_ERROR)
-        {
-            efErrorHdl_error(ret, "I2C:ret");
-        }
-
-        xSemaphoreGive(p_dhD->head.mutex);
+        efErrorHdlInfo[slot].type = type;
+        strncpy(efErrorHdlInfo[slot].msg, msg, EF_ERROR_HDL_STR_MSG_LENGTH);
     }
+
+    strncpy(efErrorHdlInfo[slot].func, func, EF_ERROR_HDL_STR_FUNC_LENGTH);
+    efErrorHdlInfo[slot].line = line;
+
+    vTaskSetThreadLocalStoragePointer(NULL, INDEX_LOCAL_STORAGE, &efErrorHdlInfo[slot]);
+
+    vPortExitCritical();
+}
+
+extern efErrorHdlType_t efErrorHdl_getErrorType(void)
+{
+    efErrorHdlInfo_t *p_efErrorHdlInfo;
+    efErrorHdlType_t ret = EF_ERROR_HDL_NO_ERROR;
+
+    p_efErrorHdlInfo = pvTaskGetThreadLocalStoragePointer(NULL, INDEX_LOCAL_STORAGE);
+
+    if (p_efErrorHdlInfo != NULL)
+        ret = p_efErrorHdlInfo->type;
 
     return ret;
 }
 
-extern void efHal_internal_i2c_endOfTransfer(efHal_internal_dhD_t *p_dhD, efHal_i2c_ec_t ec)
+extern efErrorHdlInfo_t* efErrorHdl_getErrorInfo(void)
 {
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
-    xTaskNotifyFromISR(p_dhD->taskHadle, ec, eSetValueWithOverwrite, &xHigherPriorityTaskWoken);
-
-    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+    efErrorHdlInfo_t *p_efErrorHdlInfo;
+    p_efErrorHdlInfo = pvTaskGetThreadLocalStoragePointer(NULL, INDEX_LOCAL_STORAGE);
+    return p_efErrorHdlInfo;
 }
 
-extern efHal_dh_t efHal_internal_i2c_deviceReg(efHal_i2c_deviceTransfer_t cb_devTra, void* param)
+extern void efErrirHdl_freeError(void)
 {
-    i2c_dhD_t *ret;
+    efErrorHdlInfo_t *p_efErrorHdlInfo;
 
-    taskENTER_CRITICAL();
+    p_efErrorHdlInfo = pvTaskGetThreadLocalStoragePointer(NULL, INDEX_LOCAL_STORAGE);
 
-    ret = efHal_internal_searchFreeSlot(&dhD[0].head, sizeof(i2c_dhD_t), EF_HAL_I2C_TOTAL_DEVICES);
-
-    if (ret != NULL)
+    if (p_efErrorHdlInfo != NULL)
     {
-        ret->head.mutex = xSemaphoreCreateMutex();
-        ret->cb = cb_devTra;
-        ret->param = param;
+        vPortEnterCritical();
+        p_efErrorHdlInfo->type = EF_ERROR_HDL_NO_ERROR;
+        vTaskSetThreadLocalStoragePointer(NULL, INDEX_LOCAL_STORAGE, NULL);
+        vPortExitCritical();
     }
-    else
-    {
-        efErrorHdl_error(EF_ERROR_HDL_NO_FREE_SLOT, "deviceReg");
-    }
-
-    taskEXIT_CRITICAL();
-
-    return ret;
 }
 
 /*==================[end of file]============================================*/
