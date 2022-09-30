@@ -71,10 +71,7 @@ static void uart0_task(void *pvParameters)
 /*==================[external functions definition]==========================*/
 int main(void)
 {
-    if (xTaskCreate(uart0_task, "uart0_task", 100, NULL, 0, NULL) != pdPASS)
-    {
-        while (1);
-    }
+    xTaskCreate(uart0_task, "uart0_task", 100, NULL, 0, NULL);
 
     vTaskStartScheduler();
     for (;;);

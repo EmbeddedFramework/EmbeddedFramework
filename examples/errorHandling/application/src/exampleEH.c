@@ -104,10 +104,7 @@ int main(void)
 {
     appBoard_init();
 
-    if (xTaskCreate(blinky_task, "blinky_task", 100, NULL, 0, NULL) != pdPASS)
-    {
-        while (1);
-    }
+    xTaskCreate(blinky_task, "blinky_task", 100, NULL, 0, NULL);
 
     vTaskStartScheduler();
     for (;;);

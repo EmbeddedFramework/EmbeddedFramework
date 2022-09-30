@@ -76,10 +76,7 @@ static void acc_task(void *pvParameters)
 /*==================[external functions definition]==========================*/
 int main(void)
 {
-    if (xTaskCreate(acc_task, "acc_task", 100, NULL, 0, NULL) != pdPASS)
-    {
-        while (1);
-    }
+    xTaskCreate(acc_task, "acc_task", 100, NULL, 0, NULL);
 
     vTaskStartScheduler();
     for (;;);
