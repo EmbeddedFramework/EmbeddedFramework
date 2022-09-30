@@ -42,7 +42,7 @@
 #define configUSE_PREEMPTION                    1
 #define configUSE_TICKLESS_IDLE                 0
 #define configCPU_CLOCK_HZ                      (SystemCoreClock)
-#define configTICK_RATE_HZ                      ((TickType_t)200)
+#define configTICK_RATE_HZ                      ((TickType_t)1000)
 #define configMAX_PRIORITIES                    5
 #define configMINIMAL_STACK_SIZE                ((unsigned short)90)
 #define configMAX_TASK_NAME_LEN                 20
@@ -55,7 +55,7 @@
 #define configUSE_ALTERNATIVE_API               0 /* Deprecated! */
 #define configQUEUE_REGISTRY_SIZE               8
 #define configUSE_QUEUE_SETS                    0
-#define configUSE_TIME_SLICING                  0
+#define configUSE_TIME_SLICING                  1
 #define configUSE_NEWLIB_REENTRANT              0
 #define configENABLE_BACKWARD_COMPATIBILITY     1
 #define configNUM_THREAD_LOCAL_STORAGE_POINTERS 5
@@ -79,7 +79,7 @@
 #define configUSE_DAEMON_TASK_STARTUP_HOOK      0
 
 /* Run time and task stats gathering related definitions. */
-#define configGENERATE_RUN_TIME_STATS           0
+#define configGENERATE_RUN_TIME_STATS           1
 #define configUSE_TRACE_FACILITY                1
 #define configUSE_STATS_FORMATTING_FUNCTIONS    0
 
@@ -122,5 +122,12 @@ standard names. */
 #define vPortSVCHandler SVC_Handler
 #define xPortPendSVHandler PendSV_Handler
 #define xPortSysTickHandler SysTick_Handler
+
+void timerForRTS_init(void);
+unsigned long int timerForRTS_get(void);
+
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS()    timerForRTS_init()
+#define portGET_RUN_TIME_COUNTER_VALUE()            timerForRTS_get()
+
 
 #endif /* FREERTOS_CONFIG_H */
