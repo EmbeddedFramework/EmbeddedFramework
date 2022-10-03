@@ -96,12 +96,11 @@ ifeq ($(OS),Windows_NT)
 CS                = ;
 # Command for multiline echo
 MULTILINE_ECHO    = echo -e
-# convert paths from cygwin to win (used to convert path for compiler)
 define cyg2win
-`cygpath -w $(1)`
+$(1)
 endef
 define cp4c
-$(if $(findstring tst_,$(MAKECMDGOALS)),$(1),$(call cyg2win,$(1)))
+$(1)
 endef
 
 else
