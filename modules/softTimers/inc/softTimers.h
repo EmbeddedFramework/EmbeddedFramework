@@ -86,9 +86,29 @@ extern void softTimers_close(int32_t hTimer);
  **/
 extern uint32_t softTimers_getAndClear(int32_t hTimer);
 
+
+/** \brief  Get value of timer
+ ** return current value of timer
+ **
+ ** \param[in] handler
+ ** \param[in] clear set true to clear elapsed time
+ **
+ ** \return curren value of timer
+ **/
 extern uint32_t softTimers_get(int32_t hTimer, bool clear);
+
+/** \brief  Clearvalue of timer
+ **
+ ** \param[in] handler
+ **
+ ** \return
+ **/
 extern void softTimers_clear(int32_t hTimer);
 
+/** \brief  timer rollover
+ **
+ ** \remark: this function must be called from timer's ISR
+ **/
 extern void softTimers_rollOver(void);
 
 /*==================[cplusplus]==============================================*/
