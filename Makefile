@@ -165,6 +165,7 @@ $(foreach LIB, $(LIBS), $(eval LIBS_SRC_FILES += $($(LIB)_SRC_FILES)))
 $(foreach LIB, $(LIBS), $(eval LIBS_SRC_DIRS += $(sort $(dir $($(LIB)_SRC_FILES)))))
 # Add the search patterns
 vpath %.c $($(PROJECT_NAME)_SRC_PATH)
+vpath %.cpp $($(PROJECT_NAME)_SRC_PATH)
 vpath %.c $(LIBS_SRC_DIRS)
 vpath %.s $(LIBS_SRC_DIRS)
 vpath %.S $(LIBS_SRC_DIRS)
@@ -181,7 +182,7 @@ $(LIB_DIR)$(DS)$(strip $(1)).a : $(2)
 	@echo ' '
 endef
 
-OBJ_FILES = $(notdir $(patsubst %.c,%.o,$(patsubst %.s,%.o,$(patsubst %.S,%.o,$(SRC_FILES)))))
+OBJ_FILES = $(notdir $(patsubst %.c,%.o,$(patsubst %.s,%.o,$(patsubst %.S,%.o,$(patsubst %.cpp,%.o,$(SRC_FILES))))))
 
 # create rule for library
 # lib.a : lib_OBJ_FILES.o
