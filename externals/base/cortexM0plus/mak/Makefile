@@ -32,6 +32,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+CPP = arm-none-eabi-g++
 CC = arm-none-eabi-gcc
 LD = arm-none-eabi-gcc
 AR = arm-none-eabi-ar
