@@ -1,0 +1,84 @@
+# LPCXPresso & Eclipse files
+/**/.metadata
+/**/.settings
+/**/RemoteSystemsTempFiles
+/**/Debug
+*.launch
+*.cproject
+*.project
+.settings
+
+# Own makefile or mine template
+*.mine
+*.config
+
+# Own projects
+projects
+
+# Docbook
+*.fo
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+*.bin
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Backup files
+*.bak
+*.swp
+*~
+*.kate-swp
+
+# Unity runners
+*_Runner.c
+
+# GCOV Coverage Files
+*.gcda
+*.gcno
+*.gcov
+*.info
+
+# Mac Files
+.Spotlight-V100
+.AppleDouble
+.LSOverride
+.DS_Store
+.Trashes
+Icon?
+!Icons
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
