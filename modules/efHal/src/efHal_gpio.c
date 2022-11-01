@@ -191,6 +191,37 @@ extern void efHal_gpio_setCallBackInt(efHal_gpio_id_t id, efHal_gpio_callBackInt
     }
 }
 
+extern void efHal_gpio_confBus(efHal_gpio_busid_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull)
+{
+    if (callBacks.confBus != NULL)
+        callBacks.confBus(id, dir, pull);
+    else
+    {
+        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "callBacks.confBus");
+    }
+}
+
+extern void efHal_gpio_writeBus(efHal_gpio_busid_t id, void *pData, size_t length)
+{
+    if (callBacks.writeBus != NULL)
+        callBacks.writeBus(id, pData, length);
+    else
+    {
+        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "callBacks.writeBus");
+    }
+}
+
+extern void efHal_gpio_readBus(efHal_gpio_busid_t id, void *pData, size_t length)
+{
+    if (callBacks.readBus != NULL)
+        callBacks.readBus(id, pData, length);
+    else
+    {
+        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "callBacks.readBus");
+    }
+}
+
+
 extern void efHal_internal_gpio_setCallBacks(efHal_gpio_callBacks_t cb)
 {
     callBacks = cb;
