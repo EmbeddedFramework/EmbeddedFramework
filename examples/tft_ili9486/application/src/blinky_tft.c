@@ -112,8 +112,6 @@ static void blinky_task(void *pvParameters)
 
     for (;;)
     {
-    //    vTaskDelay(5 / portTICK_PERIOD_MS);
-        efHal_gpio_togglePin(EF_HAL_GPIO_LED_GREEN);
         lv_timer_handler();
     }
 }
