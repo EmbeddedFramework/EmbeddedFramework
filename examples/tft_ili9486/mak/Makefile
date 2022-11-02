@@ -53,6 +53,7 @@ MODS += externals$(DS)drivers
 MODS += externals$(DS)board
 MODS += externals$(DS)freertos
 MODS += externals$(DS)cmsis
+MODS += externals$(DS)lvgl
 
 MODS += modules$(DS)efHal
 MODS += modules$(DS)efErrorHdl
