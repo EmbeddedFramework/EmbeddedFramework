@@ -39,6 +39,7 @@
 #include "ili9486.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "efHal.h"
 
 /*==================[macros and typedef]=====================================*/
  #define TAG "ILI9486"
@@ -118,13 +119,14 @@ void ili9486_init(efHal_gpio_id_t dc, efHal_gpio_id_t rst, efHal_gpio_id_t cs, e
     efHal_gpio_confPin(idCS, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
     efHal_gpio_confBus(idBUS, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE);
 
-#ifdef idRST
-	//Reset the display
-	efHal_gpio_setPin(idRST, 0);
-	vTaskDelay(100 / portTICK_RATE_MS);
-	efHal_gpio_setPin(idRST, 1);
-	vTaskDelay(100 / portTICK_RATE_MS);
-#endif
+    if (idRST != EF_HAL_INVALID_ID)
+    {
+    	//Reset the display
+    	efHal_gpio_setPin(idRST, 0);
+		vTaskDelay(100 / portTICK_RATE_MS);
+		efHal_gpio_setPin(idRST, 1);
+		vTaskDelay(100 / portTICK_RATE_MS);
+    }
 
 	//Send all the commands
 	uint16_t cmd = 0;
