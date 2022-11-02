@@ -131,75 +131,35 @@ void ili9486_init(void)
     ili9486_set_orientation(CONFIG_LV_DISPLAY_ORIENTATION);
 }
 
-void ili9486_flush(void)
+void ili9486_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_map)
 {
-	uint8_t data[4] = {0};
+    uint8_t data[4] = {0};
     uint32_t size = 0;
-    uint16_t x1 = 0;
-    uint16_t x2 = 320;
-    uint16_t y1 = 0;
-    uint16_t y2 = 480;
 
-	/*Column addresses*/
-	ili9486_send_cmd(0x2A);
-	data[0] = (x1 >> 8) & 0xFF;
-	data[1] = x1 & 0xFF;
-	data[2] = (x2 >> 8) & 0xFF;
-	data[3] = x2 & 0xFF;
-	ili9486_send_data(data, 4);
+    /*Column addresses*/
+    ili9486_send_cmd(0x2A);
+    data[0] = (area->x1 >> 8) & 0xFF;
+    data[1] = area->x1 & 0xFF;
+    data[2] = (area->x2 >> 8) & 0xFF;
+    data[3] = area->x2 & 0xFF;
+    ili9486_send_data(data, 4);
 
-	/*Page addresses*/
-	ili9486_send_cmd(0x2B);
-	data[0] = (y1 >> 8) & 0xFF;
-	data[1] = y1 & 0xFF;
-	data[2] = (y2 >> 8) & 0xFF;
-	data[3] = y2 & 0xFF;
-	ili9486_send_data(data, 4);
+    /*Page addresses*/
+    ili9486_send_cmd(0x2B);
+    data[0] = (area->y1 >> 8) & 0xFF;
+    data[1] = area->y1 & 0xFF;
+    data[2] = (area->y2 >> 8) & 0xFF;
+    data[3] = area->y2 & 0xFF;
+    ili9486_send_data(data, 4);
 
-	/*Memory write*/
-	ili9486_send_cmd(0x2C);
+    /*Memory write*/
+    ili9486_send_cmd(0x2C);
 
-	size = y2 * x2;
+    size = lv_area_get_width(area) * lv_area_get_height(area);
 
-#define BLACK   0x0000
-#define BLUE    0x1F00
-#define RED     0x00F8
-#define GREEN   0xE007
-#define CYAN    0xFF07
-#define MAGENTA 0x1FF8
-#define YELLOW  0xE0FF
-#define WHITE   0xFFFF
+    ili9486_send_data((void*) color_map, size * 2);
 
-
-	int i;
-	uint16_t buf;
-	size = size / 5;
-
-	i = size;
-	buf = BLUE;
-	while (i--)
-	    ili9486_send_data((void*) &buf, 2);
-
-	i = size;
-    buf = RED;
-    while (i--)
-        ili9486_send_data((void*) &buf, 2);
-
-    i = size;
-    buf = GREEN;
-    while (i--)
-        ili9486_send_data((void*) &buf, 2);
-
-    i = size;
-    buf = CYAN;
-    while (i--)
-        ili9486_send_data((void*) &buf, 2);
-
-    i = size;
-    buf = MAGENTA;
-    while (i--)
-        ili9486_send_data((void*) &buf, 2);
-
+    drv->draw_buf->flushing = 0;
 }
 
 /**********************

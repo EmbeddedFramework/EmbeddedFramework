@@ -46,6 +46,8 @@ extern "C" {
  *********************/
 #include <stdbool.h>
 
+#include "lvgl.h"
+
 #include "bsp_frdmkl46z_gpio.h"
 
 /*********************
@@ -70,7 +72,7 @@ extern "C" {
  **********************/
 
 void ili9486_init(void);
-void ili9486_flush(void);
+void ili9486_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_map);
 
 /**********************
  *      MACROS
