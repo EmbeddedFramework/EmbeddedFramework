@@ -45,7 +45,13 @@ extern "C" {
 /*==================[macros and typedef]=====================================*/
 
 #if BOARD == frdmkl46z
-#include "bsp_frdmkl46z.h"
+	#include "bsp_frdmkl46z.h"
+
+	#define ILI9486_DC      EF_HAL_A2       // LCD_RS: LCD bus command / data selection signal, low level: command, high level: data
+	#define ILI9486_RST     EF_HAL_A4
+	#define ILI9486_CS      EF_HAL_A3
+	#define ILI9486_BUS     EF_HAL_BUS_TFT
+
 #endif
 
 /*==================[external data declaration]==============================*/
