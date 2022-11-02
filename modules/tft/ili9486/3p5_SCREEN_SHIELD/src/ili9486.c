@@ -41,16 +41,6 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-
-#include "efHal_gpio.h"
-#include "bsp_frdmkl46z_gpio.h"
-
-#include "fsl_port.h"
-#include "fsl_gpio.h"
-#include "fsl_clock.h"
-#include "pin_mux.h"
-
-
 /*********************
  *      DEFINES
  *********************/
@@ -80,6 +70,11 @@ static void ili9486_send_data(void * data, uint32_t length);
  *  STATIC VARIABLES
  **********************/
 
+static efHal_gpio_id_t idDC;
+static efHal_gpio_id_t idRST;
+static efHal_gpio_id_t idCS;
+static efHal_gpio_busid_t idBUS;
+
 /**********************
  *      MACROS
  **********************/
@@ -88,7 +83,7 @@ static void ili9486_send_data(void * data, uint32_t length);
  *   GLOBAL FUNCTIONS
  **********************/
 
-void ili9486_init(void)
+void ili9486_init(efHal_gpio_id_t dc, efHal_gpio_id_t rst, efHal_gpio_id_t cs, efHal_gpio_busid_t bus)
 {
 	lcd_init_cmd_t ili_init_cmds[]={
 		{0x11, {0}, 0x80},
@@ -103,17 +98,22 @@ void ili9486_init(void)
 		{0x00, {0}, 0xff},
 	};
 
-	//Initialize GPIOs
-    efHal_gpio_confPin(ILI9486_DC, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
-    efHal_gpio_confPin(ILI9486_RST, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
-    efHal_gpio_confPin(ILI9486_CS, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
-    efHal_gpio_confBus(ILI9486_BUS, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE);
+	idDC = dc;
+	idRST = rst;
+	idCS = cs;
+	idBUS = bus;
 
-#ifdef ILI9486_RST
+	//Initialize GPIOs
+    efHal_gpio_confPin(idDC, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+    efHal_gpio_confPin(idRST, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+    efHal_gpio_confPin(idCS, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+    efHal_gpio_confBus(idBUS, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE);
+
+#ifdef idRST
 	//Reset the display
-	efHal_gpio_setPin(ILI9486_RST, 0);
+	efHal_gpio_setPin(idRST, 0);
 	vTaskDelay(100 / portTICK_RATE_MS);
-	efHal_gpio_setPin(ILI9486_RST, 1);
+	efHal_gpio_setPin(idRST, 1);
 	vTaskDelay(100 / portTICK_RATE_MS);
 #endif
 
@@ -168,19 +168,19 @@ void ili9486_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * col
 static void ili9486_send_cmd(uint8_t cmd)
 {
 	//disp_wait_for_pending_transactions();
-    efHal_gpio_setPin(ILI9486_DC, 0);    /*Command mode*/
-    efHal_gpio_setPin(ILI9486_CS, 0);
-	efHal_gpio_writeBus(ILI9486_BUS, &cmd, 1);
-	efHal_gpio_setPin(ILI9486_CS, 1);
+    efHal_gpio_setPin(idDC, 0);    /*Command mode*/
+    efHal_gpio_setPin(idCS, 0);
+	efHal_gpio_writeBus(idBUS, &cmd, 1);
+	efHal_gpio_setPin(idCS, 1);
 }
 
 static void ili9486_send_data(void * data, uint32_t length)
 {
 	//disp_wait_for_pending_transactions();
-    efHal_gpio_setPin(ILI9486_DC, 1);    /*Data mode*/
-    efHal_gpio_setPin(ILI9486_CS, 0);
-	efHal_gpio_writeBus(ILI9486_BUS, data, length);
-    efHal_gpio_setPin(ILI9486_CS, 1);
+    efHal_gpio_setPin(idDC, 1);    /*Data mode*/
+    efHal_gpio_setPin(idCS, 0);
+	efHal_gpio_writeBus(idBUS, data, length);
+    efHal_gpio_setPin(idCS, 1);
 }
 
 static void ili9486_set_orientation(uint8_t orientation)

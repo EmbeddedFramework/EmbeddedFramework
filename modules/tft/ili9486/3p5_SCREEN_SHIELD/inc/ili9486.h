@@ -44,24 +44,13 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include <stdbool.h>
-
 #include "lvgl.h"
-
-#include "bsp_frdmkl46z_gpio.h"
+#include "efHal_gpio.h"
 
 /*********************
  *      DEFINES
  *********************/
-#define ILI9486_DC      EF_HAL_A2       // LCD_RS: LCD bus command / data selection signal, low level: command, high level: data
-#define ILI9486_RST     EF_HAL_A4
-#define ILI9486_CS      EF_HAL_A3
-#define ILI9486_BUS     EF_HAL_BUS_TFT
-
-#define ILI9486_USE_RST CONFIG_LV_DISP_USE_RST
-
 #define CONFIG_LV_DISPLAY_ORIENTATION 0
-#define CONFIG_LV_PREDEFINED_DISPLAY_NONE
 
 /**********************
  *      TYPEDEFS
@@ -71,7 +60,7 @@ extern "C" {
  * GLOBAL PROTOTYPES
  **********************/
 
-void ili9486_init(void);
+void ili9486_init(efHal_gpio_id_t dc, efHal_gpio_id_t rst, efHal_gpio_id_t cs, efHal_gpio_busid_t bus);
 void ili9486_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_map);
 
 /**********************
