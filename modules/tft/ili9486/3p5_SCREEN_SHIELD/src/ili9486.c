@@ -34,21 +34,14 @@
 #                                                                             */
 /* based on https://github.com/lvgl/lvgl_esp32_drivers */
 
-/*********************
- *      INCLUDES
- *********************/
+/*==================[inclusions]=============================================*/
+
 #include "ili9486.h"
 #include "FreeRTOS.h"
 #include "task.h"
 
-/*********************
- *      DEFINES
- *********************/
+/*==================[macros and typedef]=====================================*/
  #define TAG "ILI9486"
-
-/**********************
- *      TYPEDEFS
- **********************/
 
 /*The LCD needs a bunch of command/argument values to be initialized. They are stored in this struct. */
 typedef struct {
@@ -57,31 +50,47 @@ typedef struct {
     uint8_t databytes; //No of data in data; bit 7 = delay after set; 0xFF = end of cmds.
 } lcd_init_cmd_t;
 
-/**********************
- *  STATIC PROTOTYPES
- **********************/
+/*==================[internal functions declaration]=========================*/
 static void ili9486_set_orientation(uint8_t orientation);
-
 static void ili9486_send_cmd(uint8_t cmd);
 static void ili9486_send_data(void * data, uint32_t length);
 
-
-/**********************
- *  STATIC VARIABLES
- **********************/
-
+/*==================[internal data definition]===============================*/
 static efHal_gpio_id_t idDC;
 static efHal_gpio_id_t idRST;
 static efHal_gpio_id_t idCS;
 static efHal_gpio_busid_t idBUS;
 
-/**********************
- *      MACROS
- **********************/
+/*==================[external data definition]===============================*/
 
-/**********************
- *   GLOBAL FUNCTIONS
- **********************/
+/*==================[internal functions definition]==========================*/
+static void ili9486_send_cmd(uint8_t cmd)
+{
+	//disp_wait_for_pending_transactions();
+    efHal_gpio_setPin(idDC, 0);    /*Command mode*/
+    efHal_gpio_setPin(idCS, 0);
+	efHal_gpio_writeBus(idBUS, &cmd, 1);
+	efHal_gpio_setPin(idCS, 1);
+}
+
+static void ili9486_send_data(void * data, uint32_t length)
+{
+	//disp_wait_for_pending_transactions();
+    efHal_gpio_setPin(idDC, 1);    /*Data mode*/
+    efHal_gpio_setPin(idCS, 0);
+	efHal_gpio_writeBus(idBUS, data, length);
+    efHal_gpio_setPin(idCS, 1);
+}
+
+static void ili9486_set_orientation(uint8_t orientation)
+{
+    uint8_t data[] = {0x48, 0x88, 0x28, 0xE8};
+
+    ili9486_send_cmd(0x36);
+    ili9486_send_data((void *) &data[orientation], 1);
+}
+
+/*==================[external functions definition]==========================*/
 
 void ili9486_init(efHal_gpio_id_t dc, efHal_gpio_id_t rst, efHal_gpio_id_t cs, efHal_gpio_busid_t bus)
 {
@@ -162,31 +171,5 @@ void ili9486_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * col
     drv->draw_buf->flushing = 0;
 }
 
-/**********************
- *   STATIC FUNCTIONS
- **********************/
-static void ili9486_send_cmd(uint8_t cmd)
-{
-	//disp_wait_for_pending_transactions();
-    efHal_gpio_setPin(idDC, 0);    /*Command mode*/
-    efHal_gpio_setPin(idCS, 0);
-	efHal_gpio_writeBus(idBUS, &cmd, 1);
-	efHal_gpio_setPin(idCS, 1);
-}
+/*==================[end of file]============================================*/
 
-static void ili9486_send_data(void * data, uint32_t length)
-{
-	//disp_wait_for_pending_transactions();
-    efHal_gpio_setPin(idDC, 1);    /*Data mode*/
-    efHal_gpio_setPin(idCS, 0);
-	efHal_gpio_writeBus(idBUS, data, length);
-    efHal_gpio_setPin(idCS, 1);
-}
-
-static void ili9486_set_orientation(uint8_t orientation)
-{
-    uint8_t data[] = {0x48, 0x88, 0x28, 0xE8};
-
-    ili9486_send_cmd(0x36);
-    ili9486_send_data((void *) &data[orientation], 1);
-}

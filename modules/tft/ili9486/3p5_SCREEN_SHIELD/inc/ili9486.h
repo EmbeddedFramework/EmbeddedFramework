@@ -37,39 +37,32 @@
 #ifndef ILI9486_H
 #define ILI9486_H
 
+/*==================[inclusions]=============================================*/
+#include "lvgl.h"
+#include "efHal_gpio.h"
+
+/*==================[cplusplus]==============================================*/
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*********************
- *      INCLUDES
- *********************/
-#include "lvgl.h"
-#include "efHal_gpio.h"
-
-/*********************
- *      DEFINES
- *********************/
+/*==================[macros and typedef]=====================================*/
 #define CONFIG_LV_DISPLAY_ORIENTATION 0
 
-/**********************
- *      TYPEDEFS
- **********************/
+/*==================[external data declaration]==============================*/
 
-/**********************
- * GLOBAL PROTOTYPES
- **********************/
+/*==================[external functions declaration]=========================*/
 
 void ili9486_init(efHal_gpio_id_t dc, efHal_gpio_id_t rst, efHal_gpio_id_t cs, efHal_gpio_busid_t bus);
 void ili9486_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_map);
 
-/**********************
- *      MACROS
- **********************/
-
+/*==================[cplusplus]==============================================*/
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
+
+/*==================[end of file]============================================*/
 #endif /* ILI9486_H*/
