@@ -48,13 +48,17 @@ extern "C" {
 #endif
 
 /*==================[macros and typedef]=====================================*/
-#define CONFIG_LV_DISPLAY_ORIENTATION 0
+#define DISPLAY_ORIENTATION_VERTICAL 0
+#define DISPLAY_ORIENTATION_VERTICAL_INV 1
+#define DISPLAY_ORIENTATION_HORIZONTAL 2
+#define DISPLAY_ORIENTATION_HORIZONTAL_INV 3
+
 
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
 
-void ili9486_init(efHal_gpio_id_t dc, efHal_gpio_id_t rst, efHal_gpio_id_t cs, efHal_gpio_busid_t bus);
+void ili9486_init(int ori, efHal_gpio_id_t dc, efHal_gpio_id_t rst, efHal_gpio_id_t cs, efHal_gpio_busid_t bus);
 void ili9486_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_map);
 
 /*==================[cplusplus]==============================================*/

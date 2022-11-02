@@ -93,7 +93,7 @@ static void ili9486_set_orientation(uint8_t orientation)
 
 /*==================[external functions definition]==========================*/
 
-void ili9486_init(efHal_gpio_id_t dc, efHal_gpio_id_t rst, efHal_gpio_id_t cs, efHal_gpio_busid_t bus)
+void ili9486_init(int ori, efHal_gpio_id_t dc, efHal_gpio_id_t rst, efHal_gpio_id_t cs, efHal_gpio_busid_t bus)
 {
 	lcd_init_cmd_t ili_init_cmds[]={
 		{0x11, {0}, 0x80},
@@ -139,7 +139,7 @@ void ili9486_init(efHal_gpio_id_t dc, efHal_gpio_id_t rst, efHal_gpio_id_t cs, e
 		cmd++;
 	}
 
-    ili9486_set_orientation(CONFIG_LV_DISPLAY_ORIENTATION);
+    ili9486_set_orientation(ori);
 }
 
 void ili9486_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_map)
