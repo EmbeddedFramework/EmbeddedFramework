@@ -40,8 +40,13 @@
 #include "task.h"
 
 #include "ili9486.h"
+#include "lvgl.h"
 
 /*==================[macros and typedef]=====================================*/
+#define MY_DISP_VER_RES 320
+#define MY_DISP_HOR_RES 480
+
+#define BUF_SIZE    (MY_DISP_VER_RES*8) // MY_DISP_HOR_RES * MY_DISP_VER_SER / 20
 
 /*==================[internal functions declaration]=========================*/
 
@@ -51,19 +56,65 @@
 
 /*==================[internal functions definition]==========================*/
 
-uint16_t ID=0;
+static lv_disp_draw_buf_t draw_buf;
+static lv_color_t buf1[BUF_SIZE];
+static lv_disp_drv_t disp_drv;        /*Descriptor of a display driver*/
 
+void lv_example_keyboard_2(void)
+{
+    /*Create an AZERTY keyboard map*/
+    static const char * kb_map[] = {"A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P", LV_SYMBOL_BACKSPACE, "\n",
+                                    "Q", "S", "D", "F", "G", "J", "K", "L", "M",  LV_SYMBOL_NEW_LINE, "\n",
+                                    "W", "X", "C", "V", "B", "N", ",", ".", ":", "!", "?", "\n",
+                                    LV_SYMBOL_CLOSE, " ",  " ", " ", LV_SYMBOL_OK, NULL
+                                   };
+
+    /*Set the relative width of the buttons and other controls*/
+    static const lv_btnmatrix_ctrl_t kb_ctrl[] = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6,
+                                                  4, 4, 4, 4, 4, 4, 4, 4, 4, 6,
+                                                  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+                                                  2, LV_BTNMATRIX_CTRL_HIDDEN | 2, 6, LV_BTNMATRIX_CTRL_HIDDEN | 2, 2
+                                                 };
+
+    /*Create a keyboard and add the new map as USER_1 mode*/
+    lv_obj_t * kb = lv_keyboard_create(lv_scr_act());
+
+    lv_keyboard_set_map(kb, LV_KEYBOARD_MODE_USER_1, kb_map, kb_ctrl);
+    lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_USER_1);
+
+    /*Create a text area. The keyboard will write here*/
+    lv_obj_t * ta;
+    ta = lv_textarea_create(lv_scr_act());
+    lv_obj_align(ta, LV_ALIGN_TOP_MID, 0, 10);
+    lv_obj_set_size(ta, lv_pct(90), 80);
+    lv_obj_add_state(ta, LV_STATE_FOCUSED);
+
+    lv_keyboard_set_textarea(kb, ta);
+}
 
 static void blinky_task(void *pvParameters)
 {
-    ili9486_init();
+    ili9486_init(DISPLAY_ORIENTATION_HORIZONTAL, ILI9486_DC, ILI9486_RST, ILI9486_CS, ILI9486_BUS);
 
-    ili9486_flush();
+    lv_init();
+
+    lv_disp_draw_buf_init(&draw_buf, buf1, NULL, BUF_SIZE);  /*Initialize the display buffer.*/
+
+    lv_disp_drv_init(&disp_drv);          /*Basic initialization*/
+    disp_drv.flush_cb = ili9486_flush;    /*Set your driver function*/
+    disp_drv.draw_buf = &draw_buf;        /*Assign the buffer to the display*/
+    disp_drv.hor_res = MY_DISP_HOR_RES;   /*Set the horizontal resolution of the display*/
+    disp_drv.ver_res = MY_DISP_VER_RES;   /*Set the vertical resolution of the display*/
+    lv_disp_drv_register(&disp_drv);      /*Finally register the driver*/
+
+
+    lv_example_keyboard_2();
 
     for (;;)
     {
-        vTaskDelay(500 / portTICK_PERIOD_MS);
+    //    vTaskDelay(5 / portTICK_PERIOD_MS);
         efHal_gpio_togglePin(EF_HAL_GPIO_LED_GREEN);
+        lv_timer_handler();
     }
 }
 
@@ -72,7 +123,8 @@ int main(void)
 {
     appBoard_init();
 
-    xTaskCreate(blinky_task, "blinky_task", 200, NULL, 0, NULL);
+
+    xTaskCreate(blinky_task, "blinky_task", 600, NULL, 0, NULL);
 
     vTaskStartScheduler();
     for (;;);
@@ -81,6 +133,11 @@ int main(void)
 extern void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
 {
     while (1);
+}
+
+void vApplicationTickHook(void)
+{
+    lv_tick_inc(1);
 }
 
 /*==================[end of file]============================================*/
