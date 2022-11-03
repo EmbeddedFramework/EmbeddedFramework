@@ -66,6 +66,9 @@ typedef void (*efHal_gpio_togPin_t)(efHal_gpio_id_t id);
 typedef bool (*efHal_gpio_getPin_t)(efHal_gpio_id_t id);
 typedef void (*efHal_gpio_confInt_t)(efHal_gpio_id_t id, efHal_gpio_intType_t intType);
 typedef void (*efHal_gpio_confPin_t)(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull, bool state);
+typedef void (*efHal_gpio_confBus_t)(efHal_gpio_busid_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull);
+typedef void (*efHal_gpio_writeBus_t)(efHal_gpio_busid_t id, void *pData, size_t length);
+typedef void (*efHal_gpio_readBus_t)(efHal_gpio_busid_t id, void *pData, size_t length);
 
 typedef struct
 {
@@ -74,6 +77,10 @@ typedef struct
     efHal_gpio_getPin_t getPin;
     efHal_gpio_confInt_t confInt;
     efHal_gpio_confPin_t confPin;
+    efHal_gpio_confBus_t confBus;
+    efHal_gpio_writeBus_t writeBus;
+    efHal_gpio_readBus_t readBus;
+
 }efHal_gpio_callBacks_t;
 
 #ifndef EF_HAL_GPIO_TOTAL_CALL_BACK

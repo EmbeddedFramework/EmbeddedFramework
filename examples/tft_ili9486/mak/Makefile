@@ -1,6 +1,10 @@
 ###############################################################################
 #
 # Copyright 2021, Gustavo Muro
+# Copyright 2014, 2015, Mariano Cerdeiro
+# Copyright 2014, 2015, 2016, Juan Cecconi (Numetron, UTN-FRBA)
+# Copyright 2014, 2015, Esteban Volentini (LabMicro, UNT)
+# Copyright 2017, Gustavo Muro (DIGI CHECK)
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -30,27 +34,29 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
+###############################################################################
 
+PROJECT_NAME               = $(lastword $(subst $(DS), , $(PROJECT_PATH)))
 
-ifeq ($(CPU),MKL46Z256VLL4)
-LINKER_SCRIPT ?= linkerScript.ld
-CFLAGS += -std=gnu99 -mcpu=cortex-m0plus -mthumb -fstack-usage
-CFLAGS += -Og -fno-common -g -Wall -c -ffunction-sections -fdata-sections -ffreestanding -fno-builtin -fmerge-constants
-CFLAGS += -D__REDLIB__ -DCPU_MKL46Z256VLL4_cm0plus -DCPU_MKL46Z256VLL4 -DFRDM_KL46Z -DFREEDOM -DFSL_RTOS_FREE_RTOS -DSDK_DEBUGCONSOLE=0 
-CFLAGS += -DCR_INTEGER_PRINTF -DPRINTF_FLOAT_ENABLE=0 -D__MCUXPRESSO -D__USE_CMSIS -DDEBUG -DARM_MATH_CM0PLUS
-AFLAGS += -c -x assembler-with-cpp -g3 -mcpu=cortex-m0plus -mthumb -DARM_MATH_CM0PLUS
-AFLAGS += -D__REDLIB__ 
-endif
+# Internal modules
+$(PROJECT_NAME)_SRC_PATH  += $(PROJECT_PATH)$(DS)application$(DS)src \
+							 $(PROJECT_PATH)$(DS)appBoard$(DS)src
 
-LFLAGS += -L "$(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)linker$(DS)"
-LFLAGS += -T "$(LINKER_SCRIPT)"
-LFLAGS += -nostdlib -mcpu=cortex-m0plus -mthumb -Wl,-Map="$(TARGET_NAME).map" -Wl,-gc-sections -Xlinker -print-memory-usage
+SRC_FILES 			 += $(foreach application_SRC, $($(PROJECT_NAME)_SRC_PATH), $(wildcard $(application_SRC)$(DS)*.c)) 
 
-
-ext_base_INC_PATH  += $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)inc
-
-ext_base_SRC_FILES += $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.c) \
-					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.s) \
-					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.S)
+INC_FILES            += $(PROJECT_PATH)$(DS)application$(DS)inc \
+						$(PROJECT_PATH)$(DS)appBoard$(DS)inc
 						
+
+# Modules needed for this project
+MODS += externals$(DS)drivers
+MODS += externals$(DS)board
+MODS += externals$(DS)freertos
+MODS += externals$(DS)cmsis
+MODS += externals$(DS)lvgl
+
+MODS += modules$(DS)efHal
+MODS += modules$(DS)efErrorHdl
+MODS += modules$(DS)tft$(DS)ili9486$(DS)3p5_SCREEN_SHIELD
+MODS += modules$(DS)bsp_$(BOARD)
+

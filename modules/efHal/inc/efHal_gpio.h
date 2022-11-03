@@ -48,6 +48,7 @@ extern "C" {
 /*==================[macros and typedef]=====================================*/
 
 typedef int32_t efHal_gpio_id_t;
+typedef int32_t efHal_gpio_busid_t;
 
 typedef enum
 {
@@ -85,6 +86,9 @@ extern void efHal_gpio_confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)
 extern void efHal_gpio_confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull, bool state);
 extern bool efHal_gpio_waitForInt(efHal_gpio_id_t id, TickType_t xBlockTime);
 extern void efHal_gpio_setCallBackInt(efHal_gpio_id_t id, efHal_gpio_callBackInt_t cb);
+extern void efHal_gpio_confBus(efHal_gpio_busid_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull);
+extern void efHal_gpio_writeBus(efHal_gpio_busid_t id, void *pData, size_t length);
+extern void efHal_gpio_readBus(efHal_gpio_busid_t id, void *pData, size_t length);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

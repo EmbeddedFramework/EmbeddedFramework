@@ -62,6 +62,22 @@ static const gpioStruct_t gpioStruct[] =
     {PORTC, GPIOC, 12},     /* EF_HAL_GPIO_SW_3 */
     {PORTC, GPIOC, 5},      /* EF_HAL_INT1_ACCEL */
     {PORTD, GPIOD, 1},      /* EF_HAL_INT2_ACCEL */
+
+    {PORTD, GPIOD, 2},      /* EF_HAL_D9 */
+    {PORTA, GPIOA, 13},     /* EF_HAL_D8 */
+    {PORTC, GPIOC, 9},      /* EF_HAL_D7 */
+    {PORTC, GPIOC, 8},      /* EF_HAL_D6 */
+    {PORTA, GPIOA, 5},      /* EF_HAL_D5 */
+    {PORTA, GPIOA, 4},      /* EF_HAL_D4 */
+    {PORTA, GPIOA, 12},     /* EF_HAL_D3 */
+    {PORTD, GPIOD, 3},      /* EF_HAL_D2 */
+
+    {PORTB, GPIOB, 0},      /* EF_HAL_A0 */
+    {PORTB, GPIOB, 1},      /* EF_HAL_A1 */
+    {PORTB, GPIOB, 2},      /* EF_HAL_A2 */
+    {PORTB, GPIOB, 3},      /* EF_HAL_A3 */
+    {PORTC, GPIOC, 2},      /* EF_HAL_A4 */
+    {PORTC, GPIOC, 1},      /* EF_HAL_A5 */
 };
 
 #define TOTAL_GPIO   (sizeof(gpioStruct) / sizeof(gpioStruct[0]))
@@ -193,6 +209,56 @@ static void confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t 
     GPIO_PinInit(gpioStruct[id].gpio, gpioStruct[id].pin, &gpio_pin_config);
 }
 
+static void confBus(efHal_gpio_busid_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull)
+{
+    if (id == EF_HAL_BUS_TFT)
+    {
+        confPin(EF_HAL_D2, dir, pull, 0);
+        confPin(EF_HAL_D3, dir, pull, 0);
+        confPin(EF_HAL_D4, dir, pull, 0);
+        confPin(EF_HAL_D5, dir, pull, 0);
+        confPin(EF_HAL_D6, dir, pull, 0);
+        confPin(EF_HAL_D7, dir, pull, 0);
+        confPin(EF_HAL_D8, dir, pull, 0);
+        confPin(EF_HAL_D9, dir, pull, 0);
+
+        confPin(EF_HAL_BUS_WR, dir, pull, 1);
+    }
+    else
+    {
+        efErrorHdl_error(EF_ERROR_HDL_INVALID_PARAMETER, "busid");
+    }
+}
+
+static void writeBus(efHal_gpio_busid_t id, void *pData, size_t length)
+{
+    uint8_t *dummy = pData;
+
+    if (id == EF_HAL_BUS_TFT)
+    {
+        for (int i = 0 ; i < length ; i++)
+        {
+            uint8_t d = dummy[i];
+
+            GPIO_PortClear(GPIOA, 0B0011000000110000);
+            GPIO_PortClear(GPIOD, 0B0000000000001100);
+            GPIO_PortClear(GPIOC, 0B0000001100000000);
+
+            GPIO_PortSet(GPIOA, (uint32_t)(d & 0b00110000) | ((uint32_t)(d & 0b00000001) << 13) | ((uint32_t)(d & 0b00001000) << 9) );
+            GPIO_PortSet(GPIOD, (uint32_t)(d & 0b00000110) << 1 );
+            GPIO_PortSet(GPIOC, (uint32_t)(d & 0b11000000) << 2 );
+
+            efHal_gpio_setPin(EF_HAL_BUS_WR, 0);
+            efHal_gpio_setPin(EF_HAL_BUS_WR, 1);
+        }
+    }
+    else
+    {
+        efErrorHdl_error(EF_ERROR_HDL_INVALID_PARAMETER, "busid");
+    }
+}
+
+
 static void identifyAndNotifyGpioHandler(GPIO_Type *gpio, int pin)
 {
     int i;
@@ -213,6 +279,7 @@ extern void bsp_frdmkl46z_gpio_init(void)
     int i;
 
     CLOCK_EnableClock(kCLOCK_PortA);
+    CLOCK_EnableClock(kCLOCK_PortB);
     CLOCK_EnableClock(kCLOCK_PortC);
     CLOCK_EnableClock(kCLOCK_PortD);
     CLOCK_EnableClock(kCLOCK_PortE);
@@ -222,6 +289,8 @@ extern void bsp_frdmkl46z_gpio_init(void)
     cb.getPin = getPin;
     cb.confInt = confInt;
     cb.confPin = confPin;
+    cb.confBus = confBus;
+    cb.writeBus = writeBus;
 
     efHal_internal_gpio_setCallBacks(cb);
 

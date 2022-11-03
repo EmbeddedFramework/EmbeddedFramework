@@ -1,3 +1,4 @@
+/*
 ###############################################################################
 #
 # Copyright 2021, Gustavo Muro
@@ -30,27 +31,38 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
+#                                                                             */
+#ifndef APP_BOARD_H_
+#define APP_BOARD_H_
 
+/*==================[inclusions]=============================================*/
 
-ifeq ($(CPU),MKL46Z256VLL4)
-LINKER_SCRIPT ?= linkerScript.ld
-CFLAGS += -std=gnu99 -mcpu=cortex-m0plus -mthumb -fstack-usage
-CFLAGS += -Og -fno-common -g -Wall -c -ffunction-sections -fdata-sections -ffreestanding -fno-builtin -fmerge-constants
-CFLAGS += -D__REDLIB__ -DCPU_MKL46Z256VLL4_cm0plus -DCPU_MKL46Z256VLL4 -DFRDM_KL46Z -DFREEDOM -DFSL_RTOS_FREE_RTOS -DSDK_DEBUGCONSOLE=0 
-CFLAGS += -DCR_INTEGER_PRINTF -DPRINTF_FLOAT_ENABLE=0 -D__MCUXPRESSO -D__USE_CMSIS -DDEBUG -DARM_MATH_CM0PLUS
-AFLAGS += -c -x assembler-with-cpp -g3 -mcpu=cortex-m0plus -mthumb -DARM_MATH_CM0PLUS
-AFLAGS += -D__REDLIB__ 
-endif
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-LFLAGS += -L "$(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)linker$(DS)"
-LFLAGS += -T "$(LINKER_SCRIPT)"
-LFLAGS += -nostdlib -mcpu=cortex-m0plus -mthumb -Wl,-Map="$(TARGET_NAME).map" -Wl,-gc-sections -Xlinker -print-memory-usage
+/*==================[macros and typedef]=====================================*/
 
+#if BOARD == frdmkl46z
+	#include "bsp_frdmkl46z.h"
 
-ext_base_INC_PATH  += $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)inc
+	#define ILI9486_DC      EF_HAL_A2       // LCD_RS: LCD bus command / data selection signal, low level: command, high level: data
+	#define ILI9486_RST     EF_HAL_A4
+	#define ILI9486_CS      EF_HAL_A3
+	#define ILI9486_BUS     EF_HAL_BUS_TFT
 
-ext_base_SRC_FILES += $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.c) \
-					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.s) \
-					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.S)
-						
+#endif
+
+/*==================[external data declaration]==============================*/
+
+/*==================[external functions declaration]=========================*/
+extern void appBoard_init(void);
+
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
+}
+#endif
+
+/*==================[end of file]============================================*/
+#endif /* APP_BOARD_H_ */

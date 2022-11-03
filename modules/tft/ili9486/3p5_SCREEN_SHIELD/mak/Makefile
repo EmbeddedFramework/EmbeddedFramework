@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2022, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -31,26 +31,15 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #
-
-
-ifeq ($(CPU),MKL46Z256VLL4)
-LINKER_SCRIPT ?= linkerScript.ld
-CFLAGS += -std=gnu99 -mcpu=cortex-m0plus -mthumb -fstack-usage
-CFLAGS += -Og -fno-common -g -Wall -c -ffunction-sections -fdata-sections -ffreestanding -fno-builtin -fmerge-constants
-CFLAGS += -D__REDLIB__ -DCPU_MKL46Z256VLL4_cm0plus -DCPU_MKL46Z256VLL4 -DFRDM_KL46Z -DFREEDOM -DFSL_RTOS_FREE_RTOS -DSDK_DEBUGCONSOLE=0 
-CFLAGS += -DCR_INTEGER_PRINTF -DPRINTF_FLOAT_ENABLE=0 -D__MCUXPRESSO -D__USE_CMSIS -DDEBUG -DARM_MATH_CM0PLUS
-AFLAGS += -c -x assembler-with-cpp -g3 -mcpu=cortex-m0plus -mthumb -DARM_MATH_CM0PLUS
-AFLAGS += -D__REDLIB__ 
-endif
-
-LFLAGS += -L "$(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)linker$(DS)"
-LFLAGS += -T "$(LINKER_SCRIPT)"
-LFLAGS += -nostdlib -mcpu=cortex-m0plus -mthumb -Wl,-Map="$(TARGET_NAME).map" -Wl,-gc-sections -Xlinker -print-memory-usage
-
-
-ext_base_INC_PATH  += $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)inc
-
-ext_base_SRC_FILES += $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.c) \
-					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.s) \
-					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.S)
-						
+# library
+LIBS 				  += module_tft3p5_ili9486
+# version
+module_tft3p5_ili9486_VERSION      = 0.0.0
+# library path
+module_tft3p5_ili9486_PATH 			= $(ROOT_DIR)$(DS)modules$(DS)tft$(DS)ili9486$(DS)3p5_SCREEN_SHIELD
+# library source path
+module_tft3p5_ili9486_SRC_PATH 	= $(module_tft3p5_ili9486_PATH)$(DS)src
+# library include path
+module_tft3p5_ili9486_INC_PATH 	= $(module_tft3p5_ili9486_PATH)$(DS)inc
+# library source files
+module_tft3p5_ili9486_SRC_FILES 	= $(wildcard $(module_tft3p5_ili9486_SRC_PATH)$(DS)*.c)
