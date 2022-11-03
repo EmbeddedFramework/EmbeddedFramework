@@ -91,8 +91,24 @@ typedef struct
 #define EF_HAL_GPIO_TOTAL_WAIT_FOR_INT 1
 #endif
 
-#ifndef EF_HAL_SPI_TOTAL_DEVICES
-#define EF_HAL_SPI_TOTAL_DEVICES 0
+/******************************* ANALOG ****************************************/
+
+typedef void (*efHal_analog_confAsAnalog_t)(efHal_gpio_id_t id);
+typedef void (*efHal_analog_startConv_t)(efHal_gpio_id_t id);
+typedef bool (*efHal_analog_waitConv_t)(efHal_gpio_id_t id, TickType_t xBlockTime);
+typedef int32_t (*efHal_analog_read_t)(efHal_gpio_id_t id);
+
+typedef struct
+{
+    efHal_analog_confAsAnalog_t confAsAnalog;
+    efHal_analog_startConv_t startConv;
+    efHal_analog_waitConv_t waitConv;
+    efHal_analog_read_t aRead;
+}efHal_analog_callBacks_t;
+
+
+#ifndef EF_HAL_ANALOG_TOTAL_WAIT_CONV
+#define EF_HAL_ANALOG_TOTAL_WAIT_CONV 1
 #endif
 
 /******************************* PWM ****************************************/
@@ -134,6 +150,10 @@ typedef struct
 }efHal_uart_callBacks_t;
 
 /******************************* SPI *****************************************/
+
+#ifndef EF_HAL_SPI_TOTAL_DEVICES
+#define EF_HAL_SPI_TOTAL_DEVICES 0
+#endif
 
 typedef void (*efHal_spi_confCB_t)(void *param, int32_t clockFrec, efHal_spi_mode_t mode);
 typedef void (*efHal_spi_transferCB_t)(void* param, void *pTx, void *pRx, size_t length);
