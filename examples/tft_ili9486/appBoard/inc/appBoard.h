@@ -52,6 +52,11 @@ extern "C" {
 	#define ILI9486_CS      EF_HAL_A3
 	#define ILI9486_BUS     EF_HAL_BUS_TFT
 
+    #define TFT_XM          EF_HAL_A2
+    #define TFT_XP          EF_HAL_D6
+    #define TFT_YM          EF_HAL_D7
+    #define TFT_YP          EF_HAL_A1
+
 #endif
 
 /*==================[external data declaration]==============================*/

@@ -57,6 +57,7 @@ MODS += externals$(DS)lvgl
 
 MODS += modules$(DS)efHal
 MODS += modules$(DS)efErrorHdl
+MODS += modules$(DS)touchScreen
 MODS += modules$(DS)tft$(DS)ili9486$(DS)3p5_SCREEN_SHIELD
 MODS += modules$(DS)bsp_$(BOARD)
 

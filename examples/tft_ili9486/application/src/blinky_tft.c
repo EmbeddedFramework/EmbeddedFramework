@@ -40,6 +40,7 @@
 #include "task.h"
 
 #include "ili9486.h"
+#include "touchScreen.h"
 #include "lvgl.h"
 
 /*==================[macros and typedef]=====================================*/
@@ -59,6 +60,7 @@
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t buf1[BUF_SIZE];
 static lv_disp_drv_t disp_drv;        /*Descriptor of a display driver*/
+static lv_indev_drv_t indev_drv;
 
 void lv_example_keyboard_2(void)
 {
@@ -96,6 +98,8 @@ static void blinky_task(void *pvParameters)
 {
     ili9486_init(DISPLAY_ORIENTATION_HORIZONTAL, ILI9486_DC, ILI9486_RST, ILI9486_CS, ILI9486_BUS);
 
+    touchScreen_init(TFT_XM, TFT_XP, TFT_YM, TFT_YP);
+
     lv_init();
 
     lv_disp_draw_buf_init(&draw_buf, buf1, NULL, BUF_SIZE);  /*Initialize the display buffer.*/
@@ -107,11 +111,20 @@ static void blinky_task(void *pvParameters)
     disp_drv.ver_res = MY_DISP_VER_RES;   /*Set the vertical resolution of the display*/
     lv_disp_drv_register(&disp_drv);      /*Finally register the driver*/
 
+    lv_indev_drv_init(&indev_drv);        /*Basic initialization*/
+    indev_drv.type = LV_INDEV_TYPE_POINTER;
+    indev_drv.read_cb = touchScreen_read;
+    lv_indev_drv_register(&indev_drv);    /*Register the driver in LVGL */
 
     lv_example_keyboard_2();
 
     for (;;)
     {
+        touchScreen_performRead();
+
+        efHal_gpio_confPin(TFT_YP, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+        efHal_gpio_confPin(TFT_YM, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+
         lv_timer_handler();
     }
 }
@@ -120,7 +133,6 @@ static void blinky_task(void *pvParameters)
 int main(void)
 {
     appBoard_init();
-
 
     xTaskCreate(blinky_task, "blinky_task", 600, NULL, 0, NULL);
 
