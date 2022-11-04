@@ -139,6 +139,19 @@ extern int32_t efHal_analog_read(efHal_gpio_id_t id)
     return ret;
 }
 
+extern int32_t efHal_analog_getFullValue(efHal_gpio_id_t id)
+{
+    int32_t ret = 0;
+
+    if (callBacks.getFullValue != NULL)
+        ret = callBacks.getFullValue(id);
+    else
+    {
+        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "callBacks.getFullValue");
+    }
+
+    return ret;
+}
 
 extern void efHal_internal_analog_setCallBacks(efHal_analog_callBacks_t cb)
 {

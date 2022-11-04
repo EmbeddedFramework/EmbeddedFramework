@@ -102,6 +102,7 @@ typedef struct
     efHal_analog_confAsAnalog_t confAsAnalog;
     efHal_analog_startConv_t startConv;
     efHal_analog_read_t aRead;
+    efHal_analog_read_t getFullValue;
 }efHal_analog_callBacks_t;
 
 
