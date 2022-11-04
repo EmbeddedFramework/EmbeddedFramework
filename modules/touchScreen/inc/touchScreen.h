@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2022, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,15 +32,12 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef BSP_FRDMKL46Z_H
-#define BSP_FRDMKL46Z_H
+#ifndef EF_LEDS_H_
+#define EF_LEDS_H_
 
 /*==================[inclusions]=============================================*/
-#include "bsp_frdmkl46z_i2c.h"
-#include "bsp_frdmkl46z_gpio.h"
-#include "bsp_frdmkl46z_analog.h"
-#include "bsp_frdmkl46z_uart.h"
-#include "bsp_frdmkl46z_lpsci.h"
+#include "efHal_gpio.h"
+#include "lvgl.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -52,7 +49,12 @@ extern "C" {
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-extern void bsp_frdmkl46z_init(void);
+extern void touchScreen_init(efHal_gpio_id_t xm, efHal_gpio_id_t xp,
+        efHal_gpio_id_t ym, efHal_gpio_id_t yp);
+
+extern void touchScreen_performRead(void);
+
+extern void touchScreen_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -60,4 +62,4 @@ extern void bsp_frdmkl46z_init(void);
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* BSP_FRDMKL46Z_H */
+#endif /* EF_LEDS_H_ */

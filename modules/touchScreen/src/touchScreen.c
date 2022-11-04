@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2022, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -34,39 +34,91 @@
 #                                                                             */
 
 /*==================[inclusions]=============================================*/
-#include "bsp_frdmkl46z.h"
-
-#include "board.h"
-#include "pin_mux.h"
+#include "touchScreen.h"
+#include "efHal_analog.h"
 
 /*==================[macros and typedef]=====================================*/
 
-/*==================[internal functions declaration]=========================*/
+/*=================[internal functions declaration]=========================*/
 
 /*==================[internal data definition]===============================*/
+static efHal_gpio_id_t gpioXM;
+static efHal_gpio_id_t gpioXP;
+static efHal_gpio_id_t gpioYM;
+static efHal_gpio_id_t gpioYP;
 
 /*==================[external data definition]===============================*/
 
 /*==================[internal functions definition]==========================*/
 
-/*==================[external functions definition]==========================*/
-extern void bsp_frdmkl46z_init(void)
+/*Return true is the touchpad is pressed*/
+static bool touchpad_is_pressed(void)
 {
-    /* specific board init functions */
-    BOARD_InitPins();
-    BOARD_BootClockRUN();
-    BOARD_InitDebugConsole();
+    /*Your code comes here*/
 
-    /* Embedded Framework HAL init */
-    efHal_init();
+    return false;
+}
 
-    bsp_frdmkl46z_i2c_init();
+/*Get the x and y coordinates if the touchpad is pressed*/
+static void touchpad_get_xy(lv_coord_t * x, lv_coord_t * y)
+{
+    /*Your code comes here*/
 
-    bsp_frdmkl46z_gpio_init();
-    bsp_frdmkl46z_analog_init();
+    (*x) = 0;
+    (*y) = 0;
+}
 
-    bsp_frdmkl46z_uart_init();
-    bsp_frdmkl46z_lpsci_init();
+static void setup_gpio(efHal_gpio_id_t plus, efHal_gpio_id_t minus, efHal_gpio_id_t measure, efHal_gpio_id_t ignore)
+{
+
+}
+/*==================[external functions definition]==========================*/
+
+extern void touchScreen_init(efHal_gpio_id_t xm, efHal_gpio_id_t xp,
+        efHal_gpio_id_t ym, efHal_gpio_id_t yp)
+{
+    gpioXM = xm;
+    gpioXP = xp;
+    gpioYM = ym;
+    gpioYP = yp;
+}
+
+extern void touchScreen_performRead(void)
+{
+    int x, y;
+
+    efHal_analog_confAsAnalog(gpioYP);
+    efHal_gpio_confPin(gpioYM, EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+
+    efHal_gpio_confPin(gpioXP, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+    efHal_gpio_confPin(gpioXM, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 0);
+
+    efHal_analog_startConv(gpioYP);
+    efHal_analog_waitConv(gpioYP, portMAX_DELAY);
+    x = efHal_analog_read(gpioYP);
+
+    x = (1023 - x);
+
+}
+
+
+extern void touchScreen_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data)
+{
+    static lv_coord_t last_x = 0;
+    static lv_coord_t last_y = 0;
+
+    /*Save the pressed coordinates and the state*/
+    if(touchpad_is_pressed()) {
+        touchpad_get_xy(&last_x, &last_y);
+        data->state = LV_INDEV_STATE_PR;
+    }
+    else {
+        data->state = LV_INDEV_STATE_REL;
+    }
+
+    /*Set the last pressed coordinates*/
+    data->point.x = last_x;
+    data->point.y = last_y;
 }
 
 /*==================[end of file]============================================*/

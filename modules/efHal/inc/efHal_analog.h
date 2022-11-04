@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2022, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,15 +32,14 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef BSP_FRDMKL46Z_H
-#define BSP_FRDMKL46Z_H
+#ifndef EF_HAL_analog_H_
+#define EF_HAL_analog_H_
 
 /*==================[inclusions]=============================================*/
-#include "bsp_frdmkl46z_i2c.h"
-#include "bsp_frdmkl46z_gpio.h"
-#include "bsp_frdmkl46z_analog.h"
-#include "bsp_frdmkl46z_uart.h"
-#include "bsp_frdmkl46z_lpsci.h"
+#include "stdint.h"
+#include "stdbool.h"
+#include "FreeRTOS.h"
+#include "efHal_gpio.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -52,7 +51,11 @@ extern "C" {
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-extern void bsp_frdmkl46z_init(void);
+extern void efHal_analog_init(void);
+extern void efHal_analog_confAsAnalog(efHal_gpio_id_t id);
+extern void efHal_analog_startConv(efHal_gpio_id_t id);
+extern bool efHal_analog_waitConv(efHal_gpio_id_t id, TickType_t xBlockTime);
+extern int32_t efHal_analog_read(efHal_gpio_id_t id);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -60,4 +63,4 @@ extern void bsp_frdmkl46z_init(void);
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* BSP_FRDMKL46Z_H */
+#endif /* EF_HAL_analog_H_ */

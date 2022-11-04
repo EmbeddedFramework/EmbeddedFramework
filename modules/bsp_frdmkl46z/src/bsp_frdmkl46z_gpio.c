@@ -223,6 +223,7 @@ static void confBus(efHal_gpio_busid_t id, efHal_gpio_dir_t dir, efHal_gpio_pull
         confPin(EF_HAL_D9, dir, pull, 0);
 
         confPin(EF_HAL_BUS_WR, dir, pull, 1);
+        confPin(EF_HAL_BUS_RD, dir, pull, 1);
     }
     else
     {
@@ -302,6 +303,19 @@ extern void bsp_frdmkl46z_gpio_init(void)
 
     confPin(EF_HAL_GPIO_SW_1, EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_UP, 0);
     confPin(EF_HAL_GPIO_SW_3, EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_UP, 0);
+}
+
+extern void bsp_frdmkl46z_internal_gpio_confAsAnalog(efHal_gpio_id_t id)
+{
+    port_pin_config_t port_pin_config;
+
+    port_pin_config.pullSelect = kPORT_PullDisable;
+    port_pin_config.slewRate = kPORT_SlowSlewRate;
+    port_pin_config.passiveFilterEnable = kPORT_PassiveFilterDisable;
+    port_pin_config.driveStrength = kPORT_LowDriveStrength;
+    port_pin_config.mux = kPORT_PinDisabledOrAnalog;
+
+    PORT_SetPinConfig(gpioStruct[id].port, gpioStruct[id].pin, &port_pin_config);
 }
 
 void PORTC_PORTD_IRQHandler(void)

@@ -34,39 +34,107 @@
 #                                                                             */
 
 /*==================[inclusions]=============================================*/
-#include "bsp_frdmkl46z.h"
+#include "bsp_frdmkl46z_gpio.h"
+#include "efHal_internal.h"
 
-#include "board.h"
+#include "fsl_port.h"
+#include "fsl_gpio.h"
+#include "fsl_clock.h"
 #include "pin_mux.h"
+#include "fsl_adc16.h"
 
 /*==================[macros and typedef]=====================================*/
+
+typedef struct
+{
+    efHal_gpio_id_t gpioId;
+    uint32_t channel;
+}analogAsign_t;
+
 
 /*==================[internal functions declaration]=========================*/
 
 /*==================[internal data definition]===============================*/
 
+static const analogAsign_t map[] =
+{
+        { EF_HAL_A0, 8 },
+        { EF_HAL_A1, 9 },
+        { EF_HAL_A2, 12 },
+        { EF_HAL_A3, 13 },
+};
+
+#define MAP_LENGTH  (sizeof(map) / sizeof(map[0]))
+
+static adc16_channel_config_t adc16_channel;
+static int indexMap;
+static uint32_t adcVal;
+
 /*==================[external data definition]===============================*/
 
 /*==================[internal functions definition]==========================*/
 
-/*==================[external functions definition]==========================*/
-extern void bsp_frdmkl46z_init(void)
+extern void bsp_frdmkl46z_internal_gpio_confAsAnalog(efHal_gpio_id_t id);
+
+static int getIndexMap(efHal_gpio_id_t id)
 {
-    /* specific board init functions */
-    BOARD_InitPins();
-    BOARD_BootClockRUN();
-    BOARD_InitDebugConsole();
+    int ret = -1;
 
-    /* Embedded Framework HAL init */
-    efHal_init();
+    for (int i = 0 ; i < MAP_LENGTH && ret == -1 ; i++)
+    {
+        if (map[i].gpioId == id)
+            ret = i;
+    }
 
-    bsp_frdmkl46z_i2c_init();
+    return ret;
+}
 
-    bsp_frdmkl46z_gpio_init();
-    bsp_frdmkl46z_analog_init();
+static void startConv(efHal_gpio_id_t id)
+{
+    indexMap = getIndexMap(id);
 
-    bsp_frdmkl46z_uart_init();
-    bsp_frdmkl46z_lpsci_init();
+    if (indexMap >= 0)
+    {
+        adc16_channel.channelNumber = map[indexMap].channel;
+        ADC16_SetChannelConfig(ADC0, 0, &adc16_channel);
+    }
+}
+
+static int32_t aRead(efHal_gpio_id_t id)
+{
+    return adcVal;
+}
+
+
+/*==================[external functions definition]==========================*/
+extern void bsp_frdmkl46z_analog_init(void)
+{
+    efHal_analog_callBacks_t cb;
+    adc16_config_t adc16_config;
+
+    ADC16_GetDefaultConfig(&adc16_config);
+    ADC16_Init(ADC0, &adc16_config);
+    ADC16_EnableHardwareTrigger(ADC0, false); /* Make sure the software trigger is used. */
+
+    adc16_channel.channelNumber = 0;
+    adc16_channel.enableInterruptOnConversionCompleted = true; /* Enable the interrupt. */
+    adc16_channel.enableDifferentialConversion = false;
+
+    NVIC_EnableIRQ(ADC0_IRQn);
+
+    cb.confAsAnalog = bsp_frdmkl46z_internal_gpio_confAsAnalog;
+    cb.startConv = startConv;
+    cb.aRead = aRead;
+
+    efHal_internal_analog_setCallBacks(cb);
+}
+
+void ADC0_IRQHandler(void)
+{
+    /* Read conversion result to clear the conversion completed flag. */
+    adcVal = ADC16_GetChannelConversionValue(ADC0, 0);
+
+    efHal_internal_analog_endConvInterruptRoutine(map[indexMap].gpioId);
 }
 
 /*==================[end of file]============================================*/
