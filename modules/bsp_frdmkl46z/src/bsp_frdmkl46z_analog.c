@@ -119,6 +119,10 @@ static int32_t aRead(efHal_gpio_id_t id)
     return ret;
 }
 
+static int32_t getFullValue(efHal_gpio_id_t id)
+{
+    return 4095;
+}
 
 /*==================[external functions definition]==========================*/
 extern void bsp_frdmkl46z_analog_init(void)
@@ -141,6 +145,7 @@ extern void bsp_frdmkl46z_analog_init(void)
     cb.confAsAnalog = bsp_frdmkl46z_internal_gpio_confAsAnalog;
     cb.startConv = startConv;
     cb.aRead = aRead;
+    cb.getFullValue = getFullValue;
 
     efHal_internal_analog_setCallBacks(cb);
 }
