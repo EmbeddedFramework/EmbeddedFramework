@@ -41,7 +41,7 @@
 /*==================[macros and typedef]=====================================*/
 
 #define SAMPLES_TOTAL        2
-#define SAMPLES_MAX_DIFF    10
+#define SAMPLES_MAX_DIFF    16
 
 /*=================[internal functions declaration]=========================*/
 
@@ -50,6 +50,20 @@ static efHal_gpio_id_t gpioXM;
 static efHal_gpio_id_t gpioXP;
 static efHal_gpio_id_t gpioYM;
 static efHal_gpio_id_t gpioYP;
+static int32_t thresholdValid;
+static int32_t readX;
+static int32_t readY;
+
+struct
+{
+    unsigned pressed:1;
+    unsigned swapXY:1;
+    unsigned enablePullUp:1;
+}flags;
+
+static int32_t minX = 0, maxX = 1024, minY = 0, maxY = 1024;
+static int32_t resX = 480, resY = 320;
+
 
 /*==================[external data definition]===============================*/
 
@@ -58,18 +72,19 @@ static efHal_gpio_id_t gpioYP;
 /*Return true is the touchpad is pressed*/
 static bool touchpad_is_pressed(void)
 {
-    /*Your code comes here*/
+    return flags.pressed;
+}
 
-    return false;
+static int32_t map(int32_t x, int32_t in_min, int32_t in_max, int32_t out_min, int32_t out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
 /*Get the x and y coordinates if the touchpad is pressed*/
 static void touchpad_get_xy(lv_coord_t * x, lv_coord_t * y)
 {
-    /*Your code comes here*/
-
-    (*x) = 0;
-    (*y) = 0;
+    *x = map(readX, minX, maxX, 0, resX);
+    *y = map(readY, minY, maxY, 0, resY);
 }
 
 static int32_t getValue(efHal_gpio_id_t plus, efHal_gpio_id_t minus, efHal_gpio_id_t measure, efHal_gpio_id_t ignore)
@@ -79,7 +94,8 @@ static int32_t getValue(efHal_gpio_id_t plus, efHal_gpio_id_t minus, efHal_gpio_
     int i;
 
     efHal_analog_confAsAnalog(measure);
-    efHal_gpio_confPin(ignore, EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+    efHal_gpio_confPin(ignore, EF_HAL_GPIO_INPUT,
+            flags.enablePullUp?EF_HAL_GPIO_PULL_UP:EF_HAL_GPIO_PULL_DISABLE, 1);
 
     efHal_gpio_confPin(plus, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
     efHal_gpio_confPin(minus, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 0);
@@ -101,7 +117,12 @@ static int32_t getValue(efHal_gpio_id_t plus, efHal_gpio_id_t minus, efHal_gpio_
     }
 
     if (ret >= 0)
+    {
         ret = ret / SAMPLES_TOTAL;
+
+        if (ret >= thresholdValid)
+            ret = -1;
+    }
 
     return ret;
 }
@@ -115,13 +136,53 @@ extern void touchScreen_init(efHal_gpio_id_t xm, efHal_gpio_id_t xp,
     gpioXP = xp;
     gpioYM = ym;
     gpioYP = yp;
+
+    thresholdValid = (efHal_analog_getFullValue(0) * 97) / 100;
+}
+
+extern void touchScreen_conf(int32_t mix, int32_t max, int32_t miy, int32_t may,
+        int32_t rx, int32_t ry)
+{
+    minX = mix;
+    maxX = max;
+    minY = miy;
+    maxY = may;
+    resX = rx;
+    resY = ry;
+}
+
+extern void touchScreen_swapXY(bool swXY)
+{
+    flags.swapXY = swXY;
+}
+
+extern void touchScreen_enablePullUP(bool enPU)
+{
+    flags.enablePullUp = enPU;
 }
 
 extern void touchScreen_performRead(void)
 {
-    int x, y;
+    int32_t x, y;
 
     x = getValue(gpioXP, gpioXM, gpioYP, gpioYM);
+    y = getValue(gpioYP, gpioYM, gpioXP, gpioXM);
+
+    if (flags.swapXY)
+    {
+        readY = x;
+        readX = y;
+    }
+    else
+    {
+        readX = x;
+        readY = y;
+    }
+
+    if (readX >= 0 && readY >= 0)
+        flags.pressed = true;
+    else
+        flags.pressed = false;
 }
 
 
