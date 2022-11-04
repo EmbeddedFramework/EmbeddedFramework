@@ -78,14 +78,18 @@ extern void efHal_analog_confAsAnalog(efHal_gpio_id_t id)
     }
 }
 
-extern void efHal_analog_startConv(efHal_gpio_id_t id)
+extern bool efHal_analog_startConv(efHal_gpio_id_t id)
 {
+    bool ret = false;
+
     if (callBacks.startConv != NULL)
-        callBacks.startConv(id);
+        ret = callBacks.startConv(id);
     else
     {
         efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "callBacks.startConv");
     }
+
+    return ret;
 }
 
 extern bool efHal_analog_waitConv(efHal_gpio_id_t id, TickType_t xBlockTime)
