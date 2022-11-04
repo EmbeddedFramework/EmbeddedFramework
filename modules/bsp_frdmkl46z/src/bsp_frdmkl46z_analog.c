@@ -69,6 +69,7 @@ static const analogAsign_t map[] =
 static adc16_channel_config_t adc16_channel;
 static int indexMap;
 static uint32_t adcVal;
+static SemaphoreHandle_t mutex;
 
 /*==================[external data definition]===============================*/
 
@@ -89,20 +90,33 @@ static int getIndexMap(efHal_gpio_id_t id)
     return ret;
 }
 
-static void startConv(efHal_gpio_id_t id)
+static bool startConv(efHal_gpio_id_t id)
 {
+    bool ret = false;
+
+    xSemaphoreTake(mutex, portMAX_DELAY);
+
     indexMap = getIndexMap(id);
 
     if (indexMap >= 0)
     {
         adc16_channel.channelNumber = map[indexMap].channel;
         ADC16_SetChannelConfig(ADC0, 0, &adc16_channel);
+        ret = true;
     }
+    else
+    {
+        xSemaphoreGive(mutex);
+    }
+
+    return ret;
 }
 
 static int32_t aRead(efHal_gpio_id_t id)
 {
-    return adcVal;
+    int32_t ret = adcVal;
+    xSemaphoreGive(mutex);
+    return ret;
 }
 
 
@@ -111,6 +125,8 @@ extern void bsp_frdmkl46z_analog_init(void)
 {
     efHal_analog_callBacks_t cb;
     adc16_config_t adc16_config;
+
+    mutex = xSemaphoreCreateMutex();
 
     ADC16_GetDefaultConfig(&adc16_config);
     ADC16_Init(ADC0, &adc16_config);
