@@ -36,8 +36,12 @@
 /*==================[inclusions]=============================================*/
 #include "touchScreen.h"
 #include "efHal_analog.h"
+#include "stdlib.h"
 
 /*==================[macros and typedef]=====================================*/
+
+#define SAMPLES_TOTAL        2
+#define SAMPLES_MAX_DIFF    10
 
 /*=================[internal functions declaration]=========================*/
 
@@ -68,10 +72,40 @@ static void touchpad_get_xy(lv_coord_t * x, lv_coord_t * y)
     (*y) = 0;
 }
 
-static void setup_gpio(efHal_gpio_id_t plus, efHal_gpio_id_t minus, efHal_gpio_id_t measure, efHal_gpio_id_t ignore)
+static int32_t getValue(efHal_gpio_id_t plus, efHal_gpio_id_t minus, efHal_gpio_id_t measure, efHal_gpio_id_t ignore)
 {
+    int32_t samples[SAMPLES_TOTAL];
+    int32_t ret;
+    int i;
 
+    efHal_analog_confAsAnalog(measure);
+    efHal_gpio_confPin(ignore, EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+
+    efHal_gpio_confPin(plus, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+    efHal_gpio_confPin(minus, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 0);
+
+    for (i = 0 ; i < SAMPLES_TOTAL ; i++)
+    {
+        efHal_analog_startConv(measure);
+        efHal_analog_waitConv(measure, portMAX_DELAY);
+        samples[i] = efHal_analog_read(measure);
+    }
+
+    ret = samples[0];
+    for (i = 1 ; i < SAMPLES_TOTAL && ret >= 0; i++)
+    {
+        if (abs(samples[i-1] - samples[i]) > SAMPLES_MAX_DIFF)
+            ret = -1;
+        else
+            ret += samples[i];
+    }
+
+    if (ret >= 0)
+        ret = ret / SAMPLES_TOTAL;
+
+    return ret;
 }
+
 /*==================[external functions definition]==========================*/
 
 extern void touchScreen_init(efHal_gpio_id_t xm, efHal_gpio_id_t xp,
@@ -87,18 +121,7 @@ extern void touchScreen_performRead(void)
 {
     int x, y;
 
-    efHal_analog_confAsAnalog(gpioYP);
-    efHal_gpio_confPin(gpioYM, EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
-
-    efHal_gpio_confPin(gpioXP, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
-    efHal_gpio_confPin(gpioXM, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 0);
-
-    efHal_analog_startConv(gpioYP);
-    efHal_analog_waitConv(gpioYP, portMAX_DELAY);
-    x = efHal_analog_read(gpioYP);
-
-    x = (1023 - x);
-
+    x = getValue(gpioXP, gpioXM, gpioYP, gpioYM);
 }
 
 
