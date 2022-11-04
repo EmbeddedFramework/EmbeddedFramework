@@ -95,14 +95,12 @@ typedef struct
 
 typedef void (*efHal_analog_confAsAnalog_t)(efHal_gpio_id_t id);
 typedef void (*efHal_analog_startConv_t)(efHal_gpio_id_t id);
-typedef bool (*efHal_analog_waitConv_t)(efHal_gpio_id_t id, TickType_t xBlockTime);
 typedef int32_t (*efHal_analog_read_t)(efHal_gpio_id_t id);
 
 typedef struct
 {
     efHal_analog_confAsAnalog_t confAsAnalog;
     efHal_analog_startConv_t startConv;
-    efHal_analog_waitConv_t waitConv;
     efHal_analog_read_t aRead;
 }efHal_analog_callBacks_t;
 
@@ -175,7 +173,11 @@ extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, siz
 extern void efHal_internal_gpio_setCallBacks(efHal_gpio_callBacks_t cb);
 extern void efHal_internal_gpio_InterruptRoutine(efHal_gpio_id_t id);
 
-/******************************* GPIO ****************************************/
+/******************************* ANALOG **************************************/
+extern void efHal_internal_analog_setCallBacks(efHal_analog_callBacks_t cb);
+extern void efHal_internal_analog_endConvInterruptRoutine(efHal_gpio_id_t id);
+
+/******************************* PWM *****************************************/
 extern void efHal_internal_pwm_setCallBacks(efHal_pwm_callBacks_t cb);
 
 /******************************* I2C *****************************************/
