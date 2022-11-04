@@ -94,7 +94,7 @@ typedef struct
 /******************************* ANALOG ****************************************/
 
 typedef void (*efHal_analog_confAsAnalog_t)(efHal_gpio_id_t id);
-typedef void (*efHal_analog_startConv_t)(efHal_gpio_id_t id);
+typedef bool (*efHal_analog_startConv_t)(efHal_gpio_id_t id);
 typedef int32_t (*efHal_analog_read_t)(efHal_gpio_id_t id);
 
 typedef struct
