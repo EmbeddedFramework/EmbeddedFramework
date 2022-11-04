@@ -64,6 +64,7 @@ enum efHal_gpio_id_t
     EF_HAL_D2,
 
     EF_HAL_A0,
+    EF_HAL_BUS_RD = EF_HAL_A0,
     EF_HAL_A1,
     EF_HAL_BUS_WR = EF_HAL_A1,
     EF_HAL_A2,
