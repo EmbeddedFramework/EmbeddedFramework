@@ -62,7 +62,7 @@ static int timeDownTouch;
 
 /*==================[internal functions definition]==========================*/
 
-void lv_example_btnmatrix_2(void);
+void lv_example_list_2(void);
 
 static void blinky_task(void *pvParameters)
 {
@@ -89,7 +89,7 @@ static void blinky_task(void *pvParameters)
     indev_drv.read_cb = touchScreen_read;
     lv_indev_drv_register(&indev_drv);    /*Register the driver in LVGL */
 
-    lv_example_btnmatrix_2();
+    lv_example_list_2();
 
     for (;;)
     {
@@ -113,7 +113,7 @@ int main(void)
 {
     appBoard_init();
 
-    xTaskCreate(blinky_task, "blinky_task", 500, NULL, 0, NULL);
+    xTaskCreate(blinky_task, "blinky_task", 600, NULL, 0, NULL);
 
     vTaskStartScheduler();
     for (;;);
