@@ -384,10 +384,15 @@ clean:
 ifeq ($(OUT_DIR),)
 	@echo ERROR: OUT_DIR cannot be empty
 else
-	@rm -rf $(OUT_DIR)
+	@rm -rf $(LIB_DIR)
+	@rm -rf $(BIN_DIR)
+	@rm -rf $(OBJ_DIR)
 	@mkdir -p $(LIB_DIR)
 	@mkdir -p $(BIN_DIR)
 	@mkdir -p $(OBJ_DIR)
+	@cp $(OUT_DIR)$(DS).gitignore $(LIB_DIR)$(DS)
+	@cp $(OUT_DIR)$(DS).gitignore $(BIN_DIR)$(DS)
+	@cp $(OUT_DIR)$(DS).gitignore $(OBJ_DIR)$(DS)
 endif
 
 ###############################################################################
