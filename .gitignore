@@ -45,10 +45,7 @@ oModules
 *.i*86
 *.x86_64
 *.hex
-out/ceedling/
 
-# out
-out/
 
 # Backup files
 *.bak
