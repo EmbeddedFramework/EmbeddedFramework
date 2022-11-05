@@ -56,6 +56,7 @@ extern void efHal_analog_confAsAnalog(efHal_gpio_id_t id);
 extern bool efHal_analog_startConv(efHal_gpio_id_t id);
 extern bool efHal_analog_waitConv(efHal_gpio_id_t id, TickType_t xBlockTime);
 extern int32_t efHal_analog_read(efHal_gpio_id_t id);
+extern int32_t efHal_analog_getFullValue(efHal_gpio_id_t id);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

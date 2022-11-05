@@ -47,58 +47,31 @@
 #define MY_DISP_VER_RES 320
 #define MY_DISP_HOR_RES 480
 
-#define BUF_SIZE    (MY_DISP_VER_RES*8) // MY_DISP_HOR_RES * MY_DISP_VER_SER / 20
+#define BUF_SIZE    (MY_DISP_VER_RES*12) // MY_DISP_HOR_RES * MY_DISP_VER_SER / 20
 
 /*==================[internal functions declaration]=========================*/
 
 /*==================[internal data definition]===============================*/
+static lv_disp_draw_buf_t draw_buf;
+static lv_color_t buf1[BUF_SIZE];
+static lv_disp_drv_t disp_drv;        /*Descriptor of a display driver*/
+static lv_indev_drv_t indev_drv;
+static int timeDownTouch;
 
 /*==================[external data definition]===============================*/
 
 /*==================[internal functions definition]==========================*/
 
-static lv_disp_draw_buf_t draw_buf;
-static lv_color_t buf1[BUF_SIZE];
-static lv_disp_drv_t disp_drv;        /*Descriptor of a display driver*/
-static lv_indev_drv_t indev_drv;
-
-void lv_example_keyboard_2(void)
-{
-    /*Create an AZERTY keyboard map*/
-    static const char * kb_map[] = {"A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P", LV_SYMBOL_BACKSPACE, "\n",
-                                    "Q", "S", "D", "F", "G", "J", "K", "L", "M",  LV_SYMBOL_NEW_LINE, "\n",
-                                    "W", "X", "C", "V", "B", "N", ",", ".", ":", "!", "?", "\n",
-                                    LV_SYMBOL_CLOSE, " ",  " ", " ", LV_SYMBOL_OK, NULL
-                                   };
-
-    /*Set the relative width of the buttons and other controls*/
-    static const lv_btnmatrix_ctrl_t kb_ctrl[] = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 6,
-                                                  4, 4, 4, 4, 4, 4, 4, 4, 4, 6,
-                                                  4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-                                                  2, LV_BTNMATRIX_CTRL_HIDDEN | 2, 6, LV_BTNMATRIX_CTRL_HIDDEN | 2, 2
-                                                 };
-
-    /*Create a keyboard and add the new map as USER_1 mode*/
-    lv_obj_t * kb = lv_keyboard_create(lv_scr_act());
-
-    lv_keyboard_set_map(kb, LV_KEYBOARD_MODE_USER_1, kb_map, kb_ctrl);
-    lv_keyboard_set_mode(kb, LV_KEYBOARD_MODE_USER_1);
-
-    /*Create a text area. The keyboard will write here*/
-    lv_obj_t * ta;
-    ta = lv_textarea_create(lv_scr_act());
-    lv_obj_align(ta, LV_ALIGN_TOP_MID, 0, 10);
-    lv_obj_set_size(ta, lv_pct(90), 80);
-    lv_obj_add_state(ta, LV_STATE_FOCUSED);
-
-    lv_keyboard_set_textarea(kb, ta);
-}
+void lv_example_btnmatrix_2(void);
 
 static void blinky_task(void *pvParameters)
 {
     ili9486_init(DISPLAY_ORIENTATION_HORIZONTAL, ILI9486_DC, ILI9486_RST, ILI9486_CS, ILI9486_BUS);
 
     touchScreen_init(TFT_XM, TFT_XP, TFT_YM, TFT_YP);
+    touchScreen_conf(350, 3660, 550, 3558, MY_DISP_HOR_RES, MY_DISP_VER_RES);
+    touchScreen_swapXY(1);
+    touchScreen_enablePullUP(1);
 
     lv_init();
 
@@ -116,14 +89,20 @@ static void blinky_task(void *pvParameters)
     indev_drv.read_cb = touchScreen_read;
     lv_indev_drv_register(&indev_drv);    /*Register the driver in LVGL */
 
-    lv_example_keyboard_2();
+    lv_example_btnmatrix_2();
 
     for (;;)
     {
-        touchScreen_performRead();
+        if (timeDownTouch == 0)
+        {
+            timeDownTouch = 20;
+            touchScreen_performRead();
+        }
 
         efHal_gpio_confPin(TFT_YP, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
         efHal_gpio_confPin(TFT_YM, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+        efHal_gpio_confPin(TFT_XP, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+        efHal_gpio_confPin(TFT_XM, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
 
         lv_timer_handler();
     }
@@ -134,7 +113,7 @@ int main(void)
 {
     appBoard_init();
 
-    xTaskCreate(blinky_task, "blinky_task", 600, NULL, 0, NULL);
+    xTaskCreate(blinky_task, "blinky_task", 500, NULL, 0, NULL);
 
     vTaskStartScheduler();
     for (;;);
@@ -148,6 +127,9 @@ extern void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName 
 void vApplicationTickHook(void)
 {
     lv_tick_inc(1);
+
+    if (timeDownTouch)
+        timeDownTouch--;
 }
 
 /*==================[end of file]============================================*/

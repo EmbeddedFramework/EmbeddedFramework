@@ -52,6 +52,12 @@ extern "C" {
 extern void touchScreen_init(efHal_gpio_id_t xm, efHal_gpio_id_t xp,
         efHal_gpio_id_t ym, efHal_gpio_id_t yp);
 
+extern void touchScreen_conf(int32_t mix, int32_t max, int32_t miy, int32_t may,
+        int32_t rx, int32_t ry);
+
+extern void touchScreen_swapXY(bool swXY);
+extern void touchScreen_enablePullUP(bool enPU);
+
 extern void touchScreen_performRead(void);
 
 extern void touchScreen_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data);

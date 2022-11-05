@@ -142,7 +142,7 @@ SECTIONS
     } > SRAM AT> SRAM
 
     /* Reserve and place Heap within memory map */
-    _HeapSize = 0x800;
+    _HeapSize = 0x000;
     .heap :  ALIGN(4)
     {
         _pvHeapStart = .;
@@ -151,7 +151,7 @@ SECTIONS
         _pvHeapLimit = .;
     } > SRAM
 
-     _StackSize = 0x800;
+     _StackSize = 0x200;
      /* Reserve space in memory for Stack */
     .heap2stackfill  :
     {
