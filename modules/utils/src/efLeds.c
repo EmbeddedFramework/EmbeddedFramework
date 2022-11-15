@@ -76,6 +76,17 @@ static const secuence_t blinkySec =
     },
 };
 
+static const secuence_t blinkyFastSec =
+{
+    .repeat = true,
+    .time =
+    {
+        toTimeBase(100),
+        toTimeBase(100),
+        0,
+    },
+};
+
 static const secuence_t heartBeatSec =
 {
     .repeat = true,
@@ -181,10 +192,23 @@ extern void efLeds_msg(efLeds_id_t id, efLeds_msg_t msg)
             break;
 
         case EF_LEDS_MSG_BLINKY:
-            pLedState[id].timOut = blinkySec.time[0];
-            pLedState[id].secIndex = 0;
-            efHal_gpio_setPin(conf[id].gpioId, conf[id].onState);
-            pLedState[id].pSec = &blinkySec;
+            if (pLedState[id].pSec != &blinkySec)
+            {
+                pLedState[id].timOut = blinkySec.time[0];
+                pLedState[id].secIndex = 0;
+                efHal_gpio_setPin(conf[id].gpioId, conf[id].onState);
+                pLedState[id].pSec = &blinkySec;
+            }
+            break;
+
+        case EF_LEDS_MSG_BLINKY_FAST:
+            if (pLedState[id].pSec != &blinkyFastSec)
+            {
+                pLedState[id].timOut = blinkyFastSec.time[0];
+                pLedState[id].secIndex = 0;
+                efHal_gpio_setPin(conf[id].gpioId, conf[id].onState);
+                pLedState[id].pSec = &blinkyFastSec;
+            }
             break;
 
         case EF_LEDS_MSG_HEARTBEAT:

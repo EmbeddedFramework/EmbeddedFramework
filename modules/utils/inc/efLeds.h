@@ -58,6 +58,7 @@ typedef enum
     EF_LEDS_MSG_OFF = 0,
     EF_LEDS_MSG_ON,
     EF_LEDS_MSG_BLINKY,
+    EF_LEDS_MSG_BLINKY_FAST,
     EF_LEDS_MSG_HEARTBEAT,
     EF_LEDS_MSG_PULSE,
 }efLeds_msg_t;
