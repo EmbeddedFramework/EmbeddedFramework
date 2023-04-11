@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2023, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,13 +32,12 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef EF_HAL_GPIO_H_
-#define EF_HAL_GPIO_H_
+#ifndef S_I2C_H_
+#define S_I2C_H_
 
 /*==================[inclusions]=============================================*/
-#include "stdint.h"
-#include "stdbool.h"
-#include "FreeRTOS.h"
+#include "efHal_gpio.h"
+#include "efHal_i2c.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -47,49 +46,19 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
-typedef int32_t efHal_gpio_id_t;
-typedef int32_t efHal_gpio_busid_t;
+typedef void* sI2C_dh_t; /* device handler */
 
-typedef enum
-{
-    EF_HAL_GPIO_INT_TYPE_DISABLE = 0,
-    EF_HAL_GPIO_INT_TYPE_RISING_EDGE,
-    EF_HAL_GPIO_INT_TYPE_FALLING_EDGE,
-    EF_HAL_GPIO_INT_TYPE_BOTH_EDGE,
-    EF_HAL_GPIO_INT_TYPE_LOW_LEVEL,
-    EF_HAL_GPIO_INT_TYPE_HIGH_LEVEL,
-}efHal_gpio_intType_t;
-
-typedef enum
-{
-    EF_HAL_GPIO_PULL_DISABLE = 0,
-    EF_HAL_GPIO_PULL_UP,
-    EF_HAL_GPIO_PULL_DOWN,
-}efHal_gpio_pull_t;
-
-typedef enum
-{
-    EF_HAL_GPIO_INPUT = 0,
-    EF_HAL_GPIO_OUTPUT,
-    EF_HAL_GPIO_OUTPUT_OD,      /* Output Open Drain */
-}efHal_gpio_dir_t;
-
-typedef void (*efHal_gpio_callBackInt_t)(efHal_gpio_id_t id);
+typedef void (*sI2C_delay_t)(int32_t delayUs);
 
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-extern void efHal_gpio_init(void);
-extern void efHal_gpio_setPin(efHal_gpio_id_t id, bool state);
-extern void efHal_gpio_togglePin(efHal_gpio_id_t id);
-extern bool efHal_gpio_getPin(efHal_gpio_id_t id);
-extern void efHal_gpio_confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType);
-extern void efHal_gpio_confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull, bool state);
-extern bool efHal_gpio_waitForInt(efHal_gpio_id_t id, TickType_t xBlockTime);
-extern void efHal_gpio_setCallBackInt(efHal_gpio_id_t id, efHal_gpio_callBackInt_t cb);
-extern void efHal_gpio_confBus(efHal_gpio_busid_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull);
-extern void efHal_gpio_writeBus(efHal_gpio_busid_t id, void *pData, size_t length);
-extern void efHal_gpio_readBus(efHal_gpio_busid_t id, void *pData, size_t length);
+
+extern void sI2C_init(void);
+extern sI2C_dh_t sI2C_open(efHal_gpio_id_t scl, efHal_gpio_id_t sda, sI2C_delay_t delay);
+extern void sI2C_set_efHal_dh(sI2C_dh_t dh, efHal_dh_t efHal_dh_I2C);
+extern efHal_i2c_ec_t sI2C_transfer(sI2C_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx);
+
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -97,4 +66,4 @@ extern void efHal_gpio_readBus(efHal_gpio_busid_t id, void *pData, size_t length
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* EF_HAL_GPIO_H_ */
+#endif /* S_I2C_H_ */
