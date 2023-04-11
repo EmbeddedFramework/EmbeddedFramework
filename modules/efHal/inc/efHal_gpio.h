@@ -71,6 +71,7 @@ typedef enum
 {
     EF_HAL_GPIO_INPUT = 0,
     EF_HAL_GPIO_OUTPUT,
+    EF_HAL_GPIO_OUTPUT_OD,      /* Output Open Drain */
 }efHal_gpio_dir_t;
 
 typedef void (*efHal_gpio_callBackInt_t)(efHal_gpio_id_t id);
