@@ -80,7 +80,6 @@ static inline void gpioHigh(efHal_gpio_id_t gpio)
     efHal_gpio_confPin(gpio, EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_DISABLE, 0);
 }
 
-
 static void sendStart(sI2C_data_t *sI2C_data)
 {
     gpioHigh(sI2C_data->scl);
@@ -147,6 +146,49 @@ static void sendNAck(sI2C_data_t *sI2C_data)
     gpioLow(sI2C_data->scl);
 }
 
+static void sendByte(sI2C_data_t *sI2C_data, uint8_t data)
+{
+    int i;
+
+    gpioLow(sI2C_data->scl);
+
+    for (i = 0 ; i < 8 ; i++)
+    {
+        if (data & (0x80>>i))
+            gpioHigh(sI2C_data->sda);
+        else
+            gpioLow(sI2C_data->sda);
+
+        sI2C_data->delay(SEMI_PERIOD);
+        gpioHigh(sI2C_data->scl);
+        sI2C_data->delay(SEMI_PERIOD);
+        gpioLow(sI2C_data->scl);
+    }
+}
+
+static uint8_t readByte(sI2C_data_t *sI2C_data)
+{
+    int i;
+    uint8_t ret = 0;
+
+    gpioHigh(sI2C_data->sda);
+    gpioLow(sI2C_data->scl);
+
+    for (i = 0 ; i < 8 ; i++)
+    {
+        sI2C_data->delay(SEMI_PERIOD);
+        gpioHigh(sI2C_data->scl);
+        sI2C_data->delay(SEMI_PERIOD);
+
+        if (efHal_gpio_getPin(sI2C_data->sda))
+            ret |= 0x80 >> i;
+
+        gpioLow(sI2C_data->scl);
+    }
+
+    return ret;
+}
+
 /*==================[external functions definition]==========================*/
 
 extern void sI2C_init(void)
@@ -160,7 +202,7 @@ extern void sI2C_init(void)
     }
 }
 
-extern void* sI2C_open(efHal_gpio_id_t scl, efHal_gpio_id_t sda, sI2C_delay_t delay)
+extern sI2C_dh_t sI2C_open(efHal_gpio_id_t scl, efHal_gpio_id_t sda, sI2C_delay_t delay)
 {
     void* ret = NULL;
 
@@ -182,6 +224,71 @@ extern void* sI2C_open(efHal_gpio_id_t scl, efHal_gpio_id_t sda, sI2C_delay_t de
             break;
         }
     }
+
+    return ret;
+}
+
+extern efHal_i2c_ec_t sI2C_transfer(sI2C_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx)
+{
+    efHal_i2c_ec_t ret = EF_HAL_I2C_EC_NO_ERROR;
+    sI2C_data_t *sI2C_data = dh;
+    uint8_t *pBytes;
+
+    /* there aren't reception */
+    if (sRx == 0 || pRx == NULL)
+    {
+        if (pTx == NULL || sTx == 0)
+        {
+            efErrorHdl_error(EF_ERROR_HDL_INVALID_PARAMETER, "pTx == NULL || sTx == 0");
+            ret = EF_HAL_I2C_EC_INVALID_PARAMS;
+        }
+    }
+
+    if (sTx && ret == EF_HAL_I2C_EC_NO_ERROR)
+    {
+        pBytes = pTx;
+
+        sendStart(sI2C_data);
+        sendByte(sI2C_data, da<<1 | 0);
+
+        if (waitACK(sI2C_data) == 1)
+            ret = EF_HAL_I2C_EC_NAK;
+
+        while (sTx && ret == EF_HAL_I2C_EC_NO_ERROR)
+        {
+            sendByte(sI2C_data, *pBytes);
+            sTx--;
+            pBytes++;
+
+            if (waitACK(sI2C_data) == 1)
+                ret = EF_HAL_I2C_EC_NAK;
+        }
+    }
+
+    if (sRx && ret == EF_HAL_I2C_EC_NO_ERROR)
+    {
+        pBytes = pRx;
+
+        sendStart(sI2C_data);
+        sendByte(sI2C_data, da<<1 | 1);
+
+        if (waitACK(sI2C_data) == 1)
+            ret = EF_HAL_I2C_EC_NAK;
+
+        while (sRx && ret == EF_HAL_I2C_EC_NO_ERROR)
+        {
+            *pBytes = readByte(sI2C_data);
+            sRx--;
+            pBytes++;
+
+            if (sRx)
+                sendAck(sI2C_data);
+            else
+                sendNAck(sI2C_data);
+        }
+    }
+
+    sendStop(sI2C_data);
 
     return ret;
 }

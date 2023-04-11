@@ -37,6 +37,7 @@
 
 /*==================[inclusions]=============================================*/
 #include "efHal_gpio.h"
+#include "efHal_i2c.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -52,6 +53,11 @@ typedef void (*sI2C_delay_t)(int32_t delayUs);
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
+
+extern void sI2C_init(void);
+extern sI2C_dh_t sI2C_open(efHal_gpio_id_t scl, efHal_gpio_id_t sda, sI2C_delay_t delay);
+extern efHal_i2c_ec_t sI2C_transfer(sI2C_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx);
+
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
