@@ -36,6 +36,7 @@
 /*==================[inclusions]=============================================*/
 #include "sI2C.h"
 #include "efHal.h"
+#include "efHal_internal.h"
 
 #if __has_include("sI2C_config.h")
     #include "sI2C_config.h"
@@ -58,6 +59,7 @@ typedef struct
     efHal_gpio_id_t scl;
     efHal_gpio_id_t sda;
     sI2C_delay_t delay;
+    efHal_dh_t efHal_dh_I2C;
 }sI2C_data_t;
 
 /*==================[internal functions declaration]=========================*/
@@ -199,6 +201,7 @@ extern void sI2C_init(void)
     {
         sI2C_data[i].scl = EF_HAL_INVALID_ID;
         sI2C_data[i].sda = EF_HAL_INVALID_ID;
+        sI2C_data[i].efHal_dh_I2C = NULL;
     }
 }
 
@@ -226,6 +229,12 @@ extern sI2C_dh_t sI2C_open(efHal_gpio_id_t scl, efHal_gpio_id_t sda, sI2C_delay_
     }
 
     return ret;
+}
+
+extern void sI2C_set_efHal_dh(sI2C_dh_t dh, efHal_dh_t efHal_dh_I2C)
+{
+    sI2C_data_t *sI2C_data = dh;
+    sI2C_data->efHal_dh_I2C = efHal_dh_I2C;
 }
 
 extern efHal_i2c_ec_t sI2C_transfer(sI2C_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx)
@@ -289,6 +298,8 @@ extern efHal_i2c_ec_t sI2C_transfer(sI2C_dh_t dh, efHal_i2c_devAdd_t da, void *p
     }
 
     sendStop(sI2C_data);
+
+    efHal_internal_i2c_endOfTransfer(sI2C_data->efHal_dh_I2C, ret);
 
     return ret;
 }

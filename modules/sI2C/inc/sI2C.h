@@ -56,6 +56,7 @@ typedef void (*sI2C_delay_t)(int32_t delayUs);
 
 extern void sI2C_init(void);
 extern sI2C_dh_t sI2C_open(efHal_gpio_id_t scl, efHal_gpio_id_t sda, sI2C_delay_t delay);
+extern void sI2C_set_efHal_dh(sI2C_dh_t dh, efHal_dh_t efHal_dh_I2C);
 extern efHal_i2c_ec_t sI2C_transfer(sI2C_dh_t dh, efHal_i2c_devAdd_t da, void *pTx, size_t sTx, void *pRx, size_t sRx);
 
 
