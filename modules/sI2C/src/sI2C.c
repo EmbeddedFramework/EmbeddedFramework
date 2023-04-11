@@ -72,36 +72,26 @@ static sI2C_data_t sI2C_data[sI2C_TOTAL];
 
 /*==================[internal functions definition]==========================*/
 
-static inline void gpioLow(efHal_gpio_id_t gpio)
-{
-    efHal_gpio_confPin(gpio, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 0);
-}
-
-static inline void gpioHigh(efHal_gpio_id_t gpio)
-{
-    efHal_gpio_confPin(gpio, EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_DISABLE, 0);
-}
-
 static void sendStart(sI2C_data_t *sI2C_data)
 {
-    gpioHigh(sI2C_data->scl);
-    gpioHigh(sI2C_data->sda);
+    efHal_gpio_setPin(sI2C_data->scl, 1);
+    efHal_gpio_setPin(sI2C_data->sda, 1);
 
     sI2C_data->delay(SEMI_PERIOD);
-    gpioLow(sI2C_data->sda);
+    efHal_gpio_setPin(sI2C_data->sda, 0);
     sI2C_data->delay(SEMI_PERIOD);
-    gpioLow(sI2C_data->scl);
+    efHal_gpio_setPin(sI2C_data->scl, 0);
     sI2C_data->delay(SEMI_PERIOD);
 }
 
 static void sendStop(sI2C_data_t *sI2C_data)
 {
-    gpioLow(sI2C_data->scl);
-    gpioLow(sI2C_data->sda);
+    efHal_gpio_setPin(sI2C_data->scl, 0);
+    efHal_gpio_setPin(sI2C_data->sda, 0);
     sI2C_data->delay(SEMI_PERIOD);
-    gpioHigh(sI2C_data->scl);
+    efHal_gpio_setPin(sI2C_data->scl, 1);
     sI2C_data->delay(SEMI_PERIOD);
-    gpioHigh(sI2C_data->sda);
+    efHal_gpio_setPin(sI2C_data->sda, 1);
 }
 
 static bool waitACK(sI2C_data_t *sI2C_data)
@@ -109,9 +99,9 @@ static bool waitACK(sI2C_data_t *sI2C_data)
     bool ret = true;
     uint8_t timeout = 200;
 
-    gpioHigh(sI2C_data->sda);
+    efHal_gpio_setPin(sI2C_data->sda, 1);
     sI2C_data->delay(SEMI_PERIOD);
-    gpioHigh(sI2C_data->scl);
+    efHal_gpio_setPin(sI2C_data->scl, 1);
 
     while (timeout--)
     {
@@ -123,48 +113,48 @@ static bool waitACK(sI2C_data_t *sI2C_data)
         }
     }
 
-    gpioLow(sI2C_data->scl);
+    efHal_gpio_setPin(sI2C_data->scl, 0);
 
     return ret;
 }
 
 static void sendAck(sI2C_data_t *sI2C_data)
 {
-    gpioLow(sI2C_data->scl);
-    gpioLow(sI2C_data->sda);
+    efHal_gpio_setPin(sI2C_data->scl, 0);
+    efHal_gpio_setPin(sI2C_data->sda, 0);
     sI2C_data->delay(SEMI_PERIOD);
-    gpioHigh(sI2C_data->scl);
+    efHal_gpio_setPin(sI2C_data->scl, 1);
     sI2C_data->delay(SEMI_PERIOD);
-    gpioLow(sI2C_data->scl);
+    efHal_gpio_setPin(sI2C_data->scl, 0);
 }
 
 static void sendNAck(sI2C_data_t *sI2C_data)
 {
-    gpioLow(sI2C_data->scl);
-    gpioHigh(sI2C_data->sda);
+    efHal_gpio_setPin(sI2C_data->scl, 0);
+    efHal_gpio_setPin(sI2C_data->sda, 1);
     sI2C_data->delay(SEMI_PERIOD);
-    gpioHigh(sI2C_data->scl);
+    efHal_gpio_setPin(sI2C_data->scl, 1);
     sI2C_data->delay(SEMI_PERIOD);
-    gpioLow(sI2C_data->scl);
+    efHal_gpio_setPin(sI2C_data->scl, 0);
 }
 
 static void sendByte(sI2C_data_t *sI2C_data, uint8_t data)
 {
     int i;
 
-    gpioLow(sI2C_data->scl);
+    efHal_gpio_setPin(sI2C_data->scl, 0);
 
     for (i = 0 ; i < 8 ; i++)
     {
         if (data & (0x80>>i))
-            gpioHigh(sI2C_data->sda);
+            efHal_gpio_setPin(sI2C_data->sda, 1);
         else
-            gpioLow(sI2C_data->sda);
+            efHal_gpio_setPin(sI2C_data->sda, 0);
 
         sI2C_data->delay(SEMI_PERIOD);
-        gpioHigh(sI2C_data->scl);
+        efHal_gpio_setPin(sI2C_data->scl, 1);
         sI2C_data->delay(SEMI_PERIOD);
-        gpioLow(sI2C_data->scl);
+        efHal_gpio_setPin(sI2C_data->scl, 0);
     }
 }
 
@@ -173,19 +163,19 @@ static uint8_t readByte(sI2C_data_t *sI2C_data)
     int i;
     uint8_t ret = 0;
 
-    gpioHigh(sI2C_data->sda);
-    gpioLow(sI2C_data->scl);
+    efHal_gpio_setPin(sI2C_data->sda, 1);
+    efHal_gpio_setPin(sI2C_data->scl, 0);
 
     for (i = 0 ; i < 8 ; i++)
     {
         sI2C_data->delay(SEMI_PERIOD);
-        gpioHigh(sI2C_data->scl);
+        efHal_gpio_setPin(sI2C_data->scl, 1);
         sI2C_data->delay(SEMI_PERIOD);
 
         if (efHal_gpio_getPin(sI2C_data->sda))
             ret |= 0x80 >> i;
 
-        gpioLow(sI2C_data->scl);
+        efHal_gpio_setPin(sI2C_data->scl, 0);
     }
 
     return ret;
@@ -221,8 +211,8 @@ extern sI2C_dh_t sI2C_open(efHal_gpio_id_t scl, efHal_gpio_id_t sda, sI2C_delay_
             sI2C_data[i].sda = sda;
             sI2C_data[i].delay = delay;
 
-            efHal_gpio_confPin(scl, EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
-            efHal_gpio_confPin(sda, EF_HAL_GPIO_INPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+            efHal_gpio_confPin(scl, EF_HAL_GPIO_OUTPUT_OD, EF_HAL_GPIO_PULL_DISABLE, 1);
+            efHal_gpio_confPin(sda, EF_HAL_GPIO_OUTPUT_OD, EF_HAL_GPIO_PULL_DISABLE, 1);
 
             break;
         }
