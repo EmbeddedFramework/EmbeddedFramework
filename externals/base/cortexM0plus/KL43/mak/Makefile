@@ -33,11 +33,11 @@
 #
 
 
-ifeq ($(CPU),MKL46Z256VLL4)
+ifeq ($(CPU),MKL43Z256VLH4)
 LINKER_SCRIPT ?= linkerScript.ld
 CFLAGS += -std=gnu99 -mcpu=cortex-m0plus -mthumb -fstack-usage
 CFLAGS += -Og -fno-common -g -Wall -c -ffunction-sections -fdata-sections -ffreestanding -fno-builtin -fmerge-constants
-CFLAGS += -D__REDLIB__ -DCPU_MKL46Z256VLL4_cm0plus -DCPU_MKL46Z256VLL4 -DFRDM_KL46Z -DFREEDOM -DFSL_RTOS_FREE_RTOS -DSDK_DEBUGCONSOLE=0 
+CFLAGS += -D__REDLIB__ -DCPU_MKL43Z256VLH4_cm0plus -DCPU_MKL43Z256VLH4 -DFRDM_KL43Z -DFREEDOM -DFSL_RTOS_FREE_RTOS -DSDK_DEBUGCONSOLE=0
 CFLAGS += -DCR_INTEGER_PRINTF -DPRINTF_FLOAT_ENABLE=0 -D__MCUXPRESSO -D__USE_CMSIS -DDEBUG -DARM_MATH_CM0PLUS
 AFLAGS += -c -x assembler-with-cpp -g3 -mcpu=cortex-m0plus -mthumb -DARM_MATH_CM0PLUS
 AFLAGS += -D__REDLIB__ 
@@ -53,4 +53,4 @@ ext_base_INC_PATH  += $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS
 ext_base_SRC_FILES += $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.c) \
 					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.s) \
 					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.S)
-						
+
