@@ -1,35 +1,9 @@
 /*
- * The Clear BSD License
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
- * Copyright 2016-2017 NXP
+ * Copyright 2016-2019 NXP
  * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- *  that the following conditions are met:
  *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of the copyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #include "fsl_slcd.h"
@@ -43,8 +17,7 @@
 #define FSL_COMPONENT_ID "platform.drivers.slcd"
 #endif
 
-
-#define SLCD_WAVEFORM_CONFIG_NUM 16
+#define SLCD_WAVEFORM_CONFIG_NUM 16U
 
 /*******************************************************************************
  * Prototypes
@@ -92,14 +65,27 @@ static uint32_t SLCD_GetInstance(LCD_Type *base)
     return instance;
 }
 
+/*!
+ * brief Initializes the SLCD, ungates the module clock, initializes the power
+ * setting, enables all used plane pins, and sets with interrupt and work mode
+ * with the configuration.
+ *
+ * param base  SLCD peripheral base address.
+ * param configure SLCD configuration pointer.
+ *   For the configuration structure, many parameters have the default setting
+ *   and the SLCD_Getdefaultconfig() is provided to get them. Use it
+ *   verified for their applications.
+ *   The others have no default settings, such as "clkConfig", and must be provided
+ *   by the application before calling the SLCD_Init() API.
+ */
 void SLCD_Init(LCD_Type *base, slcd_config_t *configure)
 {
     assert(configure);
     assert(configure->clkConfig);
 
-    uint32_t gcrReg = 0;
-    bool intEnabled = false;
-    uint32_t regNum = 0;
+    uint32_t gcrReg   = 0;
+    bool intEnabled   = false;
+    uint32_t regNum   = 0;
     uint32_t instance = SLCD_GetInstance(base);
 
 #if !(defined(FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL) && FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL)
@@ -108,18 +94,20 @@ void SLCD_Init(LCD_Type *base, slcd_config_t *configure)
 #endif /* FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL */
 
     /* Configure general setting: power supply. */
-    gcrReg = LCD_GCR_RVEN(configure->powerSupply & 0x1U) | LCD_GCR_CPSEL((configure->powerSupply >> 1U) & 0x1U) |
-             LCD_GCR_VSUPPLY((configure->powerSupply >> 2U) & 0x1U) | LCD_GCR_LADJ(configure->loadAdjust);
+    gcrReg = LCD_GCR_RVEN((uint32_t)configure->powerSupply & 0x1U) |
+             LCD_GCR_CPSEL(((uint32_t)configure->powerSupply >> 1U) & 0x1U) |
+             LCD_GCR_VSUPPLY(((uint32_t)configure->powerSupply >> 2U) & 0x1U) |
+             LCD_GCR_LADJ((uint32_t)configure->loadAdjust);
     /* Configure general setting: clock source. */
-    gcrReg |= LCD_GCR_SOURCE((configure->clkConfig->clkSource) & 0x1U) |
+    gcrReg |= LCD_GCR_SOURCE(((uint32_t)configure->clkConfig->clkSource) & 0x1U) |
               LCD_GCR_LCLK(configure->clkConfig->clkPrescaler) | LCD_GCR_ALTDIV(configure->clkConfig->altClkDivider);
     /* Configure the duty and set the work for low power wait and stop mode. */
-    gcrReg |= LCD_GCR_DUTY(configure->dutyCycle) | LCD_GCR_LCDSTP(configure->lowPowerBehavior & 0x1U);
+    gcrReg |= LCD_GCR_DUTY(configure->dutyCycle) | LCD_GCR_LCDSTP((uint32_t)configure->lowPowerBehavior & 0x1U);
 #if FSL_FEATURE_SLCD_HAS_LCD_WAIT
-    gcrReg |= LCD_GCR_LCDWAIT((configure->lowPowerBehavior >> 1U) & 0x1U);
+    gcrReg |= LCD_GCR_LCDWAIT(((uint32_t)configure->lowPowerBehavior >> 1U) & 0x1U);
 #endif
 #if FSL_FEATURE_SLCD_HAS_LCD_DOZE_ENABLE
-    gcrReg |= LCD_GCR_LCDDOZE((configure->lowPowerBehavior >> 1U) & 0x1U);
+    gcrReg |= LCD_GCR_LCDDOZE(((uint32_t)configure->lowPowerBehavior >> 1U) & 0x1U);
 #endif
 #if FSL_FEATURE_SLCD_HAS_FRAME_FREQUENCY_INTERRUPT
     /* Configure for frame frequency interrupt. */
@@ -127,7 +115,7 @@ void SLCD_Init(LCD_Type *base, slcd_config_t *configure)
 #endif /* FSL_FEATURE_SLCD_HAS_FRAME_FREQUENCY_INTERRUPT */
 #if FSL_FEATURE_SLCD_HAS_MULTI_ALTERNATE_CLOCK_SOURCE
     /* Select the alternate clock for alternate clock source. */
-    gcrReg |= LCD_GCR_ALTSOURCE(((configure->clkConfig->clkSource) >> 1U) & 0x1U);
+    gcrReg |= LCD_GCR_ALTSOURCE((((uint32_t)configure->clkConfig->clkSource) >> 1U) & 0x1U);
 #endif /* FSL_FEATURE_SLCD_HAS_MULTI_ALTERNATE_CLOCK_SOURCE */
 #if FSL_FEATURE_SLCD_HAS_FAST_FRAME_RATE
     /* Configure the for fast frame rate. */
@@ -139,17 +127,18 @@ void SLCD_Init(LCD_Type *base, slcd_config_t *configure)
     base->GCR = gcrReg;
 
     /* Set display mode. */
-    base->AR = LCD_AR_ALT(configure->displayMode & 0x1U) | LCD_AR_BLANK((configure->displayMode >> 1U) & 0x1U);
+    base->AR = LCD_AR_ALT((uint32_t)configure->displayMode & 0x1U) |
+               LCD_AR_BLANK(((uint32_t)configure->displayMode >> 1U) & 0x1U);
 
     /* Configure the front plane and back plane pin setting. */
     base->BPEN[0] = configure->backPlaneLowPin;
     base->BPEN[1] = configure->backPlaneHighPin;
-    base->PEN[0] = configure->slcdLowPinEnabled;
-    base->PEN[1] = configure->slcdHighPinEnabled;
+    base->PEN[0]  = configure->slcdLowPinEnabled;
+    base->PEN[1]  = configure->slcdHighPinEnabled;
 
     /* Set the fault frame detection. */
     base->FDCR = 0;
-    if (configure->faultConfig)
+    if (NULL != configure->faultConfig)
     {
         /* If fault configure structure is not NULL, the fault detection is enabled. */
         base->FDCR = LCD_FDCR_FDPRS(configure->faultConfig->faultPrescaler) |
@@ -178,10 +167,16 @@ void SLCD_Init(LCD_Type *base, slcd_config_t *configure)
 #endif /* FSL_FEATURE_SLCD_HAS_FRAME_FREQUENCY_INTERRUPT */
     if (intEnabled)
     {
-        EnableIRQ(LCD_IRQn);
+        (void)EnableIRQ(LCD_IRQn);
     }
 }
 
+/*!
+ * brief Deinitializes the SLCD module, gates the module clock, disables an interrupt,
+ * and displays the SLCD.
+ *
+ * param base  SLCD peripheral base address.
+ */
 void SLCD_Deinit(LCD_Type *base)
 {
     uint32_t instance = SLCD_GetInstance(base);
@@ -195,12 +190,32 @@ void SLCD_Deinit(LCD_Type *base)
 #endif /* FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL */
 
     /* Disable NVIC. */
-    DisableIRQ(LCD_IRQn);
+    (void)DisableIRQ(LCD_IRQn);
 }
 
+/*!
+ * brief Gets the SLCD default configuration structure. The
+ * purpose of this API is to get default parameters of the configuration structure
+ * for the SLCD_Init(). Use these initialized parameters unchanged in SLCD_Init()
+ * or modify fields of the structure before the calling SLCD_Init().
+ * All default parameters of the configure structuration are listed.
+ * code
+   config.displayMode        = kSLCD_NormalMode;
+   config.powerSupply        = kSLCD_InternalVll3UseChargePump;
+   config.voltageTrim        = kSLCD_RegulatedVolatgeTrim00;
+   config.lowPowerBehavior   = kSLCD_EnabledInWaitStop;
+   config.interruptSrc       = 0;
+   config.faultConfig        = NULL;
+   config.frameFreqIntEnable =  false;
+   endcode
+ * param configure The SLCD configuration structure pointer.
+ */
 void SLCD_GetDefaultConfig(slcd_config_t *configure)
 {
     assert(configure);
+
+    /* Initializes the configure structure to zero. */
+    (void)memset(configure, 0, sizeof(*configure));
 
     /* Get Default parameters for the configuration structure. */
     /* SLCD in normal mode. */
@@ -218,9 +233,16 @@ void SLCD_GetDefaultConfig(slcd_config_t *configure)
     configure->faultConfig = NULL;
 }
 
+/*!
+ * brief Starts the SLCD blink mode.
+ *
+ * param base  SLCD peripheral base address.
+ * param mode  SLCD blink mode.
+ * param rate  SLCD blink rate.
+ */
 void SLCD_StartBlinkMode(LCD_Type *base, slcd_blink_mode_t mode, slcd_blink_rate_t rate)
 {
-    uint32_t mask = LCD_AR_BMODE_MASK | LCD_AR_BRATE_MASK;
+    uint32_t mask  = LCD_AR_BMODE_MASK | LCD_AR_BRATE_MASK;
     uint32_t arReg = base->AR;
 
 #if FSL_FEATURE_SLCD_HAS_FRAME_FREQUENCY_INTERRUPT
@@ -237,6 +259,18 @@ void SLCD_StartBlinkMode(LCD_Type *base, slcd_blink_mode_t mode, slcd_blink_rate
     base->AR = arReg;
 }
 
+/*!
+ * brief Enables the SLCD interrupt.
+ * For example, to enable fault detect complete interrupt and frame frequency interrupt,
+ * for FSL_FEATURE_SLCD_HAS_FRAME_FREQUENCY_INTERRUPT enabled case, do the following.
+ * code
+ *     SLCD_EnableInterrupts(LCD,kSLCD_FaultDetectCompleteInterrupt | kSLCD_FrameFreqInterrupt);
+ * endcode
+ *
+ * param base  SLCD peripheral base address.
+ * param mask  SLCD interrupts to enable. This is a logical OR of the
+ *             enumeration :: slcd_interrupt_enable_t.
+ */
 void SLCD_EnableInterrupts(LCD_Type *base, uint32_t mask)
 {
     uint32_t gcReg = base->GCR;
@@ -249,18 +283,30 @@ void SLCD_EnableInterrupts(LCD_Type *base, uint32_t mask)
     base->GCR = gcReg;
 }
 
+/*!
+ * brief Disables the SLCD interrupt.
+ * For example, to disable fault detect complete interrupt and frame frequency interrupt,
+ * for FSL_FEATURE_SLCD_HAS_FRAME_FREQUENCY_INTERRUPT enabled case, do the following.
+ * code
+ *     SLCD_DisableInterrupts(LCD,kSLCD_FaultDetectCompleteInterrupt | kSLCD_FrameFreqInterrupt);
+ * endcode
+ *
+ * param base  SLCD peripheral base address.
+ * param mask  SLCD interrupts to disable. This is a logical OR of the
+ *             enumeration :: slcd_interrupt_enable_t.
+ */
 void SLCD_DisableInterrupts(LCD_Type *base, uint32_t mask)
 {
     uint32_t gcrReg = base->GCR;
 
     /*!< SLCD fault detection complete interrupt source. */
-    if (mask & kSLCD_FaultDetectCompleteInterrupt)
+    if (0U != (mask & (uint32_t)kSLCD_FaultDetectCompleteInterrupt))
     {
         gcrReg &= ~LCD_GCR_FDCIEN_MASK;
     }
 /*!< SLCD frame frequency interrupt source. */
 #if FSL_FEATURE_SLCD_HAS_FRAME_FREQUENCY_INTERRUPT
-    if (mask & kSLCD_FrameFreqInterrupt)
+    if (0U != (mask & (uint32_t)kSLCD_FrameFreqInterrupt))
     {
         gcrReg &= ~LCD_GCR_LCDIEN_MASK;
     }
@@ -269,22 +315,36 @@ void SLCD_DisableInterrupts(LCD_Type *base, uint32_t mask)
     base->GCR = gcrReg;
 }
 
+/*!
+ * brief Clears the SLCD interrupt events status flag.
+ *
+ * param base  SLCD peripheral base address.
+ * param mask  SLCD interrupt source to be cleared.
+ * This is the logical OR of members of the enumeration :: slcd_interrupt_enable_t.
+ */
 void SLCD_ClearInterruptStatus(LCD_Type *base, uint32_t mask)
 {
     /*!< SLCD fault detection complete interrupt source. */
-    if (mask & kSLCD_FaultDetectCompleteInterrupt)
+    if (0U != (mask & (uint32_t)kSLCD_FaultDetectCompleteInterrupt))
     {
         base->FDSR |= LCD_FDSR_FDCF_MASK;
     }
 /*!< SLCD frame frequency interrupt source. */
 #if FSL_FEATURE_SLCD_HAS_FRAME_FREQUENCY_INTERRUPT
-    if (mask & kSLCD_FrameFreqInterrupt)
+    if (0U != (mask & (uint32_t)kSLCD_FrameFreqInterrupt))
     {
         base->AR |= LCD_AR_LCDIF_MASK;
     }
 #endif /* FSL_FEATURE_SLCD_HAS_FRAME_FREQUENCY_INTERRUPT */
 }
 
+/*!
+ * brief Gets the SLCD interrupt status flag.
+ *
+ * param base  SLCD peripheral base address.
+ * return The event status of the interrupt source. This is the logical OR of members
+ *         of the enumeration :: slcd_interrupt_enable_t.
+ */
 uint32_t SLCD_GetInterruptStatus(LCD_Type *base)
 {
     uint32_t status = 0;

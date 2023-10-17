@@ -1,35 +1,9 @@
 /*
- * The Clear BSD License
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
  * Copyright 2016-2017 NXP
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- *  that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of the copyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #include "fsl_spi_dma.h"
@@ -79,18 +53,18 @@ static void SPI_TxDMACallback(dma_handle_t *handle, void *userData);
 static void SPI_RxDMACallback(dma_handle_t *handle, void *userData);
 
 /*******************************************************************************
-* Code
-******************************************************************************/
+ * Code
+ ******************************************************************************/
 static void SPI_TxDMACallback(dma_handle_t *handle, void *userData)
 {
     spi_dma_private_handle_t *privHandle = (spi_dma_private_handle_t *)userData;
-    spi_dma_handle_t *spiHandle = privHandle->handle;
-    SPI_Type *base = privHandle->base;
+    spi_dma_handle_t *spiHandle          = privHandle->handle;
+    SPI_Type *base                       = privHandle->base;
 
     /* Disable Tx dma */
-    SPI_EnableDMA(base, kSPI_TxDmaEnable, false);
+    SPI_EnableDMA(base, (uint8_t)kSPI_TxDmaEnable, false);
 
-    /* Stop DMA tranfer */
+    /* Stop DMA transfer */
     DMA_StopTransfer(spiHandle->txHandle);
 
     /* change the state */
@@ -99,8 +73,8 @@ static void SPI_TxDMACallback(dma_handle_t *handle, void *userData)
     /* All finished, call the callback */
     if ((spiHandle->txInProgress == false) && (spiHandle->rxInProgress == false))
     {
-        spiHandle->state = kSPI_Idle;
-        if (spiHandle->callback)
+        spiHandle->state = (uint32_t)kSPI_Idle;
+        if (spiHandle->callback != NULL)
         {
             (spiHandle->callback)(base, spiHandle, kStatus_Success, spiHandle->userData);
         }
@@ -110,13 +84,13 @@ static void SPI_TxDMACallback(dma_handle_t *handle, void *userData)
 static void SPI_RxDMACallback(dma_handle_t *handle, void *userData)
 {
     spi_dma_private_handle_t *privHandle = (spi_dma_private_handle_t *)userData;
-    spi_dma_handle_t *spiHandle = privHandle->handle;
-    SPI_Type *base = privHandle->base;
+    spi_dma_handle_t *spiHandle          = privHandle->handle;
+    SPI_Type *base                       = privHandle->base;
 
     /* Disable Tx dma */
-    SPI_EnableDMA(base, kSPI_RxDmaEnable, false);
+    SPI_EnableDMA(base, (uint8_t)kSPI_RxDmaEnable, false);
 
-    /* Stop DMA tranfer */
+    /* Stop DMA transfer */
     DMA_StopTransfer(spiHandle->rxHandle);
 
     /* change the state */
@@ -125,14 +99,27 @@ static void SPI_RxDMACallback(dma_handle_t *handle, void *userData)
     /* All finished, call the callback */
     if ((spiHandle->txInProgress == false) && (spiHandle->rxInProgress == false))
     {
-        spiHandle->state = kSPI_Idle;
-        if (spiHandle->callback)
+        spiHandle->state = (uint32_t)kSPI_Idle;
+        if (spiHandle->callback != NULL)
         {
             (spiHandle->callback)(base, spiHandle, kStatus_Success, spiHandle->userData);
         }
     }
 }
 
+/*!
+ * brief Initialize the SPI master DMA handle.
+ *
+ * This function initializes the SPI master DMA handle which can be used for other SPI master transactional APIs.
+ * Usually, for a specified SPI instance, user need only call this API once to get the initialized handle.
+ *
+ * param base SPI peripheral base address.
+ * param handle SPI handle pointer.
+ * param callback User callback function called at the end of a transfer.
+ * param userData User data for callback.
+ * param txHandle DMA handle pointer for SPI Tx, the handle shall be static allocated by users.
+ * param rxHandle DMA handle pointer for SPI Rx, the handle shall be static allocated by users.
+ */
 void SPI_MasterTransferCreateHandleDMA(SPI_Type *base,
                                        spi_dma_handle_t *handle,
                                        spi_dma_callback_t callback,
@@ -140,12 +127,12 @@ void SPI_MasterTransferCreateHandleDMA(SPI_Type *base,
                                        dma_handle_t *txHandle,
                                        dma_handle_t *rxHandle)
 {
-    assert(handle);
+    assert(handle != NULL);
     dma_transfer_config_t config = {0};
-    uint32_t instance = SPI_GetInstance(base);
+    uint32_t instance            = SPI_GetInstance(base);
 
     /* Zero the handle */
-    memset(handle, 0, sizeof(*handle));
+    (void)memset(handle, 0, sizeof(*handle));
 
     /* Set spi base to handle */
     handle->txHandle = txHandle;
@@ -154,10 +141,10 @@ void SPI_MasterTransferCreateHandleDMA(SPI_Type *base,
     handle->userData = userData;
 
     /* Set SPI state to idle */
-    handle->state = kSPI_Idle;
+    handle->state = (uint32_t)kSPI_Idle;
 
     /* Set handle to global state */
-    s_dmaPrivateHandle[instance].base = base;
+    s_dmaPrivateHandle[instance].base   = base;
     s_dmaPrivateHandle[instance].handle = handle;
 
 /* Compute internal state */
@@ -173,56 +160,69 @@ void SPI_MasterTransferCreateHandleDMA(SPI_Type *base,
        size. */
     if (FSL_FEATURE_SPI_FIFO_SIZEn(base) != 0)
     {
-        base->C3 &= ~SPI_C3_FIFOMODE_MASK;
+        base->C3 &= (uint8_t)(~SPI_C3_FIFOMODE_MASK);
     }
 
 #endif /* FSL_FEATURE_SPI_HAS_FIFO */
 
     /* Set the non-change attribute for Tx DMA transfer, to improve efficiency */
-    config.destAddr = SPI_GetDataRegisterAddress(base);
+    config.destAddr            = SPI_GetDataRegisterAddress(base);
     config.enableDestIncrement = false;
-    config.enableSrcIncrement = true;
+    config.enableSrcIncrement  = true;
     if (handle->bytesPerFrame == 1U)
     {
-        config.srcSize = kDMA_Transfersize8bits;
+        config.srcSize  = kDMA_Transfersize8bits;
         config.destSize = kDMA_Transfersize8bits;
     }
     else
     {
-        config.srcSize = kDMA_Transfersize16bits;
+        config.srcSize  = kDMA_Transfersize16bits;
         config.destSize = kDMA_Transfersize16bits;
     }
 
-    DMA_SubmitTransfer(handle->txHandle, &config, true);
+    (void)DMA_SubmitTransfer(handle->txHandle, &config, 1U);
 
     /* Set non-change attribute for Rx DMA */
-    config.srcAddr = SPI_GetDataRegisterAddress(base);
-    config.destAddr = 0U;
+    config.srcAddr             = SPI_GetDataRegisterAddress(base);
+    config.destAddr            = 0U;
     config.enableDestIncrement = true;
-    config.enableSrcIncrement = false;
-    DMA_SubmitTransfer(handle->rxHandle, &config, true);
+    config.enableSrcIncrement  = false;
+    (void)DMA_SubmitTransfer(handle->rxHandle, &config, 1U);
 
     /* Install callback for Tx dma channel */
     DMA_SetCallback(handle->txHandle, SPI_TxDMACallback, &s_dmaPrivateHandle[instance]);
     DMA_SetCallback(handle->rxHandle, SPI_RxDMACallback, &s_dmaPrivateHandle[instance]);
 }
 
+/*!
+ * brief Perform a non-blocking SPI transfer using DMA.
+ *
+ * note This interface returned immediately after transfer initiates, users should call
+ * SPI_GetTransferStatus to poll the transfer status to check whether SPI transfer finished.
+ *
+ * param base SPI peripheral base address.
+ * param handle SPI DMA handle pointer.
+ * param xfer Pointer to dma transfer structure.
+ * retval kStatus_Success Successfully start a transfer.
+ * retval kStatus_InvalidArgument Input argument is invalid.
+ * retval kStatus_SPI_Busy SPI is not idle, is running another transfer.
+ */
 status_t SPI_MasterTransferDMA(SPI_Type *base, spi_dma_handle_t *handle, spi_transfer_t *xfer)
 {
-    assert(handle && xfer);
+    assert((handle != NULL) && (xfer != NULL));
 
     dma_transfer_config_t config = {0};
 
     /* Check if the device is busy */
-    if (handle->state == kSPI_Busy)
+    if (handle->state == (uint32_t)kSPI_Busy)
     {
-        return kStatus_SPI_Busy;
+        return (status_t)kStatus_SPI_Busy;
     }
 
     /* Check if input parameter invalid */
     if (((xfer->txData == NULL) && (xfer->rxData == NULL)) || (xfer->dataSize == 0U))
     {
-        return kStatus_InvalidArgument;
+        return (status_t)kStatus_InvalidArgument;
     }
 
     /* Disable SPI and then enable it, this is used to clear S register*/
@@ -230,35 +230,35 @@ status_t SPI_MasterTransferDMA(SPI_Type *base, spi_dma_handle_t *handle, spi_tra
     SPI_Enable(base, true);
 
     /* Configure tx transfer DMA */
-    config.destAddr = SPI_GetDataRegisterAddress(base);
+    config.destAddr            = SPI_GetDataRegisterAddress(base);
     config.enableDestIncrement = false;
     if (handle->bytesPerFrame == 1U)
     {
-        config.srcSize = kDMA_Transfersize8bits;
+        config.srcSize  = kDMA_Transfersize8bits;
         config.destSize = kDMA_Transfersize8bits;
     }
     else
     {
-        config.srcSize = kDMA_Transfersize16bits;
+        config.srcSize  = kDMA_Transfersize16bits;
         config.destSize = kDMA_Transfersize16bits;
     }
     config.transferSize = xfer->dataSize;
     /* Configure DMA channel */
-    if (xfer->txData)
+    if (xfer->txData != NULL)
     {
         config.enableSrcIncrement = true;
-        config.srcAddr = (uint32_t)(xfer->txData);
+        config.srcAddr            = (uint32_t)(xfer->txData);
     }
     else
     {
         /* Disable the source increasement and source set to dummyData */
         config.enableSrcIncrement = false;
-        config.srcAddr = (uint32_t)(&g_spiDummyData[SPI_GetInstance(base)]);
+        config.srcAddr            = (uint32_t)(&g_spiDummyData[SPI_GetInstance(base)]);
     }
-    DMA_SubmitTransfer(handle->txHandle, &config, true);
+    (void)DMA_SubmitTransfer(handle->txHandle, &config, 1U);
 
     /* Handle rx transfer */
-    if (xfer->rxData)
+    if (xfer->rxData != NULL)
     {
         /* Set the source address */
         DMA_SetDestinationAddress(handle->rxHandle->base, handle->rxHandle->channel, (uint32_t)(xfer->rxData));
@@ -269,31 +269,40 @@ status_t SPI_MasterTransferDMA(SPI_Type *base, spi_dma_handle_t *handle, spi_tra
 
     /* Change the state of handle */
     handle->transferSize = xfer->dataSize;
-    handle->state = kSPI_Busy;
+    handle->state        = (uint32_t)kSPI_Busy;
 
     /* Start Rx transfer if needed */
-    if (xfer->rxData)
+    if (xfer->rxData != NULL)
     {
         handle->rxInProgress = true;
-        SPI_EnableDMA(base, kSPI_RxDmaEnable, true);
+        SPI_EnableDMA(base, (uint8_t)kSPI_RxDmaEnable, true);
         DMA_StartTransfer(handle->rxHandle);
     }
 
     /* Always start Tx transfer */
     handle->txInProgress = true;
-    SPI_EnableDMA(base, kSPI_TxDmaEnable, true);
+    SPI_EnableDMA(base, (uint8_t)kSPI_TxDmaEnable, true);
     DMA_StartTransfer(handle->txHandle);
 
     return kStatus_Success;
 }
 
+/*!
+ * brief Get the transferred bytes for SPI slave DMA.
+ *
+ * param base SPI peripheral base address.
+ * param handle SPI DMA handle pointer.
+ * param count Transferred bytes.
+ * retval kStatus_SPI_Success Succeed get the transfer count.
+ * retval kStatus_NoTransferInProgress There is not a non-blocking transaction currently in progress.
+ */
 status_t SPI_MasterTransferGetCountDMA(SPI_Type *base, spi_dma_handle_t *handle, size_t *count)
 {
-    assert(handle);
+    assert(handle != NULL);
 
     status_t status = kStatus_Success;
 
-    if (handle->state != kSPI_Busy)
+    if (handle->state != (uint32_t)kSPI_Busy)
     {
         status = kStatus_NoTransferInProgress;
     }
@@ -312,19 +321,25 @@ status_t SPI_MasterTransferGetCountDMA(SPI_Type *base, spi_dma_handle_t *handle,
     return status;
 }
 
+/*!
+ * brief Abort a SPI transfer using DMA.
+ *
+ * param base SPI peripheral base address.
+ * param handle SPI DMA handle pointer.
+ */
 void SPI_MasterTransferAbortDMA(SPI_Type *base, spi_dma_handle_t *handle)
 {
-    assert(handle);
+    assert(handle != NULL);
 
     /* Disable dma */
     DMA_StopTransfer(handle->txHandle);
     DMA_StopTransfer(handle->rxHandle);
 
     /* Disable DMA enable bit */
-    SPI_EnableDMA(base, kSPI_DmaAllEnable, false);
+    SPI_EnableDMA(base, (uint8_t)kSPI_DmaAllEnable, false);
 
     /* Set the handle state */
     handle->txInProgress = false;
     handle->rxInProgress = false;
-    handle->state = kSPI_Idle;
+    handle->state        = (uint32_t)kSPI_Idle;
 }
