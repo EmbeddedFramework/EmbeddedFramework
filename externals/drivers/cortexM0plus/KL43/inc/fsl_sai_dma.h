@@ -1,41 +1,15 @@
 /*
- * The Clear BSD License
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
  * Copyright 2016-2017 NXP
  * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- *  that the following conditions are met:
  *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of the copyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef _FSL_SAI_DMA_H_
 #define _FSL_SAI_DMA_H_
 
-#include "fsl_sai.h"
 #include "fsl_dma.h"
+#include "fsl_sai.h"
 
 /*!
  * @addtogroup sai_dma
@@ -48,7 +22,7 @@
 
 /*! @name Driver version */
 /*@{*/
-#define FSL_SAI_DMA_DRIVER_VERSION (MAKE_VERSION(2, 1, 4)) /*!< Version 2.1.4 */
+#define FSL_SAI_DMA_DRIVER_VERSION (MAKE_VERSION(2, 3, 1)) /*!< Version 2.3.1 */
 /*@}*/
 
 typedef struct _sai_dma_handle sai_dma_handle_t;
@@ -63,7 +37,7 @@ struct _sai_dma_handle
     uint8_t bytesPerFrame;                        /*!< Bytes in a frame */
     uint8_t channel;                              /*!< Which Data channel SAI use */
     uint32_t state;                               /*!< SAI DMA transfer internal state */
-    sai_dma_callback_t callback;                  /*!< Callback for users while transfer finish or error occured */
+    sai_dma_callback_t callback;                  /*!< Callback for users while transfer finish or error occurred */
     void *userData;                               /*!< User callback parameter */
     sai_transfer_t saiQueue[SAI_XFER_QUEUE_SIZE]; /*!< Transfer queue storing queued transfer. */
     size_t transferSize[SAI_XFER_QUEUE_SIZE];     /*!< Data bytes need to transfer */
@@ -77,7 +51,6 @@ struct _sai_dma_handle
 #if defined(__cplusplus)
 extern "C" {
 #endif
-
 /*!
  * @name DMA Transactional
  * @{
@@ -129,7 +102,7 @@ void SAI_TransferRxCreateHandleDMA(
  * clock, this value should equals to masterClockHz in format.
  * @retval kStatus_Success Audio format set successfully.
  * @retval kStatus_InvalidArgument The input arguments is invalid.
-*/
+ */
 void SAI_TransferTxSetFormatDMA(I2S_Type *base,
                                 sai_dma_handle_t *handle,
                                 sai_transfer_format_t *format,
@@ -150,7 +123,7 @@ void SAI_TransferTxSetFormatDMA(I2S_Type *base,
  * clock, this value should equals to masterClockHz in format.
  * @retval kStatus_Success Audio format set successfully.
  * @retval kStatus_InvalidArgument The input arguments is invalid.
-*/
+ */
 void SAI_TransferRxSetFormatDMA(I2S_Type *base,
                                 sai_dma_handle_t *handle,
                                 sai_transfer_format_t *format,
@@ -224,6 +197,26 @@ status_t SAI_TransferGetSendCountDMA(I2S_Type *base, sai_dma_handle_t *handle, s
  * @retval kStatus_NoTransferInProgress There is not a non-blocking transaction currently in progress.
  */
 status_t SAI_TransferGetReceiveCountDMA(I2S_Type *base, sai_dma_handle_t *handle, size_t *count);
+
+/*!
+ * @brief Configures the SAI Tx.
+ *
+ *
+ * @param base SAI base pointer.
+ * @param handle SAI DMA handle pointer.
+ * @param saiConfig sai configurations.
+ */
+void SAI_TransferTxSetConfigDMA(I2S_Type *base, sai_dma_handle_t *handle, sai_transceiver_t *saiConfig);
+
+/*!
+ * @brief Configures the SAI Rx.
+ *
+ *
+ * @param base SAI base pointer.
+ * @param handle SAI DMA handle pointer.
+ * @param saiConfig sai configurations.
+ */
+void SAI_TransferRxSetConfigDMA(I2S_Type *base, sai_dma_handle_t *handle, sai_transceiver_t *saiConfig);
 
 /*! @} */
 

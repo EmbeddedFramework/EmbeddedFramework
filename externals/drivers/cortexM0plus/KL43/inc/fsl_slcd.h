@@ -1,35 +1,9 @@
 /*
- * The Clear BSD License
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
- * Copyright 2016-2017 NXP
+ * Copyright 2016-2019 NXP
  * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- *  that the following conditions are met:
  *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of the copyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #ifndef _FSL_SLCD_H_
@@ -42,15 +16,14 @@
  * @{
  */
 
-
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
 
 /*! @name Driver version */
 /*@{*/
-/*! @brief SLCD driver version 2.0.1. */
-#define FSL_SLCD_DRIVER_VERSION (MAKE_VERSION(2, 0, 1))
+/*! @brief SLCD driver version. */
+#define FSL_SLCD_DRIVER_VERSION (MAKE_VERSION(2, 0, 2))
 /*@}*/
 
 /*! @brief SLCD power supply option. */
@@ -119,7 +92,7 @@ typedef enum _slcd_load_adjust
 /*! @brief SLCD clock source. */
 typedef enum _slcd_clock_src
 {
-    kSLCD_DefaultClk = 0U,    /*!< Select default clock ERCLK32K. */
+    kSLCD_DefaultClk    = 0U, /*!< Select default clock ERCLK32K. */
     kSLCD_AlternateClk1 = 1U, /*!< Select alternate clock source 1 : MCGIRCLK. */
 #if FSL_FEATURE_SLCD_HAS_MULTI_ALTERNATE_CLOCK_SOURCE
     kSLCD_AlternateClk2 = 3U /*!< Select alternate clock source 2 : OSCERCLK. */
@@ -165,14 +138,14 @@ typedef enum _slcd_duty_cycle
 typedef enum _slcd_phase_type
 {
     kSLCD_NoPhaseActivate = 0x00U, /*!< LCD wareform no phase activates. */
-    kSLCD_PhaseAActivate = 0x01U,  /*!< LCD waveform phase A activates. */
-    kSLCD_PhaseBActivate = 0x02U,  /*!< LCD waveform phase B activates. */
-    kSLCD_PhaseCActivate = 0x04U,  /*!< LCD waveform phase C activates. */
-    kSLCD_PhaseDActivate = 0x08U,  /*!< LCD waveform phase D activates. */
-    kSLCD_PhaseEActivate = 0x10U,  /*!< LCD waveform phase E activates. */
-    kSLCD_PhaseFActivate = 0x20U,  /*!< LCD waveform phase F activates. */
-    kSLCD_PhaseGActivate = 0x40U,  /*!< LCD waveform phase G activates. */
-    kSLCD_PhaseHActivate = 0x80U   /*!< LCD waveform phase H activates. */
+    kSLCD_PhaseAActivate  = 0x01U, /*!< LCD waveform phase A activates. */
+    kSLCD_PhaseBActivate  = 0x02U, /*!< LCD waveform phase B activates. */
+    kSLCD_PhaseCActivate  = 0x04U, /*!< LCD waveform phase C activates. */
+    kSLCD_PhaseDActivate  = 0x08U, /*!< LCD waveform phase D activates. */
+    kSLCD_PhaseEActivate  = 0x10U, /*!< LCD waveform phase E activates. */
+    kSLCD_PhaseFActivate  = 0x20U, /*!< LCD waveform phase F activates. */
+    kSLCD_PhaseGActivate  = 0x40U, /*!< LCD waveform phase G activates. */
+    kSLCD_PhaseHActivate  = 0x80U  /*!< LCD waveform phase H activates. */
 } slcd_phase_type_t;
 
 /*! @brief SLCD segment phase bit index. */
@@ -349,12 +322,12 @@ void SLCD_Deinit(LCD_Type *base);
  * or modify fields of the structure before the calling SLCD_Init().
  * All default parameters of the configure structuration are listed.
  * @code
-   config.displayMode        = kSLCD_NormalMode; // SLCD normal mode
-   config.powerSupply        = kSLCD_InternalVll3UseChargePump;  // Use charge pump internal VLL3
+   config.displayMode        = kSLCD_NormalMode;
+   config.powerSupply        = kSLCD_InternalVll3UseChargePump;
    config.voltageTrim        = kSLCD_RegulatedVolatgeTrim00;
-   config.lowPowerBehavior   = kSLCD_EnabledInWaitStop;  // Work on low power mode
-   config.interruptSrc       = 0;                // No interrupt source is enabled
-   config.faultConfig        = NULL;             // Fault detection is disabled
+   config.lowPowerBehavior   = kSLCD_EnabledInWaitStop;
+   config.interruptSrc       = 0;
+   config.faultConfig        = NULL;
    config.frameFreqIntEnable =  false;
    @endcode
  * @param configure The SLCD configuration structure pointer.
@@ -425,7 +398,7 @@ static inline void SLCD_StopBlinkMode(LCD_Type *base)
  */
 static inline void SLCD_SetBackPlanePhase(LCD_Type *base, uint32_t pinIndx, slcd_phase_type_t phase)
 {
-    base->WF8B[pinIndx] = phase;
+    base->WF8B[pinIndx] = (uint8_t)phase;
 }
 
 /*!
@@ -476,11 +449,11 @@ static inline void SLCD_SetFrontPlaneOnePhase(LCD_Type *base,
 
     if (enable)
     {
-        base->WF8B[pinIndx] = (reg | (1U << phaseIndx));
+        base->WF8B[pinIndx] = (reg | (1U << (uint32_t)phaseIndx));
     }
     else
     {
-        base->WF8B[pinIndx] = (reg & ~(1U << phaseIndx));
+        base->WF8B[pinIndx] = (reg & ~(1U << (uint32_t)phaseIndx));
     }
 }
 

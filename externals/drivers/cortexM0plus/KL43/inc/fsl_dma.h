@@ -1,35 +1,9 @@
 /*
- * The Clear BSD License
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
  * Copyright 2016-2017 NXP
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- *  that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of the copyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #ifndef _FSL_DMA_H_
@@ -42,28 +16,27 @@
  * @{
  */
 
-
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
 
 /*! @name Driver version */
 /*@{*/
-/*! @brief DMA driver version 2.0.1. */
-#define FSL_DMA_DRIVER_VERSION (MAKE_VERSION(2, 0, 1))
+/*! @brief DMA driver version 2.0.2. */
+#define FSL_DMA_DRIVER_VERSION (MAKE_VERSION(2, 0, 2))
 /*@}*/
 
-/*! @brief status flag for the DMA driver. */
-enum _dma_channel_status_flags
+/*! @brief _dma_channel_status_flags status flag for the DMA driver. */
+enum
 {
-    kDMA_TransactionsBCRFlag = DMA_DSR_BCR_BCR_MASK,       /*!< Contains the number of bytes yet to be
-                                                                transferred for a given block */
-    kDMA_TransactionsDoneFlag = DMA_DSR_BCR_DONE_MASK,     /*!< Transactions Done */
-    kDMA_TransactionsBusyFlag = DMA_DSR_BCR_BSY_MASK,      /*!< Transactions Busy */
-    kDMA_TransactionsRequestFlag = DMA_DSR_BCR_REQ_MASK,   /*!< Transactions Request */
-    kDMA_BusErrorOnDestinationFlag = DMA_DSR_BCR_BED_MASK, /*!< Bus Error on Destination */
-    kDMA_BusErrorOnSourceFlag = DMA_DSR_BCR_BES_MASK,      /*!< Bus Error on Source */
-    kDMA_ConfigurationErrorFlag = DMA_DSR_BCR_CE_MASK,     /*!< Configuration Error */
+    kDMA_TransactionsBCRFlag = DMA_DSR_BCR_BCR_MASK,        /*!< Contains the number of bytes yet to be
+                                                                 transferred for a given block */
+    kDMA_TransactionsDoneFlag      = DMA_DSR_BCR_DONE_MASK, /*!< Transactions Done */
+    kDMA_TransactionsBusyFlag      = DMA_DSR_BCR_BSY_MASK,  /*!< Transactions Busy */
+    kDMA_TransactionsRequestFlag   = DMA_DSR_BCR_REQ_MASK,  /*!< Transactions Request */
+    kDMA_BusErrorOnDestinationFlag = DMA_DSR_BCR_BED_MASK,  /*!< Bus Error on Destination */
+    kDMA_BusErrorOnSourceFlag      = DMA_DSR_BCR_BES_MASK,  /*!< Bus Error on Source */
+    kDMA_ConfigurationErrorFlag    = DMA_DSR_BCR_CE_MASK,   /*!< Configuration Error */
 };
 
 /*! @brief DMA transfer size type*/
@@ -120,10 +93,10 @@ typedef enum _dma_transfer_options
     kDMA_EnableInterrupt,  /*!< Enable interrupt while transfer complete. */
 } dma_transfer_options_t;
 
-/*! @brief DMA transfer status */
-enum _dma_transfer_status
+/*! @brief _dma_transfer_status DMA transfer status */
+enum
 {
-    kStatus_DMA_Busy = MAKE_STATUS(kStatusGroup_DMA, 0),
+    kStatus_DMA_Busy = MAKE_STATUS(kStatusGroup_DMA, 0), /*!< DMA is busy. */
 };
 
 /*! @brief DMA transfer configuration structure */
@@ -258,7 +231,7 @@ void DMA_SetChannelLinkConfig(DMA_Type *base, uint32_t channel, const dma_channe
  */
 static inline void DMA_SetSourceAddress(DMA_Type *base, uint32_t channel, uint32_t srcAddr)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     base->DMA[channel].SAR = srcAddr;
 }
@@ -272,7 +245,7 @@ static inline void DMA_SetSourceAddress(DMA_Type *base, uint32_t channel, uint32
  */
 static inline void DMA_SetDestinationAddress(DMA_Type *base, uint32_t channel, uint32_t destAddr)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     base->DMA[channel].DAR = destAddr;
 }
@@ -286,7 +259,7 @@ static inline void DMA_SetDestinationAddress(DMA_Type *base, uint32_t channel, u
  */
 static inline void DMA_SetTransferSize(DMA_Type *base, uint32_t channel, uint32_t size)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     base->DMA[channel].DSR_BCR = DMA_DSR_BCR_BCR(size);
 }
@@ -317,7 +290,7 @@ void DMA_SetModulo(DMA_Type *base, uint32_t channel, dma_modulo_t srcModulo, dma
  */
 static inline void DMA_EnableCycleSteal(DMA_Type *base, uint32_t channel, bool enable)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     base->DMA[channel].DCR = (base->DMA[channel].DCR & (~DMA_DCR_CS_MASK)) | DMA_DCR_CS(enable);
 }
@@ -334,7 +307,7 @@ static inline void DMA_EnableCycleSteal(DMA_Type *base, uint32_t channel, bool e
  */
 static inline void DMA_EnableAutoAlign(DMA_Type *base, uint32_t channel, bool enable)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     base->DMA[channel].DCR = (base->DMA[channel].DCR & (~DMA_DCR_AA_MASK)) | DMA_DCR_AA(enable);
 }
@@ -351,7 +324,7 @@ static inline void DMA_EnableAutoAlign(DMA_Type *base, uint32_t channel, bool en
  */
 static inline void DMA_EnableAsyncRequest(DMA_Type *base, uint32_t channel, bool enable)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     base->DMA[channel].DCR = (base->DMA[channel].DCR & (~DMA_DCR_EADREQ_MASK)) | DMA_DCR_EADREQ(enable);
 }
@@ -364,7 +337,7 @@ static inline void DMA_EnableAsyncRequest(DMA_Type *base, uint32_t channel, bool
  */
 static inline void DMA_EnableInterrupts(DMA_Type *base, uint32_t channel)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     base->DMA[channel].DCR |= DMA_DCR_EINT(true);
 }
@@ -377,7 +350,7 @@ static inline void DMA_EnableInterrupts(DMA_Type *base, uint32_t channel)
  */
 static inline void DMA_DisableInterrupts(DMA_Type *base, uint32_t channel)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     base->DMA[channel].DCR &= ~DMA_DCR_EINT_MASK;
 }
@@ -396,7 +369,7 @@ static inline void DMA_DisableInterrupts(DMA_Type *base, uint32_t channel)
  */
 static inline void DMA_EnableChannelRequest(DMA_Type *base, uint32_t channel)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     base->DMA[channel].DCR |= DMA_DCR_ERQ_MASK;
 }
@@ -409,7 +382,7 @@ static inline void DMA_EnableChannelRequest(DMA_Type *base, uint32_t channel)
  */
 static inline void DMA_DisableChannelRequest(DMA_Type *base, uint32_t channel)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     base->DMA[channel].DCR &= ~DMA_DCR_ERQ_MASK;
 }
@@ -424,7 +397,7 @@ static inline void DMA_DisableChannelRequest(DMA_Type *base, uint32_t channel)
  */
 static inline void DMA_TriggerChannelStart(DMA_Type *base, uint32_t channel)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     base->DMA[channel].DCR |= DMA_DCR_START_MASK;
 }
@@ -444,7 +417,7 @@ static inline void DMA_TriggerChannelStart(DMA_Type *base, uint32_t channel)
  */
 static inline uint32_t DMA_GetRemainingBytes(DMA_Type *base, uint32_t channel)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     return (base->DMA[channel].DSR_BCR & DMA_DSR_BCR_BCR_MASK) >> DMA_DSR_BCR_BCR_SHIFT;
 }
@@ -459,7 +432,7 @@ static inline uint32_t DMA_GetRemainingBytes(DMA_Type *base, uint32_t channel)
  */
 static inline uint32_t DMA_GetChannelStatusFlags(DMA_Type *base, uint32_t channel)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     return base->DMA[channel].DSR_BCR;
 }
@@ -474,7 +447,7 @@ static inline uint32_t DMA_GetChannelStatusFlags(DMA_Type *base, uint32_t channe
  */
 static inline void DMA_ClearChannelStatusFlags(DMA_Type *base, uint32_t channel, uint32_t mask)
 {
-    assert(channel < FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
+    assert(channel < (uint32_t)FSL_FEATURE_DMAMUX_MODULE_CHANNEL);
 
     if (mask != 0U)
     {

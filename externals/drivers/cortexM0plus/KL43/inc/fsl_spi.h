@@ -1,35 +1,9 @@
 /*
- * The Clear BSD License
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
- * Copyright 2016-2017 NXP
+ * Copyright 2016-2020 NXP
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- *  that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of the copyright holder nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * SPDX-License-Identifier: BSD-3-Clause
  */
 #ifndef _FSL_SPI_H_
 #define _FSL_SPI_H_
@@ -47,13 +21,18 @@
 
 /*! @name Driver version */
 /*@{*/
-/*! @brief SPI driver version 2.0.3. */
-#define FSL_SPI_DRIVER_VERSION (MAKE_VERSION(2, 0, 4))
+/*! @brief SPI driver version 2.1.0. */
+#define FSL_SPI_DRIVER_VERSION (MAKE_VERSION(2, 1, 0))
 /*@}*/
 
 #ifndef SPI_DUMMYDATA
 /*! @brief SPI dummy transfer data, the data is sent while txBuff is NULL. */
 #define SPI_DUMMYDATA (0xFFU)
+#endif
+
+/*! @brief Retry times for waiting flag. */
+#ifndef SPI_RETRY_TIMES
+#define SPI_RETRY_TIMES 0U /* Define to zero means keep waiting until the flag is assert/deassert. */
 #endif
 
 /*! @brief Global variable for dummy data value setting. */
@@ -62,9 +41,10 @@ extern volatile uint8_t g_spiDummyData[];
 /*! @brief Return status for the SPI driver.*/
 enum _spi_status
 {
-    kStatus_SPI_Busy = MAKE_STATUS(kStatusGroup_SPI, 0), /*!< SPI bus is busy */
-    kStatus_SPI_Idle = MAKE_STATUS(kStatusGroup_SPI, 1), /*!< SPI is idle */
-    kStatus_SPI_Error = MAKE_STATUS(kStatusGroup_SPI, 2) /*!< SPI  error */
+    kStatus_SPI_Busy    = MAKE_STATUS(kStatusGroup_SPI, 0), /*!< SPI bus is busy */
+    kStatus_SPI_Idle    = MAKE_STATUS(kStatusGroup_SPI, 1), /*!< SPI is idle */
+    kStatus_SPI_Error   = MAKE_STATUS(kStatusGroup_SPI, 2), /*!< SPI error */
+    kStatus_SPI_Timeout = MAKE_STATUS(kStatusGroup_SPI, 3)  /*!< SPI timeout polling status flags. */
 };
 
 /*! @brief SPI clock polarity configuration.*/
@@ -93,16 +73,16 @@ typedef enum _spi_shift_direction
 /*! @brief SPI slave select output mode options.*/
 typedef enum _spi_ss_output_mode
 {
-    kSPI_SlaveSelectAsGpio = 0x0U,         /*!< Slave select pin configured as GPIO. */
-    kSPI_SlaveSelectFaultInput = 0x2U,     /*!< Slave select pin configured for fault detection. */
-    kSPI_SlaveSelectAutomaticOutput = 0x3U /*!< Slave select pin configured for automatic SPI output. */
+    kSPI_SlaveSelectAsGpio          = 0x0U, /*!< Slave select pin configured as GPIO. */
+    kSPI_SlaveSelectFaultInput      = 0x2U, /*!< Slave select pin configured for fault detection. */
+    kSPI_SlaveSelectAutomaticOutput = 0x3U  /*!< Slave select pin configured for automatic SPI output. */
 } spi_ss_output_mode_t;
 
 /*! @brief SPI pin mode options.*/
 typedef enum _spi_pin_mode
 {
     kSPI_PinModeNormal = 0x0U, /*!< Pins operate in normal, single-direction mode.*/
-    kSPI_PinModeInput = 0x1U,  /*!< Bidirectional mode. Master: MOSI pin is input;
+    kSPI_PinModeInput  = 0x1U, /*!< Bidirectional mode. Master: MOSI pin is input;
                                 *   Slave: MISO pin is input. */
     kSPI_PinModeOutput = 0x3U  /*!< Bidirectional mode. Master: MOSI pin is output;
                                 *   Slave: MISO pin is output. */
@@ -119,10 +99,10 @@ typedef enum _spi_data_bitcount_mode
 enum _spi_interrupt_enable
 {
     kSPI_RxFullAndModfInterruptEnable = 0x1U, /*!< Receive buffer full (SPRF) and mode fault (MODF) interrupt */
-    kSPI_TxEmptyInterruptEnable = 0x2U,       /*!< Transmit buffer empty interrupt */
-    kSPI_MatchInterruptEnable = 0x4U,         /*!< Match interrupt */
+    kSPI_TxEmptyInterruptEnable       = 0x2U, /*!< Transmit buffer empty interrupt */
+    kSPI_MatchInterruptEnable         = 0x4U, /*!< Match interrupt */
 #if defined(FSL_FEATURE_SPI_HAS_FIFO) && FSL_FEATURE_SPI_HAS_FIFO
-    kSPI_RxFifoNearFullInterruptEnable = 0x8U,   /*!< Receive FIFO nearly full interrupt */
+    kSPI_RxFifoNearFullInterruptEnable  = 0x8U,  /*!< Receive FIFO nearly full interrupt */
     kSPI_TxFifoNearEmptyInterruptEnable = 0x10U, /*!< Transmit FIFO nearly empty interrupt */
 #endif                                           /* FSL_FEATURE_SPI_HAS_FIFO */
 };
@@ -130,44 +110,44 @@ enum _spi_interrupt_enable
 /*! @brief SPI status flags.*/
 enum _spi_flags
 {
-    kSPI_RxBufferFullFlag = SPI_S_SPRF_MASK,   /*!< Read buffer full flag */
-    kSPI_MatchFlag = SPI_S_SPMF_MASK,          /*!< Match flag */
+    kSPI_RxBufferFullFlag  = SPI_S_SPRF_MASK,  /*!< Read buffer full flag */
+    kSPI_MatchFlag         = SPI_S_SPMF_MASK,  /*!< Match flag */
     kSPI_TxBufferEmptyFlag = SPI_S_SPTEF_MASK, /*!< Transmit buffer empty flag */
-    kSPI_ModeFaultFlag = SPI_S_MODF_MASK,      /*!< Mode fault flag */
+    kSPI_ModeFaultFlag     = SPI_S_MODF_MASK,  /*!< Mode fault flag */
 #if defined(FSL_FEATURE_SPI_HAS_FIFO) && FSL_FEATURE_SPI_HAS_FIFO
-    kSPI_RxFifoNearFullFlag = SPI_S_RNFULLF_MASK,  /*!< Rx FIFO near full */
-    kSPI_TxFifoNearEmptyFlag = SPI_S_TNEAREF_MASK, /*!< Tx FIFO near empty */
-    kSPI_TxFifoFullFlag = SPI_S_TXFULLF_MASK,      /*!< Tx FIFO full */
-    kSPI_RxFifoEmptyFlag = SPI_S_RFIFOEF_MASK,     /*!< Rx FIFO empty */
-    kSPI_TxFifoError = SPI_CI_TXFERR_MASK << 8U,   /*!< Tx FIFO error */
-    kSPI_RxFifoError = SPI_CI_RXFERR_MASK << 8U,   /*!< Rx FIFO error */
-    kSPI_TxOverflow = SPI_CI_TXFOF_MASK << 8U,     /*!< Tx FIFO Overflow */
-    kSPI_RxOverflow = SPI_CI_RXFOF_MASK << 8U      /*!< Rx FIFO Overflow */
-#endif                                             /* FSL_FEATURE_SPI_HAS_FIFO */
+    kSPI_RxFifoNearFullFlag  = SPI_S_RNFULLF_MASK,       /*!< Rx FIFO near full */
+    kSPI_TxFifoNearEmptyFlag = SPI_S_TNEAREF_MASK,       /*!< Tx FIFO near empty */
+    kSPI_TxFifoFullFlag      = SPI_S_TXFULLF_MASK,       /*!< Tx FIFO full */
+    kSPI_RxFifoEmptyFlag     = SPI_S_RFIFOEF_MASK,       /*!< Rx FIFO empty */
+    kSPI_TxFifoError         = SPI_CI_TXFERR_MASK << 8U, /*!< Tx FIFO error */
+    kSPI_RxFifoError         = SPI_CI_RXFERR_MASK << 8U, /*!< Rx FIFO error */
+    kSPI_TxOverflow          = SPI_CI_TXFOF_MASK << 8U,  /*!< Tx FIFO Overflow */
+    kSPI_RxOverflow          = SPI_CI_RXFOF_MASK << 8U   /*!< Rx FIFO Overflow */
+#endif                                                   /* FSL_FEATURE_SPI_HAS_FIFO */
 };
 
 #if defined(FSL_FEATURE_SPI_HAS_FIFO) && FSL_FEATURE_SPI_HAS_FIFO
 /*! @brief SPI FIFO write-1-to-clear interrupt flags.*/
 typedef enum _spi_w1c_interrupt
 {
-    kSPI_RxFifoFullClearInterrupt = SPI_CI_SPRFCI_MASK,    /*!< Receive FIFO full interrupt */
-    kSPI_TxFifoEmptyClearInterrupt = SPI_CI_SPTEFCI_MASK,  /*!< Transmit FIFO empty interrupt */
-    kSPI_RxNearFullClearInterrupt = SPI_CI_RNFULLFCI_MASK, /*!< Receive FIFO nearly full interrupt */
-    kSPI_TxNearEmptyClearInterrupt = SPI_CI_TNEAREFCI_MASK /*!< Transmit FIFO nearly empty interrupt */
+    kSPI_RxFifoFullClearInterrupt  = SPI_CI_SPRFCI_MASK,    /*!< Receive FIFO full interrupt */
+    kSPI_TxFifoEmptyClearInterrupt = SPI_CI_SPTEFCI_MASK,   /*!< Transmit FIFO empty interrupt */
+    kSPI_RxNearFullClearInterrupt  = SPI_CI_RNFULLFCI_MASK, /*!< Receive FIFO nearly full interrupt */
+    kSPI_TxNearEmptyClearInterrupt = SPI_CI_TNEAREFCI_MASK  /*!< Transmit FIFO nearly empty interrupt */
 } spi_w1c_interrupt_t;
 
 /*! @brief SPI TX FIFO watermark settings.*/
 typedef enum _spi_txfifo_watermark
 {
     kSPI_TxFifoOneFourthEmpty = 0, /*!< SPI tx watermark at 1/4 FIFO size */
-    kSPI_TxFifoOneHalfEmpty = 1    /*!< SPI tx watermark at 1/2 FIFO size */
+    kSPI_TxFifoOneHalfEmpty   = 1  /*!< SPI tx watermark at 1/2 FIFO size */
 } spi_txfifo_watermark_t;
 
 /*! @brief SPI RX FIFO watermark settings.*/
 typedef enum _spi_rxfifo_watermark
 {
     kSPI_RxFifoThreeFourthsFull = 0, /*!< SPI rx watermark at 3/4 FIFO size */
-    kSPI_RxFifoOneHalfFull = 1       /*!< SPI rx watermark at 1/2 FIFO size */
+    kSPI_RxFifoOneHalfFull      = 1  /*!< SPI rx watermark at 1/2 FIFO size */
 } spi_rxfifo_watermark_t;
 #endif /* FSL_FEATURE_SPI_HAS_FIFO */
 
@@ -175,8 +155,8 @@ typedef enum _spi_rxfifo_watermark
 /*! @brief SPI DMA source*/
 enum _spi_dma_enable_t
 {
-    kSPI_TxDmaEnable = SPI_C2_TXDMAE_MASK,                        /*!< Tx DMA request source */
-    kSPI_RxDmaEnable = SPI_C2_RXDMAE_MASK,                        /*!< Rx DMA request source */
+    kSPI_TxDmaEnable  = SPI_C2_TXDMAE_MASK,                       /*!< Tx DMA request source */
+    kSPI_RxDmaEnable  = SPI_C2_RXDMAE_MASK,                       /*!< Rx DMA request source */
     kSPI_DmaAllEnable = (SPI_C2_TXDMAE_MASK | SPI_C2_RXDMAE_MASK) /*!< All DMA request source*/
 };
 #endif /* FSL_FEATURE_SPI_HAS_DMA_SUPPORT */
@@ -363,7 +343,7 @@ static inline void SPI_Enable(SPI_Type *base, bool enable)
     }
     else
     {
-        base->C1 &= ~SPI_C1_SPE_MASK;
+        base->C1 &= (uint8_t)~SPI_C1_SPE_MASK;
     }
 }
 
@@ -387,14 +367,15 @@ uint32_t SPI_GetStatusFlags(SPI_Type *base);
  * @brief Clear the interrupt if enable INCTLR.
  *
  * @param base SPI base pointer
- * @param interrupt Interrupt need to be cleared
+ * @param mask Interrupt need to be cleared
  *      The parameter could be any combination of the following values:
- *          @arg kSPIRxFifoFullClearInt
- *          @arg kSPITxFifoEmptyClearInt
- *          @arg kSPIRxNearFullClearInt
- *          @arg kSPITxNearEmptyClearInt
+ *          @arg kSPI_RxFullAndModfInterruptEnable
+ *          @arg kSPI_TxEmptyInterruptEnable
+ *          @arg kSPI_MatchInterruptEnable
+ *          @arg kSPI_RxFifoNearFullInterruptEnable
+ *          @arg kSPI_TxFifoNearEmptyInterruptEnable
  */
-static inline void SPI_ClearInterrupt(SPI_Type *base, uint32_t mask)
+static inline void SPI_ClearInterrupt(SPI_Type *base, uint8_t mask)
 {
     base->CI |= mask;
 }
@@ -445,10 +426,10 @@ void SPI_DisableInterrupts(SPI_Type *base, uint32_t mask);
  * @brief Enables the DMA source for SPI.
  *
  * @param base SPI base pointer
- * @param source SPI DMA source.
+ * @param mask SPI DMA source.
  * @param enable True means enable DMA, false means disable DMA
  */
-static inline void SPI_EnableDMA(SPI_Type *base, uint32_t mask, bool enable)
+static inline void SPI_EnableDMA(SPI_Type *base, uint8_t mask, bool enable)
 {
     if (enable)
     {
@@ -496,14 +477,14 @@ uint32_t SPI_GetInstance(SPI_Type *base);
  * @brief Sets the pin mode for transfer.
  *
  * @param base SPI base pointer
- * @param pinMode pin mode for transfer AND #_spi_pin_mode could get the related configuration.
+ * @param pinMode pin mode for transfer AND _spi_pin_mode could get the related configuration.
  */
 static inline void SPI_SetPinMode(SPI_Type *base, spi_pin_mode_t pinMode)
 {
     /* Clear SPC0 and BIDIROE bit. */
-    base->C2 &= ~(SPI_C2_BIDIROE_MASK | SPI_C2_SPC0_MASK);
+    base->C2 &= (uint8_t) ~(SPI_C2_BIDIROE_MASK | SPI_C2_SPC0_MASK);
     /* Set pin mode for transfer. */
-    base->C2 |= SPI_C2_BIDIROE(pinMode >> 1U) | SPI_C2_SPC0(pinMode & 1U);
+    base->C2 |= SPI_C2_BIDIROE((uint8_t)pinMode >> 1U) | SPI_C2_SPC0((uint8_t)pinMode & 1U);
 }
 
 /*!
@@ -528,10 +509,10 @@ void SPI_MasterSetBaudRate(SPI_Type *base, uint32_t baudRate_Bps, uint32_t srcCl
 static inline void SPI_SetMatchData(SPI_Type *base, uint32_t matchData)
 {
 #if defined(FSL_FEATURE_SPI_16BIT_TRANSFERS) && FSL_FEATURE_SPI_16BIT_TRANSFERS
-    base->ML = matchData & 0xFFU;
-    base->MH = (matchData >> 8U) & 0xFFU;
+    base->ML = (uint8_t)matchData & 0xFFU;
+    base->MH = (uint8_t)(matchData >> 8U) & 0xFFU;
 #else
-    base->M = matchData;
+    base->M = (uint8_t)matchData;
 #endif /* FSL_FEATURE_SPI_16BIT_TRANSFERS */
 }
 
@@ -553,8 +534,9 @@ void SPI_EnableFIFO(SPI_Type *base, bool enable);
  * @param base SPI base pointer
  * @param buffer The data bytes to send
  * @param size The number of data bytes to send
+ * @return kStatus_SPI_Timeout The transfer timed out and was aborted.
  */
-void SPI_WriteBlocking(SPI_Type *base, uint8_t *buffer, size_t size);
+status_t SPI_WriteBlocking(SPI_Type *base, uint8_t *buffer, size_t size);
 
 /*!
  * @brief Writes a data into the SPI data register.
@@ -679,16 +661,13 @@ void SPI_SlaveTransferCreateHandle(SPI_Type *base,
  * @note If SPI transfer data frame size is 16 bits, the transfer size cannot be an odd number.
  *
  * @param base SPI peripheral base address.
- * @param handle pointer to spi_master_handle_t structure which stores the transfer state
+ * @param handle pointer to spi_slave_handle_t structure which stores the transfer state
  * @param xfer pointer to spi_xfer_config_t structure
  * @retval kStatus_Success Successfully start a transfer.
  * @retval kStatus_InvalidArgument Input argument is invalid.
  * @retval kStatus_SPI_Busy SPI is not idle, is running another transfer.
  */
-static inline status_t SPI_SlaveTransferNonBlocking(SPI_Type *base, spi_slave_handle_t *handle, spi_transfer_t *xfer)
-{
-    return SPI_MasterTransferNonBlocking(base, handle, xfer);
-}
+status_t SPI_SlaveTransferNonBlocking(SPI_Type *base, spi_slave_handle_t *handle, spi_transfer_t *xfer);
 
 /*!
  * @brief Gets the bytes of the SPI interrupt transferred.
