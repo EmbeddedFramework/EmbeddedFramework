@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2023, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -33,14 +33,14 @@
 #
 
 # library
-LIBS 				  += mod_bsp_frdmkl46z
+LIBS 				  += mod_bsp_frdmkl43z
 # version
-mod_bsp_frdmkl46z_VERSION    = 0.0.0
+mod_bsp_frdmkl43z_VERSION    = 0.0.0
 # library path
-mod_bsp_frdmkl46z_PATH 		= $(ROOT_DIR)$(DS)modules$(DS)bsp_frdmkl46z
+mod_bsp_frdmkl43z_PATH 		= $(ROOT_DIR)$(DS)modules$(DS)bsp_frdmkl43z
 # library source path
-mod_bsp_frdmkl46z_SRC_PATH 	= $(mod_bsp_frdmkl46z_PATH)$(DS)src
+mod_bsp_frdmkl43z_SRC_PATH 	= $(mod_bsp_frdmkl43z_PATH)$(DS)src
 # library include path
-mod_bsp_frdmkl46z_INC_PATH 	= $(mod_bsp_frdmkl46z_PATH)$(DS)inc
+mod_bsp_frdmkl43z_INC_PATH 	= $(mod_bsp_frdmkl43z_PATH)$(DS)inc
 # library source files
-mod_bsp_frdmkl46z_SRC_FILES 	= $(wildcard $(mod_bsp_frdmkl46z_SRC_PATH)$(DS)*.c)
+mod_bsp_frdmkl43z_SRC_FILES 	= $(wildcard $(mod_bsp_frdmkl43z_SRC_PATH)$(DS)*.c)

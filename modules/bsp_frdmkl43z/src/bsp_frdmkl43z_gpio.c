@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2022, Gustavo Muro
+# Copyright 2023, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.

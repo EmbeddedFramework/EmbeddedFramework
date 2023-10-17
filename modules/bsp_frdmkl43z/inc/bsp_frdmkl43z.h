@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2023, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,15 +32,15 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef BSP_FRDMKL46Z_H
-#define BSP_FRDMKL46Z_H
+#ifndef BSP_FRDMKL43Z_H
+#define BSP_FRDMKL43Z_H
 
 /*==================[inclusions]=============================================*/
-#include "bsp_frdmkl46z_i2c.h"
-#include "bsp_frdmkl46z_gpio.h"
-#include "bsp_frdmkl46z_analog.h"
-#include "bsp_frdmkl46z_uart.h"
-#include "bsp_frdmkl46z_lpsci.h"
+#include "bsp_frdmkl43z_i2c.h"
+#include "bsp_frdmkl43z_gpio.h"
+#include "bsp_frdmkl43z_analog.h"
+#include "bsp_frdmkl43z_uart.h"
+#include "bsp_frdmkl43z_lpsci.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -52,7 +52,7 @@ extern "C" {
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-extern void bsp_frdmkl46z_init(void);
+extern void bsp_frdmkl43z_init(void);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -60,4 +60,4 @@ extern void bsp_frdmkl46z_init(void);
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* BSP_FRDMKL46Z_H */
+#endif /* BSP_FRDMKL43Z_H */
