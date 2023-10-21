@@ -318,6 +318,22 @@ extern void bsp_frdmkl46z_internal_gpio_confAsAnalog(efHal_gpio_id_t id)
     PORT_SetPinConfig(gpioStruct[id].port, gpioStruct[id].pin, &port_pin_config);
 }
 
+extern void bsp_frdmkl46z_internal_gpio_confAsPWM(efHal_gpio_id_t id)
+{
+    port_pin_config_t port_pin_config;
+
+    port_pin_config.pullSelect = kPORT_PullDisable;
+    port_pin_config.slewRate = kPORT_SlowSlewRate;
+    port_pin_config.passiveFilterEnable = kPORT_PassiveFilterDisable;
+    port_pin_config.driveStrength = kPORT_LowDriveStrength;
+
+    if(gpioStruct[id].port == PORTD || (gpioStruct[id].port == PORTC && gpioStruct[id].pin>=1 && gpioStruct[id].pin<=4))
+    	port_pin_config.mux = kPORT_MuxAlt4;
+    else port_pin_config.mux = kPORT_MuxAlt3;
+
+    PORT_SetPinConfig(gpioStruct[id].port, gpioStruct[id].pin, &port_pin_config);
+}
+
 void PORTC_PORTD_IRQHandler(void)
 {
     uint32_t intFlags;
