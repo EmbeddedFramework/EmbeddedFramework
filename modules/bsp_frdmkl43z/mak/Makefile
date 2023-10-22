@@ -1,10 +1,6 @@
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
-# Copyright 2014, 2015, Mariano Cerdeiro
-# Copyright 2014, 2015, 2016, Juan Cecconi (Numetron, UTN-FRBA)
-# Copyright 2014, 2015, Esteban Volentini (LabMicro, UNT)
-# Copyright 2017, Gustavo Muro (DIGI CHECK)
+# Copyright 2023, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -34,7 +30,17 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-###############################################################################
+#
 
-BOARD          ?= frdmkl46z
-PROJECT_PATH = examples$(DS)blinky
+# library
+LIBS 				  += mod_bsp_frdmkl43z
+# version
+mod_bsp_frdmkl43z_VERSION    = 0.0.0
+# library path
+mod_bsp_frdmkl43z_PATH 		= $(ROOT_DIR)$(DS)modules$(DS)bsp_frdmkl43z
+# library source path
+mod_bsp_frdmkl43z_SRC_PATH 	= $(mod_bsp_frdmkl43z_PATH)$(DS)src
+# library include path
+mod_bsp_frdmkl43z_INC_PATH 	= $(mod_bsp_frdmkl43z_PATH)$(DS)inc
+# library source files
+mod_bsp_frdmkl43z_SRC_FILES 	= $(wildcard $(mod_bsp_frdmkl43z_SRC_PATH)$(DS)*.c)
