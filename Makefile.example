@@ -37,4 +37,4 @@
 ###############################################################################
 
 BOARD          ?= frdmkl46z
-PROJECT_PATH = examples$(DS)kl46z_blinky
+PROJECT_PATH = examples$(DS)blinky
