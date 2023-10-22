@@ -125,7 +125,7 @@ static void togPin(efHal_gpio_id_t id)
 
 static bool getPin(efHal_gpio_id_t id)
 {
-    return GPIO_ReadPinInput(gpioStruct[id].gpio, gpioStruct[id].pin);
+    return GPIO_PinRead(gpioStruct[id].gpio, gpioStruct[id].pin);
 }
 
 static void confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)

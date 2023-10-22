@@ -36,11 +36,11 @@
 #define BSP_FRDMKL43Z_H
 
 /*==================[inclusions]=============================================*/
-#include "bsp_frdmkl43z_i2c.h"
+//#include "bsp_frdmkl43z_i2c.h"
 #include "bsp_frdmkl43z_gpio.h"
-#include "bsp_frdmkl43z_analog.h"
-#include "bsp_frdmkl43z_uart.h"
-#include "bsp_frdmkl43z_lpsci.h"
+//#include "bsp_frdmkl43z_analog.h"
+//#include "bsp_frdmkl43z_uart.h"
+//#include "bsp_frdmkl43z_lpsci.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
