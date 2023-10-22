@@ -60,6 +60,13 @@ CPU            ?= MKL46Z256VLL4
 COMPILER       ?= gcc
 endif
 
+# Default values for frdmkl43z
+ifeq ($(BOARD),frdmkl43z)
+ARCH           ?= cortexM0plus
+CPUTYPE        ?= KL43
+CPU            ?= MKL43Z256VLH4
+COMPILER       ?= gcc
+endif
 
 # Default values in other case
 ARCH           ?= x86
@@ -152,7 +159,7 @@ include $(foreach module, $(MODS), $(module)$(DS)mak$(DS)Makefile)
 INCLUDE += $(foreach LIB, $(LIBS), $($(LIB)_INC_PATH))
 CFLAGS  += $(foreach inc, $(INC_FILES), -I$(call cp4c,$(inc)))
 CFLAGS  += $(foreach inc, $(INCLUDE), -I$(inc))
-CFLAGS  += -DARCH=$(ARCH) -DCPUTYPE=$(CPUTYPE) -DCPU=$(CPU) -DBOARD=$(BOARD)
+CFLAGS  += -DARCH=$(ARCH) -DCPUTYPE=$(CPUTYPE) -DCPU=$(CPU) -DBOARD=$(BOARD) -DBOARD_$(BOARD)
 TARGET_NAME ?= $(BIN_DIR)$(DS)$(PROJECT_NAME)
 LD_TARGET = $(TARGET_NAME).$(LD_EXTENSION)
 # create list of object files for a Lib (without DIR), based on source file %.c and %.s
