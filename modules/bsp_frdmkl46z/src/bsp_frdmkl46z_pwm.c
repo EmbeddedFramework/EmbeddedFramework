@@ -75,7 +75,7 @@ static tpm_chnl_pwm_signal_param_t tpm_chnl_pwm_signal_param[4];
 bool setDuty (efHal_pwm_id_t id, uint32_t dutyCount){
 	xSemaphoreTake(mutex, portMAX_DELAY);
 	bsp_frdmkl46z_internal_gpio_confAsPWM(pwmStruct[id].gpio);
-	TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, (uint8_t)(dutyCount/pwmStruct[id].tpm->MOD*100));
+	TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, (uint8_t)((float)dutyCount/(float)pwmStruct[id].tpm->MOD*(float)100));
 	xSemaphoreGive(mutex);
 	return 1;
 }
@@ -85,9 +85,9 @@ bool setPeriod (efHal_pwm_id_t id, uint32_t period_nS){
 	TPM_StopTimer(pwmStruct[id].tpm);
 
 	if(pwmStruct[id].tpm == TPM0)
-		TPM_SetupPwm(TPM0, tpm_chnl_pwm_signal_param, 4, kTPM_EdgeAlignedPwm, (uint32_t)(1.0)/(period_nS*1e-9), CLOCK_GetFreq(kCLOCK_PllFllSelClk));
+		TPM_SetupPwm(TPM0, tpm_chnl_pwm_signal_param, 4, kTPM_EdgeAlignedPwm, (uint32_t)((1.0)/(float)(period_nS*1e-9)), CLOCK_GetFreq(kCLOCK_PllFllSelClk));
 	else if(pwmStruct[id].tpm == TPM1)
-		TPM_SetupPwm(TPM1, tpm_chnl_pwm_signal_param, 1, kTPM_EdgeAlignedPwm, (uint32_t)(1.0)/(period_nS*1e-9), CLOCK_GetFreq(kCLOCK_PllFllSelClk));
+		TPM_SetupPwm(TPM1, tpm_chnl_pwm_signal_param, 1, kTPM_EdgeAlignedPwm, (uint32_t)((1.0)/(float)(period_nS*1e-9)), CLOCK_GetFreq(kCLOCK_PllFllSelClk));
 
 	TPM_StartTimer(pwmStruct[id].tpm, kTPM_SystemClock);
 	xSemaphoreGive(mutex);
