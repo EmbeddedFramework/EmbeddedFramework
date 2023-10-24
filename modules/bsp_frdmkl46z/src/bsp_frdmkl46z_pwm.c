@@ -34,6 +34,7 @@
 #                                                                             */
 
 /*==================[inclusions]=============================================*/
+#include "bsp_frdmkl46z_pwm.h"
 #include "bsp_frdmkl46z_gpio.h"
 #include "efHal_internal.h"
 
@@ -67,7 +68,7 @@ static const pwmStruct_t pwmStruct[] =
 };
 
 static SemaphoreHandle_t mutex;
-static tpm_chnl_pwm_signal_param_t tpm_chnl_pwm_signal_param[4];
+static tpm_chnl_pwm_signal_param_t tpm_chnl_pwm_signal_param[6];
 
 /*==================[external data definition]===============================*/
 
@@ -75,7 +76,10 @@ static tpm_chnl_pwm_signal_param_t tpm_chnl_pwm_signal_param[4];
 bool setDuty (efHal_pwm_id_t id, uint32_t dutyCount){
 	xSemaphoreTake(mutex, portMAX_DELAY);
 	bsp_frdmkl46z_internal_gpio_confAsPWM(pwmStruct[id].gpio);
-	TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, (uint8_t)((float)dutyCount/(float)pwmStruct[id].tpm->MOD*(float)100));
+	if(id == EF_HAL_PWM_LED_RED || id == EF_HAL_PWM_LED_GREEN)
+		TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, (uint8_t)((float)100 - (float)dutyCount/(float)pwmStruct[id].tpm->MOD*(float)100));
+	else
+		TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, (uint8_t)((float)dutyCount/(float)pwmStruct[id].tpm->MOD*(float)100));
 	xSemaphoreGive(mutex);
 	return 1;
 }
@@ -99,7 +103,7 @@ uint32_t getPeriodCount (efHal_pwm_id_t id){
 }
 
 uint32_t getPeriodNs (efHal_pwm_id_t id){
-	return (uint32_t)(pwmStruct[id].tpm->MOD*1e9/CLOCK_GetFreq(kCLOCK_PllFllSelClk));
+	return (uint32_t)((float)pwmStruct[id].tpm->MOD*(float)1e9/(float)CLOCK_GetFreq(kCLOCK_PllFllSelClk));
 }
 
 void confIntCount (efHal_pwm_id_t id, uint32_t count){
@@ -134,13 +138,13 @@ extern void bsp_frdmkl46z_pwm_init(void)
     TPM_Init(TPM0, &tpm_config);
     TPM_Init(TPM1, &tpm_config);
 
-    for(int i=0; i<4; i++){
-        tpm_chnl_pwm_signal_param[i].chnlNumber = 0;
+    for(int i=0; i<6; i++){
+        tpm_chnl_pwm_signal_param[i].chnlNumber = i;
         tpm_chnl_pwm_signal_param[i].level = kTPM_HighTrue;
         tpm_chnl_pwm_signal_param[i].dutyCyclePercent = 0;
     }
 
-    TPM_SetupPwm(TPM0, tpm_chnl_pwm_signal_param, 4, kTPM_EdgeAlignedPwm, 1000, CLOCK_GetFreq(kCLOCK_PllFllSelClk));
+    TPM_SetupPwm(TPM0, tpm_chnl_pwm_signal_param, 6, kTPM_EdgeAlignedPwm, 1000, CLOCK_GetFreq(kCLOCK_PllFllSelClk));
     TPM_SetupPwm(TPM1, tpm_chnl_pwm_signal_param, 1, kTPM_EdgeAlignedPwm, 1000, CLOCK_GetFreq(kCLOCK_PllFllSelClk));
 
     TPM_StartTimer(TPM0, kTPM_SystemClock);
