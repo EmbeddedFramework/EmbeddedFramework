@@ -58,10 +58,12 @@ typedef struct
 
 static const pwmStruct_t pwmStruct[] =
 {
-    {TPM1, 0, EF_HAL_D3},     /* EF_HAL_PWM0 */
-	{TPM0, 2, EF_HAL_D5},     /* EF_HAL_PWM1 */
-	{TPM0, 4, EF_HAL_D6},     /* EF_HAL_PWM2 */
-	{TPM0, 1, EF_HAL_D9}      /* EF_HAL_PWM3 */
+    {TPM1, 0, EF_HAL_D3},     			  /* EF_HAL_PWM0 */
+	{TPM0, 2, EF_HAL_D5},     			  /* EF_HAL_PWM1 */
+	{TPM0, 4, EF_HAL_D6},     			  /* EF_HAL_PWM2 */
+	{TPM0, 1, EF_HAL_D9},     			  /* EF_HAL_PWM3 */
+    {TPM0, 5, EF_HAL_GPIO_LED_GREEN},     /* EF_HAL_GPIO_LED_GREEN */
+    {TPM0, 2, EF_HAL_GPIO_LED_RED}        /* EF_HAL_GPIO_LED_RED */
 };
 
 static SemaphoreHandle_t mutex;
@@ -113,10 +115,24 @@ extern void bsp_frdmkl46z_pwm_init(void)
 
     mutex = xSemaphoreCreateMutex();
 
+    //kCLOCK_PllFllSelClk for TPM
+    CLOCK_SetTpmClock(1U);
+
+    /*
+	* tpm_config.prescale = kTPM_Prescale_Divide_1;
+	* tpm_config.useGlobalTimeBase = false;
+	* tpm_config.enableDoze = false;
+	* tpm_config.enableDebugMode = false;
+	* tpm_config.enableReloadOnTrigger = false;
+	* tpm_config.enableStopOnOverflow = false;
+	* tpm_config.enableStartOnTrigger = false;
+	* tpm_config.enablePauseOnTrigger = false;
+	* tpm_config.triggerSelect = kTPM_Trigger_Select_0;
+	* tpm_config.triggerSource = kTPM_TriggerSource_External;
+	*/
     TPM_GetDefaultConfig(&tpm_config);
     TPM_Init(TPM0, &tpm_config);
     TPM_Init(TPM1, &tpm_config);
-    TPM_Init(TPM2, &tpm_config);
 
     for(int i=0; i<4; i++){
         tpm_chnl_pwm_signal_param[i].chnlNumber = 0;
