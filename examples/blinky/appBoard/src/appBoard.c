@@ -1,10 +1,7 @@
+/*
 ###############################################################################
 #
 # Copyright 2021, Gustavo Muro
-# Copyright 2014, 2015, Mariano Cerdeiro
-# Copyright 2014, 2015, 2016, Juan Cecconi (Numetron, UTN-FRBA)
-# Copyright 2014, 2015, Esteban Volentini (LabMicro, UNT)
-# Copyright 2017, Gustavo Muro (DIGI CHECK)
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -34,7 +31,31 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-###############################################################################
+#                                                                             */
 
-BOARD          ?= frdmkl46z
-PROJECT_PATH = examples$(DS)blinky
+/*==================[inclusions]=============================================*/
+#include "appBoard.h"
+
+/*==================[macros and typedef]=====================================*/
+
+/*==================[internal functions declaration]=========================*/
+
+/*==================[internal data definition]===============================*/
+
+/*==================[external data definition]===============================*/
+
+/*==================[internal functions definition]==========================*/
+
+/*==================[external functions definition]==========================*/
+
+extern void appBoard_init(void)
+{
+#ifdef BOARD_frdmkl46z
+    bsp_frdmkl46z_init();
+#endif
+#ifdef BOARD_frdmkl43z
+    bsp_frdmkl43z_init();
+#endif
+}
+
+/*==================[end of file]============================================*/

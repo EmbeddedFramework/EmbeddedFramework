@@ -1,4 +1,3 @@
-/*
 ###############################################################################
 #
 # Copyright 2021, Gustavo Muro
@@ -31,28 +30,13 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#                                                                             */
+#
 
-/*==================[inclusions]=============================================*/
-#include "appBoard.h"
+# library include path
+ext_board_INC_PATH  += $(ext_board_PATH)$(DS)$(BOARD)$(DS)inc
 
-/*==================[macros and typedef]=====================================*/
-
-/*==================[internal functions declaration]=========================*/
-
-/*==================[internal data definition]===============================*/
-
-/*==================[external data definition]===============================*/
-
-/*==================[internal functions definition]==========================*/
-
-/*==================[external functions definition]==========================*/
-
-extern void appBoard_init(void)
-{
-#if BOARD == frdmkl46z
-    bsp_frdmkl46z_init();
-#endif
-}
-
-/*==================[end of file]============================================*/
+# library source files
+ext_board_SRC_FILES += $(wildcard $(ext_board_PATH)$(DS)$(BOARD)$(DS)src$(DS)*.c) \
+					   $(wildcard $(ext_board_PATH)$(DS)$(BOARD)$(DS)src$(DS)*.S) \
+					   $(wildcard $(ext_board_PATH)$(DS)$(BOARD)$(DS)src$(DS)*.s)
+						 
