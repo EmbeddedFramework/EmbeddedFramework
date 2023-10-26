@@ -55,6 +55,8 @@ typedef struct
 
 /*==================[internal functions declaration]=========================*/
 
+static uint8_t _duty[EF_HAL_PWM_TOTAL] = {0};
+
 /*==================[internal data definition]===============================*/
 
 static const pwmStruct_t pwmStruct[] =
@@ -74,12 +76,13 @@ static tpm_chnl_pwm_signal_param_t tpm_chnl_pwm_signal_param[6];
 
 /*==================[internal functions definition]==========================*/
 bool setDuty (efHal_pwm_id_t id, uint32_t dutyCount){
+	_duty[id] = (uint8_t)((float)dutyCount/(float)pwmStruct[id].tpm->MOD*(float)100 + 1);
 	xSemaphoreTake(mutex, portMAX_DELAY);
 	bsp_frdmkl46z_internal_gpio_confAsPWM(pwmStruct[id].gpio);
 	if(id == EF_HAL_PWM_LED_RED || id == EF_HAL_PWM_LED_GREEN)
-		TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, (uint8_t)((float)100 - (float)dutyCount/(float)pwmStruct[id].tpm->MOD*(float)100));
+		TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, 100 - _duty[id]);
 	else
-		TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, (uint8_t)((float)dutyCount/(float)pwmStruct[id].tpm->MOD*(float)100));
+		TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, _duty[id]);
 	xSemaphoreGive(mutex);
 	return 1;
 }
@@ -87,12 +90,13 @@ bool setDuty (efHal_pwm_id_t id, uint32_t dutyCount){
 bool setPeriod (efHal_pwm_id_t id, uint32_t period_nS){
 	xSemaphoreTake(mutex, portMAX_DELAY);
 	TPM_StopTimer(pwmStruct[id].tpm);
-
-	if(pwmStruct[id].tpm == TPM0)
-		TPM_SetupPwm(TPM0, tpm_chnl_pwm_signal_param, 4, kTPM_EdgeAlignedPwm, (uint32_t)((1.0)/(float)(period_nS*1e-9)), CLOCK_GetFreq(kCLOCK_PllFllSelClk));
-	else if(pwmStruct[id].tpm == TPM1)
-		TPM_SetupPwm(TPM1, tpm_chnl_pwm_signal_param, 1, kTPM_EdgeAlignedPwm, (uint32_t)((1.0)/(float)(period_nS*1e-9)), CLOCK_GetFreq(kCLOCK_PllFllSelClk));
-
+	pwmStruct[id].tpm->MOD = (uint32_t)(((float)CLOCK_GetFreq(kCLOCK_PllFllSelClk)/(float)(1U << (pwmStruct[id].tpm->SC & TPM_SC_PS_MASK)) * (float)period_nS * (float)1e-9) - 1);
+	if(_duty[id] != 0){
+		if(id == EF_HAL_PWM_LED_RED || id == EF_HAL_PWM_LED_GREEN)
+			TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, 100 - _duty[id]);
+		else
+			TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, _duty[id]);
+	}
 	TPM_StartTimer(pwmStruct[id].tpm, kTPM_SystemClock);
 	xSemaphoreGive(mutex);
 	return 1;

@@ -52,7 +52,8 @@ enum efHal_pwm_id_t
 	EF_HAL_PWM2,
 	EF_HAL_PWM3,
 	EF_HAL_PWM_LED_GREEN,
-	EF_HAL_PWM_LED_RED
+	EF_HAL_PWM_LED_RED,
+	EF_HAL_PWM_TOTAL
 };
 
 /*==================[external data declaration]==============================*/
