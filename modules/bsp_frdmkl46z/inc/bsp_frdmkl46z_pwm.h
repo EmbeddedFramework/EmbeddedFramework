@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2023, Guido Cicconi
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,16 +32,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef BSP_FRDMKL46Z_H
-#define BSP_FRDMKL46Z_H
+#ifndef BSP_FRDMKL46Z_PWM_H
+#define BSP_FRDMKL46Z_PWM_H
 
 /*==================[inclusions]=============================================*/
-#include "bsp_frdmkl46z_i2c.h"
-#include "bsp_frdmkl46z_gpio.h"
-#include "bsp_frdmkl46z_analog.h"
-#include "bsp_frdmkl46z_uart.h"
-#include "bsp_frdmkl46z_lpsci.h"
-#include "bsp_frdmkl46z_pwm.h"
+#include "efHal_gpio.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -50,10 +45,21 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
+enum efHal_pwm_id_t
+{
+    EF_HAL_PWM0 = 0,
+	EF_HAL_PWM1,
+	EF_HAL_PWM2,
+	EF_HAL_PWM3,
+	EF_HAL_PWM_LED_GREEN,
+	EF_HAL_PWM_LED_RED,
+	EF_HAL_PWM_TOTAL
+};
+
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-extern void bsp_frdmkl46z_init(void);
+extern void bsp_frdmkl46z_pwm_init(void);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -61,4 +67,4 @@ extern void bsp_frdmkl46z_init(void);
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* BSP_FRDMKL46Z_H */
+#endif /* BSP_FRDMKL46Z_ANALOG_H */
