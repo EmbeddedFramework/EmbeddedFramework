@@ -55,7 +55,7 @@ typedef struct
 
 /*==================[internal functions declaration]=========================*/
 
-static uint8_t _duty[EF_HAL_PWM_TOTAL] = {0};
+static float _dutyPercentage[EF_HAL_PWM_TOTAL] = {0};
 
 /*==================[internal data definition]===============================*/
 
@@ -76,29 +76,49 @@ static tpm_chnl_pwm_signal_param_t tpm_chnl_pwm_signal_param[6];
 
 /*==================[internal functions definition]==========================*/
 bool setDuty (efHal_pwm_id_t id, uint32_t dutyCount){
-	_duty[id] = (uint8_t)((float)dutyCount/(float)pwmStruct[id].tpm->MOD*(float)100 + 1);
+	_dutyPercentage[id] = ((float)dutyCount/(float)pwmStruct[id].tpm->MOD*(float)100 + 1);
+	uint16_t  mod = pwmStruct[id].tpm->MOD;
+
 	xSemaphoreTake(mutex, portMAX_DELAY);
+
 	bsp_frdmkl46z_internal_gpio_confAsPWM(pwmStruct[id].gpio);
-	if(id == EF_HAL_PWM_LED_RED || id == EF_HAL_PWM_LED_GREEN)
-		TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, 100 - _duty[id]);
-	else
-		TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, _duty[id]);
+
+	if(dutyCount >= 0){
+		if (dutyCount >= mod) pwmStruct[id].tpm->CONTROLS[pwmStruct[id].chnl].CnV = mod + 1;
+		else if(id == EF_HAL_PWM_LED_RED || id == EF_HAL_PWM_LED_GREEN)
+			pwmStruct[id].tpm->CONTROLS[pwmStruct[id].chnl].CnV = mod - dutyCount;
+		else
+			pwmStruct[id].tpm->CONTROLS[pwmStruct[id].chnl].CnV = dutyCount;
+	}
+
 	xSemaphoreGive(mutex);
+
 	return 1;
 }
 
 bool setPeriod (efHal_pwm_id_t id, uint32_t period_nS){
+	uint16_t dutyCount = 0;
+
 	xSemaphoreTake(mutex, portMAX_DELAY);
+
 	TPM_StopTimer(pwmStruct[id].tpm);
+
 	pwmStruct[id].tpm->MOD = (uint32_t)(((float)CLOCK_GetFreq(kCLOCK_PllFllSelClk)/(float)(1U << (pwmStruct[id].tpm->SC & TPM_SC_PS_MASK)) * (float)period_nS * (float)1e-9) - 1);
-	if(_duty[id] != 0){
-		if(id == EF_HAL_PWM_LED_RED || id == EF_HAL_PWM_LED_GREEN)
-			TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, 100 - _duty[id]);
+
+	dutyCount = _dutyPercentage[id] * pwmStruct[id].tpm->MOD;
+
+	if(dutyCount >= 0){
+		if (dutyCount >= pwmStruct[id].tpm->MOD) pwmStruct[id].tpm->CONTROLS[pwmStruct[id].chnl].CnV = pwmStruct[id].tpm->MOD + 1;
+		else if(id == EF_HAL_PWM_LED_RED || id == EF_HAL_PWM_LED_GREEN)
+			pwmStruct[id].tpm->CONTROLS[pwmStruct[id].chnl].CnV = pwmStruct[id].tpm->MOD - dutyCount;
 		else
-			TPM_UpdatePwmDutycycle(pwmStruct[id].tpm, pwmStruct[id].chnl, kTPM_EdgeAlignedPwm, _duty[id]);
+			pwmStruct[id].tpm->CONTROLS[pwmStruct[id].chnl].CnV = dutyCount;
 	}
+
 	TPM_StartTimer(pwmStruct[id].tpm, kTPM_SystemClock);
+
 	xSemaphoreGive(mutex);
+
 	return 1;
 }
 
@@ -107,7 +127,7 @@ uint32_t getPeriodCount (efHal_pwm_id_t id){
 }
 
 uint32_t getPeriodNs (efHal_pwm_id_t id){
-	return (uint32_t)((float)pwmStruct[id].tpm->MOD*(float)1e9/(float)CLOCK_GetFreq(kCLOCK_PllFllSelClk));
+	return (uint32_t)(((float)pwmStruct[id].tpm->MOD+1)*(float)1e9/((float)CLOCK_GetFreq(kCLOCK_PllFllSelClk)/(float)(1U << (pwmStruct[id].tpm->SC & TPM_SC_PS_MASK))));
 }
 
 void confIntCount (efHal_pwm_id_t id, uint32_t count){
@@ -143,8 +163,8 @@ extern void bsp_frdmkl46z_pwm_init(void)
 
     tpm1_config.prescale = kTPM_Prescale_Divide_64;
 
-    TPM_Init(TPM0, &tpm_config);
-    TPM_Init(TPM1, &tpm_config);
+    TPM_Init(TPM0, &tpm0_config);
+    TPM_Init(TPM1, &tpm1_config);
 
     for(int i=0; i<6; i++){
         tpm_chnl_pwm_signal_param[i].chnlNumber = i;
