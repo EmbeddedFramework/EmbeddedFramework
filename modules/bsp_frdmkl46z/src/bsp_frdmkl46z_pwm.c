@@ -119,7 +119,7 @@ void confIntCount (efHal_pwm_id_t id, uint32_t count){
 extern void bsp_frdmkl46z_pwm_init(void)
 {
 	efHal_pwm_callBacks_t cb;
-    tpm_config_t tpm_config;
+    tpm_config_t tpm0_config, tpm1_config;
 
     mutex = xSemaphoreCreateMutex();
 
@@ -138,7 +138,11 @@ extern void bsp_frdmkl46z_pwm_init(void)
 	* tpm_config.triggerSelect = kTPM_Trigger_Select_0;
 	* tpm_config.triggerSource = kTPM_TriggerSource_External;
 	*/
-    TPM_GetDefaultConfig(&tpm_config);
+    TPM_GetDefaultConfig(&tpm0_config);
+    TPM_GetDefaultConfig(&tpm1_config);
+
+    tpm1_config.prescale = kTPM_Prescale_Divide_64;
+
     TPM_Init(TPM0, &tpm_config);
     TPM_Init(TPM1, &tpm_config);
 
