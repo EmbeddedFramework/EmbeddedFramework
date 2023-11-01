@@ -53,6 +53,8 @@ typedef struct
 
 typedef int32_t efLeds_id_t;
 
+#define EF_LEDS_ID_IVALID   (-1)
+
 typedef enum
 {
     EF_LEDS_MSG_OFF = 0,

@@ -121,7 +121,9 @@ static void vCB_leds( TimerHandle_t xTimer )
 
     for (i = 0 ; i < totalLeds ; i++)
     {
-        if (pLedState[i].pSec != NULL)
+        secuence_t const * pSec = pLedState[i].pSec;
+
+        if (pSec != NULL)
         {
             if (pLedState[i].timOut)
                 pLedState[i].timOut--;
@@ -129,16 +131,16 @@ static void vCB_leds( TimerHandle_t xTimer )
             {
                 pLedState[i].secIndex++;
 
-                if ( (pLedState[i].pSec->time[pLedState[i].secIndex] == 0) &&
-                     (pLedState[i].pSec->repeat) )
+                if ( (pSec->time[pLedState[i].secIndex] == 0) &&
+                     (pSec->repeat) )
                 {
                     pLedState[i].secIndex = 0;
                 }
 
-                if (pLedState[i].pSec->time[pLedState[i].secIndex] != 0)
+                if (pSec->time[pLedState[i].secIndex] != 0)
                 {
                     efHal_gpio_togglePin(conf[i].gpioId);
-                    pLedState[i].timOut = pLedState[i].pSec->time[pLedState[i].secIndex];
+                    pLedState[i].timOut = pSec->time[pLedState[i].secIndex];
                 }
                 else
                 {
@@ -181,13 +183,18 @@ extern void efLeds_init(efLeds_conf_t const *cf, int tl)
 
 extern void efLeds_msg(efLeds_id_t id, efLeds_msg_t msg)
 {
+    if (id == EF_LEDS_ID_IVALID)
+        return;
+
     switch (msg)
     {
         case EF_LEDS_MSG_OFF:
+            pLedState[id].pSec = NULL;
             efHal_gpio_setPin(conf[id].gpioId, !conf[id].onState);
             break;
 
         case EF_LEDS_MSG_ON:
+            pLedState[id].pSec = NULL;
             efHal_gpio_setPin(conf[id].gpioId, conf[id].onState);
             break;
 
