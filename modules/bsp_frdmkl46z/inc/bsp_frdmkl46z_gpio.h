@@ -82,6 +82,7 @@ enum efHal_gpio_busid_t
 
 /*==================[external functions declaration]=========================*/
 extern void bsp_frdmkl46z_gpio_init(void);
+extern void bsp_frdmkl46z_internal_gpio_confAsPWM(efHal_gpio_id_t id);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
