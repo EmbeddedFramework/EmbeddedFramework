@@ -131,11 +131,11 @@ extern void bsp_frdmkl46z_uart_init(void)
 {
     efHal_uart_callBacks_t cb;
 
-    efHal_dh_UART1 = efHal_internal_uart_deviceReg(cb, UART1);
-
     cb.conf = confCB;
     cb.dataReadyTx = dataReadyTx;
     cb.sendBuffer = NULL;
+
+    efHal_dh_UART1 = efHal_internal_uart_deviceReg(cb, UART1);
 
     uart_init();
 }
