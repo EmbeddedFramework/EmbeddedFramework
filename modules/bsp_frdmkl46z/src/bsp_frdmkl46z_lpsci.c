@@ -119,7 +119,7 @@ static void confCB(void *param, efHal_uart_conf_t const *cfg)
     config.enableTx = true;
     config.enableRx = true;
 
-    LPSCI_Init(UART0, &config, CLOCK_GetFreq(BUS_CLK));
+    LPSCI_Init(UART0, &config, CLOCK_GetPllFllSelClkFreq());
 }
 
 static void dataReadyTx(void *param)
@@ -133,11 +133,11 @@ extern void bsp_frdmkl46z_lpsci_init(void)
 {
     efHal_uart_callBacks_t cb;
 
-    efHal_dh_UART0 = efHal_internal_uart_deviceReg(cb, UART0);
-
     cb.conf = confCB;
     cb.dataReadyTx = dataReadyTx;
     cb.sendBuffer = NULL;
+
+    efHal_dh_UART0 = efHal_internal_uart_deviceReg(cb, UART0);
 
     lpsci_init();
 }
