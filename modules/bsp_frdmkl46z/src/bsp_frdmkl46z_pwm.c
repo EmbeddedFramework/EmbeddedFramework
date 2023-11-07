@@ -69,7 +69,6 @@ static const pwmStruct_t pwmStruct[] =
     {TPM0, 2, EF_HAL_GPIO_LED_RED}        /* EF_HAL_GPIO_LED_RED */
 };
 
-static SemaphoreHandle_t mutex;
 static tpm_chnl_pwm_signal_param_t tpm_chnl_pwm_signal_param[6];
 
 /*==================[external data definition]===============================*/
@@ -78,8 +77,6 @@ static tpm_chnl_pwm_signal_param_t tpm_chnl_pwm_signal_param[6];
 bool setDuty (efHal_pwm_id_t id, uint32_t dutyCount){
     _dutyPercentage[id] = ((float)dutyCount/(float)pwmStruct[id].tpm->MOD*(float)100 + 1);
     uint16_t  mod = pwmStruct[id].tpm->MOD;
-
-    xSemaphoreTake(mutex, portMAX_DELAY);
 
     bsp_frdmkl46z_internal_gpio_confAsPWM(pwmStruct[id].gpio);
 
@@ -91,15 +88,11 @@ bool setDuty (efHal_pwm_id_t id, uint32_t dutyCount){
             pwmStruct[id].tpm->CONTROLS[pwmStruct[id].chnl].CnV = dutyCount;
     }
 
-    xSemaphoreGive(mutex);
-
     return 1;
 }
 
 bool setPeriod (efHal_pwm_id_t id, uint32_t period_nS){
     uint16_t dutyCount = 0;
-
-    xSemaphoreTake(mutex, portMAX_DELAY);
 
     TPM_StopTimer(pwmStruct[id].tpm);
 
@@ -116,8 +109,6 @@ bool setPeriod (efHal_pwm_id_t id, uint32_t period_nS){
     }
 
     TPM_StartTimer(pwmStruct[id].tpm, kTPM_SystemClock);
-
-    xSemaphoreGive(mutex);
 
     return 1;
 }
@@ -140,8 +131,6 @@ extern void bsp_frdmkl46z_pwm_init(void)
 {
     efHal_pwm_callBacks_t cb;
     tpm_config_t tpm0_config, tpm1_config;
-
-    mutex = xSemaphoreCreateMutex();
 
     //kCLOCK_PllFllSelClk for TPM
     CLOCK_SetTpmClock(1U);
