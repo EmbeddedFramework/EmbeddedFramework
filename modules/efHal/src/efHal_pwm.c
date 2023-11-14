@@ -128,6 +128,16 @@ extern void efHal_pwm_setPeriod(efHal_pwm_id_t id, uint32_t period_nS)
     }
 }
 
+extern uint32_t efHal_pwm_getPeriodCount(efHal_pwm_id_t id)
+{
+    uint32_t ret = 0;
+
+    if (callBacks.getPeriodCount != NULL)
+        ret = callBacks.getPeriodCount(id);
+
+    return ret;
+}
+
 extern bool efHal_pwm_waitForInt(efHal_pwm_id_t id, TickType_t xBlockTime)
 {
     int i;
