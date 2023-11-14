@@ -64,6 +64,7 @@ typedef void (*efHal_pwm_callBackInt_t)(efHal_pwm_id_t id);
 extern void efHal_pwm_init(void);
 extern void efHal_pwm_setDuty(efHal_pwm_id_t id, uint32_t duty, efHal_pwm_dutyUnit_t dutyUnit);
 extern void efHal_pwm_setPeriod(efHal_pwm_id_t id, uint32_t period_nS);
+extern uint32_t efHal_pwm_getPeriodCount(efHal_pwm_id_t id);
 extern void efHal_pwm_confIntCount(efHal_pwm_id_t id, uint32_t count);
 extern bool efHal_pwm_waitForInt(efHal_pwm_id_t id, TickType_t xBlockTime);
 extern void efHal_pwm_setCallBackInt(efHal_pwm_id_t id, efHal_pwm_callBackInt_t cb);
