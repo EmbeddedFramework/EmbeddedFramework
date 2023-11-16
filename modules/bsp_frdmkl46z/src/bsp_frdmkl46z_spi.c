@@ -152,7 +152,10 @@ extern void bsp_frdmkl46z_spi_init(void)
     cb.transfer = spi_TransferCB;
 
     efHal_dh_SPI0 = efHal_internal_spi_deviceReg(cb, SPI0);
+
+    CLOCK_EnableClock(kCLOCK_Spi0);
     SPI_MasterTransferCreateHandle(SPI0, &handle, SPI_MasterInterruptCallback, efHal_dh_SPI0);
+    CLOCK_DisableClock(kCLOCK_Spi0);
 }
 
 /*==================[end of file]============================================*/
