@@ -54,6 +54,7 @@ typedef enum
     EF_HAL_PWM_DUTY_PERCENT = 0,
     EF_HAL_PWM_DUTY_COUNT,
     EF_HAL_PWM_DUTY_NS,
+    EF_HAL_PWM_DUTY_US,
 }efHal_pwm_dutyUnit_t;
 
 typedef void (*efHal_pwm_callBackInt_t)(efHal_pwm_id_t id);

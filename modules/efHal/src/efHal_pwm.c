@@ -106,6 +106,18 @@ extern void efHal_pwm_setDuty(efHal_pwm_id_t id, uint32_t duty, efHal_pwm_dutyUn
                 }
                 break;
 
+            case EF_HAL_PWM_DUTY_US:
+                duty = duty * callBacks.getPeriodCount(id);
+                periodNs = callBacks.getPeriodNs(id) / 1000 ;
+                if (periodNs > 0)
+                    duty = duty / periodNs;
+                else
+                {
+                    /* handle error */
+                }
+                break;
+
+
             default:
                 /* handle error */
                 break;
