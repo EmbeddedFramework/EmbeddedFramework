@@ -78,6 +78,7 @@ static const gpioStruct_t gpioStruct[] =
     {PORTB, GPIOB, 3},      /* EF_HAL_A3 */
     {PORTC, GPIOC, 2},      /* EF_HAL_A4 */
     {PORTC, GPIOC, 1},      /* EF_HAL_A5 */
+    {PORTE, GPIOE, 22},     /* EF_HAL_LIGHT_SENSOR */
 };
 
 #define TOTAL_GPIO   (sizeof(gpioStruct) / sizeof(gpioStruct[0]))
