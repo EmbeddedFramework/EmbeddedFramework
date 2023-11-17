@@ -62,14 +62,15 @@ static const analogAsign_t map[] =
         { EF_HAL_A1, 9 },
         { EF_HAL_A2, 12 },
         { EF_HAL_A3, 13 },
+        { EF_HAL_LIGHT_SENSOR, 3 },
 };
 
 #define MAP_LENGTH  (sizeof(map) / sizeof(map[0]))
 
 static adc16_channel_config_t adc16_channel;
 static int indexMap;
-static uint32_t adcVal;
-static SemaphoreHandle_t mutex;
+static uint32_t adcVal[MAP_LENGTH];
+static SemaphoreHandle_t semphAdc;
 
 /*==================[external data definition]===============================*/
 
@@ -94,7 +95,7 @@ static bool startConv(efHal_gpio_id_t id)
 {
     bool ret = false;
 
-    xSemaphoreTake(mutex, portMAX_DELAY);
+    xSemaphoreTake(semphAdc, portMAX_DELAY);
 
     indexMap = getIndexMap(id);
 
@@ -106,7 +107,7 @@ static bool startConv(efHal_gpio_id_t id)
     }
     else
     {
-        xSemaphoreGive(mutex);
+        xSemaphoreGive(semphAdc);
     }
 
     return ret;
@@ -114,8 +115,11 @@ static bool startConv(efHal_gpio_id_t id)
 
 static int32_t aRead(efHal_gpio_id_t id)
 {
-    int32_t ret = adcVal;
-    xSemaphoreGive(mutex);
+    int32_t ret = getIndexMap(id);
+
+    if (ret >= 0)
+        ret = adcVal[ret];
+
     return ret;
 }
 
@@ -130,7 +134,8 @@ extern void bsp_frdmkl46z_analog_init(void)
     efHal_analog_callBacks_t cb;
     adc16_config_t adc16_config;
 
-    mutex = xSemaphoreCreateMutex();
+    semphAdc = xSemaphoreCreateBinary();
+    xSemaphoreGive(semphAdc);
 
     ADC16_GetDefaultConfig(&adc16_config);
     ADC16_Init(ADC0, &adc16_config);
@@ -152,10 +157,16 @@ extern void bsp_frdmkl46z_analog_init(void)
 
 void ADC0_IRQHandler(void)
 {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
     /* Read conversion result to clear the conversion completed flag. */
-    adcVal = ADC16_GetChannelConversionValue(ADC0, 0);
+    adcVal[indexMap] = ADC16_GetChannelConversionValue(ADC0, 0);
+
+    xSemaphoreGiveFromISR(semphAdc, &xHigherPriorityTaskWoken);
 
     efHal_internal_analog_endConvInterruptRoutine(map[indexMap].gpioId);
+
+    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 }
 
 /*==================[end of file]============================================*/
