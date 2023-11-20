@@ -71,7 +71,7 @@ static void setPin(efHal_gpio_id_t id, bool state)
 
 static void togPin(efHal_gpio_id_t id)
 {
-    HAL_GPIO_TogglePin(gpioStruct[id].GPIOx, 1<<gpioStruct[id].GPIO_Pin);
+    HAL_GPIO_TogglePin(gpioStruct[id].GPIOx, gpioStruct[id].GPIO_Pin);
 }
 
 static bool getPin(efHal_gpio_id_t id)
