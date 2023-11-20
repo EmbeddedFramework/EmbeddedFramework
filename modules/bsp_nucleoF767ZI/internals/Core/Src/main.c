@@ -404,6 +404,9 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+extern void bsp_nucleoF767ZI_init(void);
+extern int app_init(void);
+
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -416,6 +419,11 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
+
+  bsp_nucleoF767ZI_init();
+
+  app_init();
+
   /* Infinite loop */
   for(;;)
   {
