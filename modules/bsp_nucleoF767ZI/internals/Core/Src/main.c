@@ -404,8 +404,15 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-extern void bsp_nucleoF767ZI_init(void);
-extern int app_init(void);
+__attribute__((weak)) void bsp_nucleoF767ZI_init(void)
+{
+
+}
+
+__attribute__((weak)) void app_init(void)
+{
+
+}
 
 /* USER CODE END 4 */
 
