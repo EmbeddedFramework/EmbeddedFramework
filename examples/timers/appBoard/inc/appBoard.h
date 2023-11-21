@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2022, Gustavo Muro
+# Copyright 2021, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,13 +32,10 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef EF_HAL_PWM_H_
-#define EF_HAL_PWM_H_
+#ifndef APP_BOARD_H_
+#define APP_BOARD_H_
 
 /*==================[inclusions]=============================================*/
-#include "stdint.h"
-#include "stdbool.h"
-#include "FreeRTOS.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -47,28 +44,18 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
-typedef int32_t efHal_pwm_id_t;
+#ifdef BOARD_frdmkl46z
+#include "bsp_frdmkl46z.h"
+#endif
 
-typedef enum
-{
-    EF_HAL_PWM_DUTY_PERCENT = 0,
-    EF_HAL_PWM_DUTY_COUNT,
-    EF_HAL_PWM_DUTY_NS,
-    EF_HAL_PWM_DUTY_US,
-}efHal_pwm_dutyUnit_t;
-
-typedef void (*efHal_pwm_callBackInt_t)(efHal_pwm_id_t id);
+#ifdef BOARD_frdmkl43z
+#include "bsp_frdmkl43z.h"
+#endif
 
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-extern void efHal_pwm_init(void);
-extern void efHal_pwm_setDuty(efHal_pwm_id_t id, uint32_t duty, efHal_pwm_dutyUnit_t dutyUnit);
-extern void efHal_pwm_setPeriod(efHal_pwm_id_t id, uint32_t period_nS);
-extern uint32_t efHal_pwm_getPeriodCount(efHal_pwm_id_t id);
-extern void efHal_pwm_confIntCount(efHal_pwm_id_t id, uint32_t count);
-extern bool efHal_pwm_waitForInt(efHal_pwm_id_t id, TickType_t xBlockTime);
-extern void efHal_pwm_setCallBackInt(efHal_pwm_id_t id, efHal_pwm_callBackInt_t cb);
+extern void appBoard_init(void);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -76,4 +63,4 @@ extern void efHal_pwm_setCallBackInt(efHal_pwm_id_t id, efHal_pwm_callBackInt_t 
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* EF_HAL_PWM_H_ */
+#endif /* APP_BOARD_H_ */

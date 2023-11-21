@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2022, Gustavo Muro
+# Copyright 2021, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,48 +32,76 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef EF_HAL_PWM_H_
-#define EF_HAL_PWM_H_
 
 /*==================[inclusions]=============================================*/
-#include "stdint.h"
-#include "stdbool.h"
+#include "appBoard.h"
+#include "efHal_gpio.h"
+#include "efHal_analog.h"
 #include "FreeRTOS.h"
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "task.h"
+#include "timers.h"
 
 /*==================[macros and typedef]=====================================*/
 
-typedef int32_t efHal_pwm_id_t;
+#define THRESHOLD   3900
 
-typedef enum
+/*==================[internal functions declaration]=========================*/
+
+/*==================[internal data definition]===============================*/
+
+static TimerHandle_t timerHandle;
+
+/*==================[external data definition]===============================*/
+
+/*==================[internal functions definition]==========================*/
+
+static void timerCallback(TimerHandle_t xTimer)
 {
-    EF_HAL_PWM_DUTY_PERCENT = 0,
-    EF_HAL_PWM_DUTY_COUNT,
-    EF_HAL_PWM_DUTY_NS,
-    EF_HAL_PWM_DUTY_US,
-}efHal_pwm_dutyUnit_t;
-
-typedef void (*efHal_pwm_callBackInt_t)(efHal_pwm_id_t id);
-
-/*==================[external data declaration]==============================*/
-
-/*==================[external functions declaration]=========================*/
-extern void efHal_pwm_init(void);
-extern void efHal_pwm_setDuty(efHal_pwm_id_t id, uint32_t duty, efHal_pwm_dutyUnit_t dutyUnit);
-extern void efHal_pwm_setPeriod(efHal_pwm_id_t id, uint32_t period_nS);
-extern uint32_t efHal_pwm_getPeriodCount(efHal_pwm_id_t id);
-extern void efHal_pwm_confIntCount(efHal_pwm_id_t id, uint32_t count);
-extern bool efHal_pwm_waitForInt(efHal_pwm_id_t id, TickType_t xBlockTime);
-extern void efHal_pwm_setCallBackInt(efHal_pwm_id_t id, efHal_pwm_callBackInt_t cb);
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
+    efHal_analog_startConv(EF_HAL_LIGHT_SENSOR);
 }
-#endif
+
+static void blinky_task(void *pvParameters)
+{
+    int32_t adcRead;
+
+    timerHandle = xTimerCreate("timer",
+                200 / portTICK_PERIOD_MS,
+                pdTRUE,
+                0, timerCallback);
+
+    xTimerStart(timerHandle, portMAX_DELAY);
+
+    efHal_analog_confAsAnalog(EF_HAL_LIGHT_SENSOR);
+
+    for (;;)
+    {
+        efHal_analog_waitConv(EF_HAL_LIGHT_SENSOR, portMAX_DELAY);
+
+        adcRead = efHal_analog_read(EF_HAL_LIGHT_SENSOR);
+
+        if(adcRead < THRESHOLD)
+            efHal_gpio_setPin(EF_HAL_GPIO_LED_GREEN, true);
+        else
+            efHal_gpio_setPin(EF_HAL_GPIO_LED_GREEN, false);
+
+        efHal_gpio_togglePin(EF_HAL_GPIO_LED_RED);
+    }
+}
+
+/*==================[external functions definition]==========================*/
+int main(void)
+{
+    appBoard_init();
+
+    xTaskCreate(blinky_task, "blinky_task", 100, NULL, 0, NULL);
+
+    vTaskStartScheduler();
+    for (;;);
+}
+
+extern void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
+{
+    while (1);
+}
 
 /*==================[end of file]============================================*/
-#endif /* EF_HAL_PWM_H_ */

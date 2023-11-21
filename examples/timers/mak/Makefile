@@ -1,7 +1,10 @@
-/*
 ###############################################################################
 #
-# Copyright 2022, Gustavo Muro
+# Copyright 2021, Gustavo Muro
+# Copyright 2014, 2015, Mariano Cerdeiro
+# Copyright 2014, 2015, 2016, Juan Cecconi (Numetron, UTN-FRBA)
+# Copyright 2014, 2015, Esteban Volentini (LabMicro, UNT)
+# Copyright 2017, Gustavo Muro (DIGI CHECK)
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -31,49 +34,27 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#                                                                             */
-#ifndef EF_HAL_PWM_H_
-#define EF_HAL_PWM_H_
+###############################################################################
 
-/*==================[inclusions]=============================================*/
-#include "stdint.h"
-#include "stdbool.h"
-#include "FreeRTOS.h"
+PROJECT_NAME               = $(lastword $(subst $(DS), , $(PROJECT_PATH)))
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+# Internal modules
+$(PROJECT_NAME)_SRC_PATH  += $(PROJECT_PATH)$(DS)application$(DS)src \
+							 $(PROJECT_PATH)$(DS)appBoard$(DS)src
 
-/*==================[macros and typedef]=====================================*/
+SRC_FILES 			 += $(foreach application_SRC, $($(PROJECT_NAME)_SRC_PATH), $(wildcard $(application_SRC)$(DS)*.c)) 
 
-typedef int32_t efHal_pwm_id_t;
+INC_FILES            += $(PROJECT_PATH)$(DS)application$(DS)inc \
+						$(PROJECT_PATH)$(DS)appBoard$(DS)inc
+						
 
-typedef enum
-{
-    EF_HAL_PWM_DUTY_PERCENT = 0,
-    EF_HAL_PWM_DUTY_COUNT,
-    EF_HAL_PWM_DUTY_NS,
-    EF_HAL_PWM_DUTY_US,
-}efHal_pwm_dutyUnit_t;
+# Modules needed for this project
+MODS += externals$(DS)drivers
+MODS += externals$(DS)board
+MODS += externals$(DS)freertos
+MODS += externals$(DS)cmsis
 
-typedef void (*efHal_pwm_callBackInt_t)(efHal_pwm_id_t id);
+MODS += modules$(DS)efHal
+MODS += modules$(DS)efErrorHdl
+MODS += modules$(DS)bsp_$(BOARD)
 
-/*==================[external data declaration]==============================*/
-
-/*==================[external functions declaration]=========================*/
-extern void efHal_pwm_init(void);
-extern void efHal_pwm_setDuty(efHal_pwm_id_t id, uint32_t duty, efHal_pwm_dutyUnit_t dutyUnit);
-extern void efHal_pwm_setPeriod(efHal_pwm_id_t id, uint32_t period_nS);
-extern uint32_t efHal_pwm_getPeriodCount(efHal_pwm_id_t id);
-extern void efHal_pwm_confIntCount(efHal_pwm_id_t id, uint32_t count);
-extern bool efHal_pwm_waitForInt(efHal_pwm_id_t id, TickType_t xBlockTime);
-extern void efHal_pwm_setCallBackInt(efHal_pwm_id_t id, efHal_pwm_callBackInt_t cb);
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-}
-#endif
-
-/*==================[end of file]============================================*/
-#endif /* EF_HAL_PWM_H_ */

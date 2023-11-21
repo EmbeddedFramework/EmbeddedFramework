@@ -71,6 +71,7 @@ enum efHal_gpio_id_t
     EF_HAL_A3,
     EF_HAL_A4,
     EF_HAL_A5,
+    EF_HAL_LIGHT_SENSOR,
 };
 
 enum efHal_gpio_busid_t
