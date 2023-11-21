@@ -60,6 +60,11 @@ efHal_dh_t efHal_dh_SPI0;
 
 /*==================[internal functions definition]==========================*/
 
+static void SPI_MasterInterruptCallback(SPI_Type *base, spi_master_handle_t *masterHandle,status_t status, void *userData){
+    efHal_internal_spi_endOfTransfer(userData);
+}
+
+
 static void spi_ConfCB(void *param, int32_t clockFrec, efHal_spi_mode_t mode)
 {
 
@@ -82,6 +87,8 @@ static void spi_ConfCB(void *param, int32_t clockFrec, efHal_spi_mode_t mode)
 	PORT_SetPinConfig(PORTE, 19, &port_spi_config); //SPI0_MISO
 
 	CLOCK_EnableClock(kCLOCK_Spi0);
+
+    SPI_MasterTransferCreateHandle(SPI0, &handle, SPI_MasterInterruptCallback, efHal_dh_SPI0);
 
 	spi_master_config_t userConfig;
 
@@ -127,10 +134,6 @@ static void spi_ConfCB(void *param, int32_t clockFrec, efHal_spi_mode_t mode)
 	SPI_MasterInit(param, &userConfig, SPI_MASTER_CLK_FREQ);
 }
 
-static void SPI_MasterInterruptCallback(SPI_Type *base, spi_master_handle_t *masterHandle,status_t status, void *userData){
-    efHal_internal_spi_endOfTransfer(userData);
-}
-
 static void spi_TransferCB(void* param, void *pTx, void *pRx, size_t length)
 {
     spi_transfer_t tempXfer = {0};
@@ -152,10 +155,6 @@ extern void bsp_frdmkl46z_spi_init(void)
     cb.transfer = spi_TransferCB;
 
     efHal_dh_SPI0 = efHal_internal_spi_deviceReg(cb, SPI0);
-
-    CLOCK_EnableClock(kCLOCK_Spi0);
-    SPI_MasterTransferCreateHandle(SPI0, &handle, SPI_MasterInterruptCallback, efHal_dh_SPI0);
-    CLOCK_DisableClock(kCLOCK_Spi0);
 }
 
 /*==================[end of file]============================================*/
