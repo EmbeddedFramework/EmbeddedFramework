@@ -51,6 +51,37 @@ enum efHal_gpio_id_t
 	EF_HAL_GPIO_LED_LD2,
 	EF_HAL_GPIO_LED_LD3,
     EF_HAL_GPIO_BUTTON_B1,
+
+    EF_HAL_D15,
+    EF_HAL_D14,
+    EF_HAL_D13,
+    EF_HAL_D12,
+    EF_HAL_D11,
+    EF_HAL_D10,
+    EF_HAL_D9,
+    EF_HAL_D8,
+    EF_HAL_D7,
+    EF_HAL_D6,
+    EF_HAL_D5,
+    EF_HAL_D4,
+    EF_HAL_D3,
+    EF_HAL_D2,
+    EF_HAL_D1,
+    EF_HAL_D0,
+
+    EF_HAL_A0,
+    EF_HAL_BUS_RD = EF_HAL_A0,
+    EF_HAL_A1,
+    EF_HAL_BUS_WR = EF_HAL_A1,
+    EF_HAL_A2,
+    EF_HAL_A3,
+    EF_HAL_A4,
+    EF_HAL_A5,
+};
+
+enum efHal_gpio_busid_t
+{
+    EF_HAL_BUS_TFT = 0,
 };
 
 /*==================[external data declaration]==============================*/

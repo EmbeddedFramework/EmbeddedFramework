@@ -56,6 +56,31 @@ static const gpioStruct_t gpioStruct[] =
     {LD2_GPIO_Port,  LD2_Pin},              /* EF_HAL_GPIO_LED_LD2 */
     {LD3_GPIO_Port,  LD3_Pin},              /* EF_HAL_GPIO_LED_LD3 */
     {USER_Btn_GPIO_Port,  USER_Btn_Pin},    /* EF_HAL_GPIO_BUTTON_B1 */
+
+    {GPIOB, GPIO_PIN_8},                    /* EF_HAL_D15 */
+    {GPIOB, GPIO_PIN_9},                    /* EF_HAL_D14 */
+    {GPIOA, GPIO_PIN_5},                    /* EF_HAL_D13 */
+    {GPIOA, GPIO_PIN_6},                    /* EF_HAL_D12 */
+    {GPIOA, GPIO_PIN_7},                    /* EF_HAL_D11 */
+    {GPIOD, GPIO_PIN_14},                   /* EF_HAL_D10 */
+    {GPIOD, GPIO_PIN_15},                   /* EF_HAL_D9 */
+    {GPIOF, GPIO_PIN_12},                   /* EF_HAL_D8 */
+    {GPIOF, GPIO_PIN_13},                   /* EF_HAL_D7 */
+    {GPIOE, GPIO_PIN_9},                    /* EF_HAL_D6 */
+    {GPIOE, GPIO_PIN_11},                   /* EF_HAL_D5 */
+    {GPIOF, GPIO_PIN_14},                   /* EF_HAL_D4 */
+    {GPIOE, GPIO_PIN_13},                   /* EF_HAL_D3 */
+    {GPIOF, GPIO_PIN_15},                   /* EF_HAL_D2 */
+    {GPIOG, GPIO_PIN_14},                   /* EF_HAL_D1 */
+    {GPIOG, GPIO_PIN_9},                    /* EF_HAL_D0 */
+
+    {GPIOA, GPIO_PIN_3},                    /* EF_HAL_A0 */
+    {GPIOC, GPIO_PIN_0},                    /* EF_HAL_A1 */
+    {GPIOC, GPIO_PIN_3},                    /* EF_HAL_A2 */
+    {GPIOF, GPIO_PIN_3},                    /* EF_HAL_A3 */
+    {GPIOF, GPIO_PIN_5},                    /* EF_HAL_A4 */
+    {GPIOF, GPIO_PIN_10},                   /* EF_HAL_A5 */
+
 };
 
 #define TOTAL_GPIO   (sizeof(gpioStruct) / sizeof(gpioStruct[0]))
@@ -125,7 +150,24 @@ static void confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t 
 
 static void confBus(efHal_gpio_busid_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull)
 {
+    if (id == EF_HAL_BUS_TFT)
+    {
+        confPin(EF_HAL_D2, dir, pull, 0);
+        confPin(EF_HAL_D3, dir, pull, 0);
+        confPin(EF_HAL_D4, dir, pull, 0);
+        confPin(EF_HAL_D5, dir, pull, 0);
+        confPin(EF_HAL_D6, dir, pull, 0);
+        confPin(EF_HAL_D7, dir, pull, 0);
+        confPin(EF_HAL_D8, dir, pull, 0);
+        confPin(EF_HAL_D9, dir, pull, 0);
 
+        confPin(EF_HAL_BUS_WR, dir, pull, 1);
+        confPin(EF_HAL_BUS_RD, dir, pull, 1);
+    }
+    else
+    {
+        efErrorHdl_error(EF_ERROR_HDL_INVALID_PARAMETER, "busid");
+    }
 }
 
 static void writeBus(efHal_gpio_busid_t id, void *pData, size_t length)
