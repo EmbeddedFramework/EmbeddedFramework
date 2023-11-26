@@ -199,7 +199,6 @@ extern void bsp_nucleoF767ZI_internal_gpio_confAsAnalog(efHal_gpio_id_t id)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pin = gpioStruct[id].GPIO_Pin;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 
     HAL_GPIO_Init(gpioStruct[id].GPIOx, &GPIO_InitStruct);
 }
