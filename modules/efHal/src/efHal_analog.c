@@ -83,6 +83,8 @@ extern bool efHal_analog_startConv(efHal_gpio_id_t id)
     bool ret = false;
     int i;
 
+    taskENTER_CRITICAL();
+
     for (i = 0 ; i < EF_HAL_ANALOG_TOTAL_WAIT_CONV ; i++)
     {
         if (taskHandle_analog[i].taskHandle == NULL)
@@ -93,6 +95,8 @@ extern bool efHal_analog_startConv(efHal_gpio_id_t id)
             break;
         }
     }
+
+    taskEXIT_CRITICAL();
 
     /* check if no free slot error */
     if (i >= EF_HAL_ANALOG_TOTAL_WAIT_CONV)
@@ -128,6 +132,7 @@ extern int32_t efHal_analog_read(efHal_gpio_id_t id)
     }
 
     /* release slot */
+    taskENTER_CRITICAL();
     for (i = 0 ; i < EF_HAL_ANALOG_TOTAL_WAIT_CONV ; i++)
     {
         if (taskHandle_analog[i].gpioId == id)
@@ -136,6 +141,7 @@ extern int32_t efHal_analog_read(efHal_gpio_id_t id)
             taskHandle_analog[i].taskHandle = NULL;
         }
     }
+    taskEXIT_CRITICAL();
 
     return ret;
 }
