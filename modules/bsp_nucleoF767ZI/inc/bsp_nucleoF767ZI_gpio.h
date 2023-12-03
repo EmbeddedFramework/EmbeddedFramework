@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2023, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,65 +32,68 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
+#ifndef BSP_NUCLEO_F767ZI_GPIO_H
+#define BSP_NUCLEO_F767ZI_GPIO_H
 
 /*==================[inclusions]=============================================*/
-#include "efHal_i2c.h"
-#include "efHal_spi.h"
-#include "efHal_internal.h"
+#include "efHal_gpio.h"
+
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*==================[macros and typedef]=====================================*/
 
-/*==================[internal functions declaration]=========================*/
-
-/*==================[internal data definition]===============================*/
-
-/*==================[external data definition]===============================*/
-
-/*==================[internal functions definition]==========================*/
-
-/*==================[external functions definition]==========================*/
-
-extern void efHal_init(void)
+enum efHal_gpio_id_t
 {
-    efHal_gpio_init();
+    EF_HAL_GPIO_LED_LD1 = 0,
+	EF_HAL_GPIO_LED_LD2,
+	EF_HAL_GPIO_LED_LD3,
+    EF_HAL_GPIO_BUTTON_B1,
 
-    efHal_analog_init();
+    EF_HAL_D15,
+    EF_HAL_D14,
+    EF_HAL_D13,
+    EF_HAL_D12,
+    EF_HAL_D11,
+    EF_HAL_D10,
+    EF_HAL_D9,
+    EF_HAL_D8,
+    EF_HAL_D7,
+    EF_HAL_D6,
+    EF_HAL_D5,
+    EF_HAL_D4,
+    EF_HAL_D3,
+    EF_HAL_D2,
+    EF_HAL_D1,
+    EF_HAL_D0,
 
-    efHal_pwm_init();
+    EF_HAL_A0,
+    EF_HAL_BUS_RD = EF_HAL_A0,
+    EF_HAL_A1,
+    EF_HAL_BUS_WR = EF_HAL_A1,
+    EF_HAL_A2,
+    EF_HAL_A3,
+    EF_HAL_A4,
+    EF_HAL_A5,
+};
 
-#if EF_HAL_I2C_TOTAL_DEVICES > 0
-    efHal_i2c_init();
-#endif
-#if EF_HAL_UART_TOTAL_DEVICES > 0
-    efHal_uart_init();
-#endif
-
-#if EF_HAL_SPI_TOTAL_DEVICES > 0
-    efHal_spi_init();
-#endif
-
-}
-
-extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)
+enum efHal_gpio_busid_t
 {
-    efHal_dh_t ret = NULL;
-    uint8_t *pTemp = (uint8_t*)p_dhD;
-    int i;
+    EF_HAL_BUS_TFT = 0,
+};
 
-    for (i = 0 ; i < length ; i++)
-    {
-        if (p_dhD->mutex == NULL)
-        {
-            ret = p_dhD;
-            break;
-        }
+/*==================[external data declaration]==============================*/
 
-        pTemp += size;
-        p_dhD = (efHal_internal_dhD_t*)pTemp;
-    }
+/*==================[external functions declaration]=========================*/
+extern void bsp_nucleoF767ZI_gpio_init(void);
+extern void bsp_nucleoF767ZI_internal_gpio_confAsPWM(efHal_gpio_id_t id);
 
-    return ret;
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
 }
-
+#endif
 
 /*==================[end of file]============================================*/
+#endif /* BSP_NUCLEO_F767ZI_GPIO_H */

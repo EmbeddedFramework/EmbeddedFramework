@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2023, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,65 +32,29 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
+#ifndef BSP_NUCLEO_F767ZI_H
+#define BSP_NUCLEO_F767ZI_H
 
 /*==================[inclusions]=============================================*/
-#include "efHal_i2c.h"
-#include "efHal_spi.h"
-#include "efHal_internal.h"
+#include "bsp_nucleoF767ZI_gpio.h"
+#include "bsp_nucleoF767ZI_analog.h"
+
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*==================[macros and typedef]=====================================*/
 
-/*==================[internal functions declaration]=========================*/
+/*==================[external data declaration]==============================*/
 
-/*==================[internal data definition]===============================*/
+/*==================[external functions declaration]=========================*/
+extern void bsp_nucleoF767ZI_init(void);
 
-/*==================[external data definition]===============================*/
-
-/*==================[internal functions definition]==========================*/
-
-/*==================[external functions definition]==========================*/
-
-extern void efHal_init(void)
-{
-    efHal_gpio_init();
-
-    efHal_analog_init();
-
-    efHal_pwm_init();
-
-#if EF_HAL_I2C_TOTAL_DEVICES > 0
-    efHal_i2c_init();
-#endif
-#if EF_HAL_UART_TOTAL_DEVICES > 0
-    efHal_uart_init();
-#endif
-
-#if EF_HAL_SPI_TOTAL_DEVICES > 0
-    efHal_spi_init();
-#endif
-
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
 }
-
-extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)
-{
-    efHal_dh_t ret = NULL;
-    uint8_t *pTemp = (uint8_t*)p_dhD;
-    int i;
-
-    for (i = 0 ; i < length ; i++)
-    {
-        if (p_dhD->mutex == NULL)
-        {
-            ret = p_dhD;
-            break;
-        }
-
-        pTemp += size;
-        p_dhD = (efHal_internal_dhD_t*)pTemp;
-    }
-
-    return ret;
-}
-
+#endif
 
 /*==================[end of file]============================================*/
+#endif /* BSP_NUCLEO_F767ZI_H */

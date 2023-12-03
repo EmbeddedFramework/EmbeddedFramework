@@ -1,4 +1,3 @@
-/*
 ###############################################################################
 #
 # Copyright 2021, Gustavo Muro
@@ -31,66 +30,28 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#                                                                             */
+#
 
-/*==================[inclusions]=============================================*/
-#include "efHal_i2c.h"
-#include "efHal_spi.h"
-#include "efHal_internal.h"
+# library
+LIBS 				  += mod_bsp_nucleoF767ZI
+# version
+mod_bsp_nucleoF767ZI_VERSION    = 0.0.0
+# library path
+mod_bsp_nucleoF767ZI_PATH 		= $(ROOT_DIR)$(DS)modules$(DS)bsp_nucleoF767ZI
 
-/*==================[macros and typedef]=====================================*/
-
-/*==================[internal functions declaration]=========================*/
-
-/*==================[internal data definition]===============================*/
-
-/*==================[external data definition]===============================*/
-
-/*==================[internal functions definition]==========================*/
-
-/*==================[external functions definition]==========================*/
-
-extern void efHal_init(void)
-{
-    efHal_gpio_init();
-
-    efHal_analog_init();
-
-    efHal_pwm_init();
-
-#if EF_HAL_I2C_TOTAL_DEVICES > 0
-    efHal_i2c_init();
-#endif
-#if EF_HAL_UART_TOTAL_DEVICES > 0
-    efHal_uart_init();
-#endif
-
-#if EF_HAL_SPI_TOTAL_DEVICES > 0
-    efHal_spi_init();
-#endif
-
-}
-
-extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)
-{
-    efHal_dh_t ret = NULL;
-    uint8_t *pTemp = (uint8_t*)p_dhD;
-    int i;
-
-    for (i = 0 ; i < length ; i++)
-    {
-        if (p_dhD->mutex == NULL)
-        {
-            ret = p_dhD;
-            break;
-        }
-
-        pTemp += size;
-        p_dhD = (efHal_internal_dhD_t*)pTemp;
-    }
-
-    return ret;
-}
+# library source path
+mod_bsp_nucleoF767ZI_SRC_PATH 	= $(mod_bsp_nucleoF767ZI_PATH)$(DS)src \
+							$(mod_bsp_nucleoF767ZI_PATH)$(DS)internals$(DS)src \
+							$(mod_bsp_nucleoF767ZI_PATH)$(DS)internals$(DS)Core$(DS)Src \
+							$(mod_bsp_nucleoF767ZI_PATH)$(DS)internals$(DS)Core$(DS)Startup
 
 
-/*==================[end of file]============================================*/
+# library include path
+mod_bsp_nucleoF767ZI_INC_PATH 	= $(mod_bsp_nucleoF767ZI_PATH)$(DS)inc \
+							$(mod_bsp_nucleoF767ZI_PATH)$(DS)internals$(DS)inc \
+							$(mod_bsp_nucleoF767ZI_PATH)$(DS)internals$(DS)Core$(DS)Inc
+
+
+# library source files
+mod_bsp_nucleoF767ZI_SRC_FILES 	= $(foreach mod_bsp_nucleoF767ZI_SRC, $(mod_bsp_nucleoF767ZI_SRC_PATH), $(wildcard $(mod_bsp_nucleoF767ZI_SRC)$(DS)*.c))
+mod_bsp_nucleoF767ZI_SRC_FILES  += $(foreach mod_bsp_nucleoF767ZI_SRC, $(mod_bsp_nucleoF767ZI_SRC_PATH), $(wildcard $(mod_bsp_nucleoF767ZI_SRC)$(DS)*.s))

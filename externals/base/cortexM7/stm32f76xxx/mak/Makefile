@@ -1,7 +1,6 @@
-/*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2022, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -31,66 +30,25 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#                                                                             */
-
-/*==================[inclusions]=============================================*/
-#include "efHal_i2c.h"
-#include "efHal_spi.h"
-#include "efHal_internal.h"
-
-/*==================[macros and typedef]=====================================*/
-
-/*==================[internal functions declaration]=========================*/
-
-/*==================[internal data definition]===============================*/
-
-/*==================[external data definition]===============================*/
-
-/*==================[internal functions definition]==========================*/
-
-/*==================[external functions definition]==========================*/
-
-extern void efHal_init(void)
-{
-    efHal_gpio_init();
-
-    efHal_analog_init();
-
-    efHal_pwm_init();
-
-#if EF_HAL_I2C_TOTAL_DEVICES > 0
-    efHal_i2c_init();
-#endif
-#if EF_HAL_UART_TOTAL_DEVICES > 0
-    efHal_uart_init();
-#endif
-
-#if EF_HAL_SPI_TOTAL_DEVICES > 0
-    efHal_spi_init();
-#endif
-
-}
-
-extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)
-{
-    efHal_dh_t ret = NULL;
-    uint8_t *pTemp = (uint8_t*)p_dhD;
-    int i;
-
-    for (i = 0 ; i < length ; i++)
-    {
-        if (p_dhD->mutex == NULL)
-        {
-            ret = p_dhD;
-            break;
-        }
-
-        pTemp += size;
-        p_dhD = (efHal_internal_dhD_t*)pTemp;
-    }
-
-    return ret;
-}
+#
 
 
-/*==================[end of file]============================================*/
+ifeq ($(CPU),stm32f767zitx)
+LINKER_SCRIPT ?= stm32f767zitx_FLASH.ld
+AFLAGS += -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-d16 -g3 -c -x assembler-with-cpp -MMD --specs=nano.specs
+CFLAGS += -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-d16 -D$(CPUTYPE) -DARM_MATH_CM7 -D__FPU_PRESENT=1 -Og -g3 -ffunction-sections -fdata-sections -Wall -fstack-usage -c --specs=nano.specs
+LFLAGS += -mcpu=cortex-m7 -T "externals/base/cortexM7/stm32f76xxx/stm32f767zitx/linker/$(LINKER_SCRIPT)" --specs=nosys.specs -Wl,-Map="$(TARGET_NAME).map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -lc -lm -Wl,--print-memory-usage
+CFLAGS += -DUSE_HAL_DRIVER -DSTM32F767xx
+
+#CFLAGS += -DDEBUG
+#CFLAGS += -std=gnu11
+endif
+
+ext_base_INC_PATH  += $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)inc
+
+ext_base_SRC_FILES += $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.c) \
+					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.s) \
+					  $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)$(CPU)$(DS)src$(DS)*.S)
+						
+EXTERN_LIBS += $(wildcard $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)lib$(DS)*.a)
+
