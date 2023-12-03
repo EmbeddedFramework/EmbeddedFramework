@@ -81,21 +81,7 @@ extern void efHal_analog_confAsAnalog(efHal_gpio_id_t id)
 extern bool efHal_analog_startConv(efHal_gpio_id_t id)
 {
     bool ret = false;
-
-    if (callBacks.startConv != NULL)
-        ret = callBacks.startConv(id);
-    else
-    {
-        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "callBacks.startConv");
-    }
-
-    return ret;
-}
-
-extern bool efHal_analog_waitConv(efHal_gpio_id_t id, TickType_t xBlockTime)
-{
     int i;
-    bool ret = false;
 
     for (i = 0 ; i < EF_HAL_ANALOG_TOTAL_WAIT_CONV ; i++)
     {
@@ -110,23 +96,28 @@ extern bool efHal_analog_waitConv(efHal_gpio_id_t id, TickType_t xBlockTime)
 
     /* check if no free slot error */
     if (i >= EF_HAL_ANALOG_TOTAL_WAIT_CONV)
-    {
-        efErrorHdl_error(EF_ERROR_HDL_NO_FREE_SLOT, "waitConv");
-    }
+        efErrorHdl_error(EF_ERROR_HDL_NO_FREE_SLOT, "callBacks.startConv");
+    else if (callBacks.startConv != NULL)
+        ret = callBacks.startConv(id);
     else
-    {
-        if (ulTaskNotifyTake(pdTRUE, xBlockTime))
-            ret = true;
+        efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "callBacks.startConv");
 
-        taskHandle_analog[i].gpioId = EF_HAL_INVALID_ID;
-        taskHandle_analog[i].taskHandle = NULL;
-    }
+    return ret;
+}
+
+extern bool efHal_analog_waitConv(efHal_gpio_id_t id, TickType_t xBlockTime)
+{
+    bool ret = false;
+
+    if (ulTaskNotifyTake(pdTRUE, xBlockTime))
+        ret = true;
 
     return ret;
 }
 
 extern int32_t efHal_analog_read(efHal_gpio_id_t id)
 {
+    int i;
     int32_t ret = 0;
 
     if (callBacks.aRead != NULL)
@@ -134,6 +125,16 @@ extern int32_t efHal_analog_read(efHal_gpio_id_t id)
     else
     {
         efErrorHdl_error(EF_ERROR_HDL_NULL_POINTER, "callBacks.aRead");
+    }
+
+    /* release slot */
+    for (i = 0 ; i < EF_HAL_ANALOG_TOTAL_WAIT_CONV ; i++)
+    {
+        if (taskHandle_analog[i].gpioId == id)
+        {
+            taskHandle_analog[i].gpioId = EF_HAL_INVALID_ID;
+            taskHandle_analog[i].taskHandle = NULL;
+        }
     }
 
     return ret;

@@ -36,6 +36,7 @@
 /*==================[inclusions]=============================================*/
 #include "efHal_i2c.h"
 #include "efHal_spi.h"
+#include "efHal_analog.h"
 #include "efHal_internal.h"
 
 /*==================[macros and typedef]=====================================*/
