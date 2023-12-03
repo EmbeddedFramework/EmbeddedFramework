@@ -113,6 +113,8 @@ static void confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t 
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
+    setPin(id, state);
+
     switch (pull)
     {
         case EF_HAL_GPIO_PULL_DISABLE:
@@ -172,7 +174,57 @@ static void confBus(efHal_gpio_busid_t id, efHal_gpio_dir_t dir, efHal_gpio_pull
 
 static void writeBus(efHal_gpio_busid_t id, void *pData, size_t length)
 {
+    uint8_t *dummy = pData;
 
+    if (id == EF_HAL_BUS_TFT)
+    {
+        for (int i = 0 ; i < length ; i++)
+        {
+            uint8_t d = dummy[i];
+
+            // clear bits
+            // bit 0 D8 F12
+            // bit 2 D2 F15
+            // bit 4 D4 F14
+            // bit 7 D7 F13
+            GPIOF->BSRR = (GPIO_PIN_12|GPIO_PIN_15|GPIO_PIN_14|GPIO_PIN_13) << 16;
+
+            // bit 1 D9 D15
+            GPIOD->BSRR = (GPIO_PIN_15) << 16;
+
+            // bit 3 D3 E13
+            // bit 5 D5 E11
+            // bit 6 D6 E9
+            GPIOE->BSRR = (GPIO_PIN_13|GPIO_PIN_11|GPIO_PIN_9) << 16;
+
+            // set bits
+            if (d & 0b00000001)
+                GPIOF->BSRR = GPIO_PIN_12;
+            if (d & 0b00000100)
+                GPIOF->BSRR = GPIO_PIN_15;
+            if (d & 0b00010000)
+                GPIOF->BSRR = GPIO_PIN_14;
+            if (d & 0b10000000)
+                GPIOF->BSRR = GPIO_PIN_13;
+
+            if (d & 0b00000010)
+                GPIOD->BSRR = GPIO_PIN_15;
+
+            if (d & 0b00001000)
+                GPIOE->BSRR = GPIO_PIN_13;
+            if (d & 0b00100000)
+                GPIOE->BSRR = GPIO_PIN_11;
+            if (d & 0b01000000)
+                GPIOE->BSRR = GPIO_PIN_9;
+
+            efHal_gpio_setPin(EF_HAL_BUS_WR, 0);
+            efHal_gpio_setPin(EF_HAL_BUS_WR, 1);
+        }
+    }
+    else
+    {
+        efErrorHdl_error(EF_ERROR_HDL_INVALID_PARAMETER, "busid");
+    }
 }
 
 
@@ -180,6 +232,16 @@ static void writeBus(efHal_gpio_busid_t id, void *pData, size_t length)
 extern void bsp_nucleoF767ZI_gpio_init(void)
 {
     efHal_gpio_callBacks_t cb;
+
+    /* GPIO Ports Clock Enable */
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+    __HAL_RCC_GPIOE_CLK_ENABLE();
+    __HAL_RCC_GPIOF_CLK_ENABLE();
+    __HAL_RCC_GPIOG_CLK_ENABLE();
+    __HAL_RCC_GPIOH_CLK_ENABLE();
 
     cb.setPin = setPin;
     cb.togPin = togPin;
