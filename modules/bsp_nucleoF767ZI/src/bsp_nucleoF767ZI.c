@@ -54,6 +54,7 @@ extern void bsp_nucleoF767ZI_init(void)
     efHal_init();
 
     bsp_nucleoF767ZI_gpio_init();
+    bsp_nucleoF767ZI_analog_init();
 }
 
 /*==================[end of file]============================================*/
