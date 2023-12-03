@@ -56,6 +56,8 @@ typedef struct
 static const analogAsign_t map[] =
 {
         { EF_HAL_A0, ADC_CHANNEL_3 },
+        { EF_HAL_A1, ADC_CHANNEL_10 },
+        { EF_HAL_A2, ADC_CHANNEL_13 },
 };
 
 #define MAP_LENGTH  (sizeof(map) / sizeof(map[0]))
