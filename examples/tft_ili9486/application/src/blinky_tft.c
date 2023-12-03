@@ -97,12 +97,11 @@ static void blinky_task(void *pvParameters)
         {
             timeDownTouch = 20;
             touchScreen_performRead();
+            efHal_gpio_confPin(TFT_YP, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+            efHal_gpio_confPin(TFT_YM, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+            efHal_gpio_confPin(TFT_XP, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
+            efHal_gpio_confPin(TFT_XM, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
         }
-
-        efHal_gpio_confPin(TFT_YP, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
-        efHal_gpio_confPin(TFT_YM, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
-        efHal_gpio_confPin(TFT_XP, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
-        efHal_gpio_confPin(TFT_XM, EF_HAL_GPIO_OUTPUT, EF_HAL_GPIO_PULL_DISABLE, 1);
 
         lv_timer_handler();
     }
