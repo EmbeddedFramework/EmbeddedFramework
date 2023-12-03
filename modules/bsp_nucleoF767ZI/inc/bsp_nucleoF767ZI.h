@@ -37,6 +37,7 @@
 
 /*==================[inclusions]=============================================*/
 #include "bsp_nucleoF767ZI_gpio.h"
+#include "bsp_nucleoF767ZI_analog.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
