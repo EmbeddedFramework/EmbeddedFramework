@@ -68,6 +68,14 @@ CPU            ?= MKL43Z256VLH4
 COMPILER       ?= gcc
 endif
 
+# Default values for nucleoF767ZI
+ifeq ($(BOARD),nucleoF767ZI)
+ARCH           ?= cortexM7
+CPUTYPE        ?= stm32f76xxx
+CPU            ?= stm32f767zitx
+COMPILER       ?= gcc
+endif
+
 # Default values in other case
 ARCH           ?= x86
 CPUTYPE        ?= ia64
