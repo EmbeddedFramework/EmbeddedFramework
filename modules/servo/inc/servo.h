@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2023, Guido Cicconi
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,10 +32,12 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef EF_HAL_CONFIG_H_
-#define EF_HAL_CONFIG_H_
+#ifndef SERVO_H_
+#define SERVO_H_
 
 /*==================[inclusions]=============================================*/
+#include "appBoard.h"
+#include "efHal_pwm.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -43,20 +45,15 @@ extern "C" {
 #endif
 
 /*==================[macros and typedef]=====================================*/
-
-#define EF_HAL_I2C_TOTAL_DEVICES        1
-
-#define EF_HAL_SPI_TOTAL_DEVICES        1
-
-#define EF_HAL_GPIO_TOTAL_CALL_BACK     5
-
-#define EF_HAL_GPIO_TOTAL_WAIT_FOR_INT  5
-
-#define EF_HAL_UART_TOTAL_DEVICES   2
+#define SERVO_PWM_MIN_DUTY_US 500
+#define SERVO_PWM_MAX_DUTY_US 2580
 
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
+
+extern void servo_init(efHal_pwm_id_t pwmPin, uint8_t initialPos);
+extern void servo_setPos(uint8_t posDegree);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -64,4 +61,4 @@ extern "C" {
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* EF_HAL_CONFIG_H_ */
+#endif /* SERVO_H_ */

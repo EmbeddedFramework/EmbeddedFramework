@@ -42,6 +42,7 @@
 #include "bsp_frdmkl46z_uart.h"
 #include "bsp_frdmkl46z_lpsci.h"
 #include "bsp_frdmkl46z_pwm.h"
+#include "bsp_frdmkl46z_spi.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2023, Guido Cicconi
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,36 +32,51 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef EF_HAL_CONFIG_H_
-#define EF_HAL_CONFIG_H_
 
 /*==================[inclusions]=============================================*/
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "servo.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 /*==================[macros and typedef]=====================================*/
 
-#define EF_HAL_I2C_TOTAL_DEVICES        1
+#define SERVO_PWM_FREQ 50
 
-#define EF_HAL_SPI_TOTAL_DEVICES        1
+/*==================[internal functions declaration]=========================*/
 
-#define EF_HAL_GPIO_TOTAL_CALL_BACK     5
+/*==================[internal data definition]===============================*/
 
-#define EF_HAL_GPIO_TOTAL_WAIT_FOR_INT  5
+efHal_pwm_id_t _pwmPin;
 
-#define EF_HAL_UART_TOTAL_DEVICES   2
+/*==================[external data definition]===============================*/
 
-/*==================[external data declaration]==============================*/
+/*==================[internal functions definition]==========================*/
 
-/*==================[external functions declaration]=========================*/
+/*==================[external functions definition]==========================*/
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
+extern void servo_init(efHal_pwm_id_t pwmPin, uint8_t initialPos){
+    _pwmPin = pwmPin;
+    efHal_pwm_setPeriod(pwmPin, (uint32_t)((float)1e9/(float)SERVO_PWM_FREQ));
+    servo_setPos(initialPos);
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    return;
 }
-#endif
+
+extern void servo_setPos(uint8_t posDegree){
+    float servoDutyCount = 0;
+
+    servoDutyCount = SERVO_PWM_MIN_DUTY_US*1e-6*50.0*(efHal_pwm_getPeriodCount(_pwmPin) + 1) +
+                     (float)posDegree/180.0 * ((SERVO_PWM_MAX_DUTY_US*1e-6*50.0*(efHal_pwm_getPeriodCount(_pwmPin) + 1))-
+                     (SERVO_PWM_MIN_DUTY_US*1e-6*50.0*(efHal_pwm_getPeriodCount(_pwmPin) + 1)));
+
+    efHal_pwm_setDuty(_pwmPin, (uint32_t)servoDutyCount, EF_HAL_PWM_DUTY_COUNT);
+
+    return;
+}
 
 /*==================[end of file]============================================*/
-#endif /* EF_HAL_CONFIG_H_ */
+
+
+
+
+

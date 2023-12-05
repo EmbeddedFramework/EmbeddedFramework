@@ -1,7 +1,10 @@
-/*
 ###############################################################################
 #
 # Copyright 2021, Gustavo Muro
+# Copyright 2014, 2015, Mariano Cerdeiro
+# Copyright 2014, 2015, 2016, Juan Cecconi (Numetron, UTN-FRBA)
+# Copyright 2014, 2015, Esteban Volentini (LabMicro, UNT)
+# Copyright 2017, Gustavo Muro (DIGI CHECK)
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -31,37 +34,15 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#                                                                             */
-#ifndef EF_HAL_CONFIG_H_
-#define EF_HAL_CONFIG_H_
-
-/*==================[inclusions]=============================================*/
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/*==================[macros and typedef]=====================================*/
-
-#define EF_HAL_I2C_TOTAL_DEVICES        1
-
-#define EF_HAL_SPI_TOTAL_DEVICES        1
-
-#define EF_HAL_GPIO_TOTAL_CALL_BACK     5
-
-#define EF_HAL_GPIO_TOTAL_WAIT_FOR_INT  5
-
-#define EF_HAL_UART_TOTAL_DEVICES   2
-
-/*==================[external data declaration]==============================*/
-
-/*==================[external functions declaration]=========================*/
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-}
-#endif
-
-/*==================[end of file]============================================*/
-#endif /* EF_HAL_CONFIG_H_ */
+###############################################################################
+LIBS 				  += mod_servo
+# version
+mod_servo_VERSION     = 0.1.0
+# library path
+mod_servo_PATH 		= $(ROOT_DIR)$(DS)modules$(DS)servo
+# library source path
+mod_servo_SRC_PATH 	= $(mod_servo_PATH)$(DS)src
+# library include path
+mod_servo_INC_PATH 	= $(mod_servo_PATH)$(DS)inc
+# library source files
+mod_servo_SRC_FILES 	= $(wildcard $(mod_servo_SRC_PATH)$(DS)*.c)

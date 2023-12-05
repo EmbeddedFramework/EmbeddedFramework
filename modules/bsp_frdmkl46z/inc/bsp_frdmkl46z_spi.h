@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2023, Gustavo Garcia
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,36 +32,36 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef EF_HAL_CONFIG_H_
-#define EF_HAL_CONFIG_H_
+
+#ifndef BSP_FRDMKL46Z_SPI_H_
+#define BSP_FRDMKL46Z_SPI_H_
 
 /*==================[inclusions]=============================================*/
 
+#include "efHal_spi.h"
+
 /*==================[cplusplus]==============================================*/
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*==================[macros and typedef]=====================================*/
 
-#define EF_HAL_I2C_TOTAL_DEVICES        1
-
-#define EF_HAL_SPI_TOTAL_DEVICES        1
-
-#define EF_HAL_GPIO_TOTAL_CALL_BACK     5
-
-#define EF_HAL_GPIO_TOTAL_WAIT_FOR_INT  5
-
-#define EF_HAL_UART_TOTAL_DEVICES   2
+extern efHal_dh_t efHal_dh_SPI0;
 
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
 
+extern void bsp_frdmkl46z_spi_init(void);
+
 /*==================[cplusplus]==============================================*/
+
 #ifdef __cplusplus
 }
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* EF_HAL_CONFIG_H_ */
+#endif /* BSP_FRDMKL46Z_SPI_H_ */
+
