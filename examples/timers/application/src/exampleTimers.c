@@ -50,6 +50,7 @@
 /*==================[internal data definition]===============================*/
 
 static TimerHandle_t timerHandle;
+static TaskHandle_t taskHandle;
 
 /*==================[external data definition]===============================*/
 
@@ -57,7 +58,7 @@ static TimerHandle_t timerHandle;
 
 static void timerCallback(TimerHandle_t xTimer)
 {
-    efHal_analog_startConv(EF_HAL_LIGHT_SENSOR);
+    xTaskNotifyGive(taskHandle);
 }
 
 static void blinky_task(void *pvParameters)
@@ -75,9 +76,9 @@ static void blinky_task(void *pvParameters)
 
     for (;;)
     {
-        efHal_analog_waitConv(EF_HAL_LIGHT_SENSOR, portMAX_DELAY);
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
-        adcRead = efHal_analog_read(EF_HAL_LIGHT_SENSOR);
+        efHal_analog_startWaitRead(EF_HAL_LIGHT_SENSOR, &adcRead, portMAX_DELAY);
 
         if(adcRead < THRESHOLD)
             efHal_gpio_setPin(EF_HAL_GPIO_LED_GREEN, true);
@@ -93,7 +94,7 @@ int main(void)
 {
     appBoard_init();
 
-    xTaskCreate(blinky_task, "blinky_task", 100, NULL, 0, NULL);
+    xTaskCreate(blinky_task, "blinky_task", 100, NULL, 0, &taskHandle);
 
     vTaskStartScheduler();
     for (;;);
