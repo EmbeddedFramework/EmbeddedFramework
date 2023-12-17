@@ -110,6 +110,10 @@ typedef struct
 #define EF_HAL_ANALOG_TOTAL_WAIT_CONV 1
 #endif
 
+#ifndef EF_HAL_ANALOG_TOTAL_CALL_BACK_CONV
+#define EF_HAL_ANALOG_TOTAL_CALL_BACK_CONV 1
+#endif
+
 /******************************* PWM ****************************************/
 
 typedef bool (*efHal_pwm_setDuty_t)(efHal_pwm_id_t id, uint32_t dutyCount);
