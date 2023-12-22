@@ -48,6 +48,7 @@ extern "C" {
 enum efHal_gpio_id_t
 {
     EF_HAL_GPIO_LED_LD1 = 0,
+    EF_HAL_GPIO_LED_GREEN = EF_HAL_GPIO_LED_LD1,
 	EF_HAL_GPIO_LED_LD2,
 	EF_HAL_GPIO_LED_LD3,
     EF_HAL_GPIO_BUTTON_B1,
