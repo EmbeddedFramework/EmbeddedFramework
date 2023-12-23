@@ -60,14 +60,15 @@ void vApplicationMallocFailedHook(void);
 
 /* USER CODE BEGIN 1 */
 /* Functions needed when configGENERATE_RUN_TIME_STATS is on */
+extern TIM_HandleTypeDef htim5;
 __weak void configureTimerForRunTimeStats(void)
 {
-
+    HAL_TIM_Base_Start_IT(&htim5);
 }
 
 __weak unsigned long getRunTimeCounterValue(void)
 {
-return 0;
+    return htim5.Instance->CNT;
 }
 /* USER CODE END 1 */
 
