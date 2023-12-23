@@ -487,11 +487,8 @@ void StartDefaultTask(void *argument)
 
   app_init();
 
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+  vTaskDelete(NULL);
+
   /* USER CODE END 5 */
 }
 

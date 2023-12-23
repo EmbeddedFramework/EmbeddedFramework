@@ -48,6 +48,8 @@
 /*==================[internal functions definition]==========================*/
 
 /*==================[external functions definition]==========================*/
+extern void app_init(void);
+
 extern void bsp_nucleoF767ZI_init(void)
 {
     /* Embedded Framework HAL init */
