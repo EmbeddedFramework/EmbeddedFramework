@@ -102,9 +102,7 @@ static int32_t getValue(efHal_gpio_id_t plus, efHal_gpio_id_t minus, efHal_gpio_
 
     for (i = 0 ; i < SAMPLES_TOTAL ; i++)
     {
-        efHal_analog_startConv(measure);
-        efHal_analog_waitConv(measure, portMAX_DELAY);
-        samples[i] = efHal_analog_read(measure);
+        efHal_analog_startWaitRead(measure, &samples[i], portMAX_DELAY);
     }
 
     ret = samples[0];
