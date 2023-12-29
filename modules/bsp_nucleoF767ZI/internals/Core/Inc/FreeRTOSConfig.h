@@ -99,6 +99,11 @@
 /* The following flag must be enabled only when using newlib */
 #define configUSE_NEWLIB_REENTRANT          1
 
+#define configENABLE_BACKWARD_COMPATIBILITY     1
+
+/* Task aware debugging. */
+#define configRECORD_STACK_HIGH_ADDRESS         1
+
 /* Set the following definitions to 1 to include the API function, or zero
 to exclude the API function. */
 #define INCLUDE_vTaskPrioritySet             1
