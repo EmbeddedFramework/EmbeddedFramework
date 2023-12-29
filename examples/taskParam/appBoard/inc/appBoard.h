@@ -44,8 +44,16 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
-#if BOARD == frdmkl46z
+#ifdef BOARD_frdmkl46z
 #include "bsp_frdmkl46z.h"
+#endif
+
+#ifdef BOARD_frdmkl43z
+#include "bsp_frdmkl43z.h"
+#endif
+
+#ifdef BOARD_nucleoF767ZI
+#include "bsp_nucleoF767ZI.h"
 #endif
 
 /*==================[external data declaration]==============================*/
