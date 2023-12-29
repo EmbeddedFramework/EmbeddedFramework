@@ -50,9 +50,6 @@
 
 extern void appBoard_init(void)
 {
-#if BOARD == frdmkl46z
-    bsp_frdmkl46z_init();
-#endif
 }
 
 /*==================[end of file]============================================*/

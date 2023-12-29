@@ -81,18 +81,20 @@ static void task2(void *pvParameters)
     }
 }
 /*==================[external functions definition]==========================*/
-int main(void)
+void app_init(void)
 {
     appBoard_init();
 
-    xTaskCreate(task1, "task1", 300, NULL, 1, NULL);
-    xTaskCreate(task2, "task2", 300, NULL, 0, NULL);
-
-    vTaskStartScheduler();
-    for (;;);
+    xTaskCreate(task1, "task1", 200, NULL, 1, NULL);
+    xTaskCreate(task2, "task2", 200, NULL, 0, NULL);
 }
 
 extern void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
+{
+    while (1);
+}
+
+extern void vApplicationMallocFailedHook( void )
 {
     while (1);
 }

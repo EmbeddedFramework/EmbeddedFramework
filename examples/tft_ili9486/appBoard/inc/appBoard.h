@@ -44,20 +44,28 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
-#if BOARD == frdmkl46z
-	#include "bsp_frdmkl46z.h"
-
-	#define ILI9486_DC      EF_HAL_A2       // LCD_RS: LCD bus command / data selection signal, low level: command, high level: data
-	#define ILI9486_RST     EF_HAL_A4
-	#define ILI9486_CS      EF_HAL_A3
-	#define ILI9486_BUS     EF_HAL_BUS_TFT
-
-    #define TFT_XM          EF_HAL_D6
-    #define TFT_XP          EF_HAL_A2
-    #define TFT_YM          EF_HAL_D7
-    #define TFT_YP          EF_HAL_A1
-
+#ifdef BOARD_frdmkl46z
+#include "bsp_frdmkl46z.h"
 #endif
+
+#ifdef BOARD_frdmkl43z
+#include "bsp_frdmkl43z.h"
+#endif
+
+#ifdef BOARD_nucleoF767ZI
+#include "bsp_nucleoF767ZI.h"
+#endif
+
+
+#define ILI9486_DC      EF_HAL_A2       // LCD_RS: LCD bus command / data selection signal, low level: command, high level: data
+#define ILI9486_RST     EF_HAL_A4
+#define ILI9486_CS      EF_HAL_A3
+#define ILI9486_BUS     EF_HAL_BUS_TFT
+
+#define TFT_XM          EF_HAL_D6
+#define TFT_XP          EF_HAL_A2
+#define TFT_YM          EF_HAL_D7
+#define TFT_YP          EF_HAL_A1
 
 /*==================[external data declaration]==============================*/
 

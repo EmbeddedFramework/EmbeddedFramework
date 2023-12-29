@@ -34,6 +34,9 @@
 #                                                                             */
 
 /*==================[inclusions]=============================================*/
+#include "FreeRTOS.h"
+#include "task.h"
+
 #include "bsp_frdmkl46z.h"
 
 #include "board.h"
@@ -48,15 +51,8 @@
 /*==================[external data definition]===============================*/
 
 /*==================[internal functions definition]==========================*/
-
-/*==================[external functions definition]==========================*/
-extern void bsp_frdmkl46z_init(void)
+static void bsp_init(void)
 {
-    /* specific board init functions */
-    BOARD_InitPins();
-    BOARD_BootClockRUN();
-    BOARD_InitDebugConsole();
-
     /* Embedded Framework HAL init */
     efHal_init();
 
@@ -70,6 +66,27 @@ extern void bsp_frdmkl46z_init(void)
     bsp_frdmkl46z_lpsci_init();
 
     bsp_frdmkl46z_spi_init();
+}
+
+/*==================[external functions definition]==========================*/
+int main(void)
+{
+    /* specific board init functions */
+    BOARD_InitPins();
+    BOARD_BootClockRUN();
+    BOARD_InitDebugConsole();
+
+    vTaskStartScheduler();
+    for (;;);
+    return 0;
+}
+
+extern void app_init(void);
+
+void vApplicationDaemonTaskStartupHook(void)
+{
+    bsp_init();
+    app_init();
 }
 
 /*==================[end of file]============================================*/
