@@ -52,6 +52,10 @@ extern "C" {
 #include "bsp_frdmkl43z.h"
 #endif
 
+#ifdef BOARD_nucleoF767ZI
+#include "bsp_nucleoF767ZI.h"
+#endif
+
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
