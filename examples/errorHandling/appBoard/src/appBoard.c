@@ -35,7 +35,6 @@
 
 /*==================[inclusions]=============================================*/
 #include "appBoard.h"
-#include "stdio.h"
 
 /*==================[macros and typedef]=====================================*/
 
@@ -51,11 +50,6 @@
 
 extern void appBoard_init(void)
 {
-    efErrorHdl_init();
-
-#if BOARD == frdmkl46z
-    bsp_frdmkl46z_init();
-#endif
 }
 
 /*==================[end of file]============================================*/
