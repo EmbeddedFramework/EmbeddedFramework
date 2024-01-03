@@ -369,7 +369,8 @@ info:
 #	@echo Lib Src Files......: $(LIBS_SRC_FILES)
 #	@echo Lib Obj Files......: $(LIBS_OBJ_FILES)
 #	@echo Project Src Path...: $($(PROJECT_NAME)_SRC_PATH)
-	@echo Includes...........: $(INCLUDE)
+	@$(MULTILINE_ECHO) "Includes libs......: \n $(foreach inc, $(INCLUDE),     $(inc)\n)"
+	@$(MULTILINE_ECHO) "Includes proj......: \n $(foreach inc, $(INC_FILES),     $(inc)\n)"
 	@echo use make info_\<mod\>: to get information of a specific module. eg: make info_posix
 	@echo "+-----------------------------------------------------------------------------+"
 	@echo "|               FRAMEWORK Firmware Info                                       |"
