@@ -163,12 +163,26 @@ SECTIONS
     . = ALIGN(8);
   } >RAM_D1
 
+  .domain_DTCMRAM :
+  {
+    . = ALIGN(4); 
+  } > DTCMRAM
+
   /* ETHERNET DATA: */
   .D2_domain_AHB_SRAM :
   {
     . = ALIGN(4); 
   } > RAM_D2
   
+  .D3_domain_AHB_SRAM :
+  {
+    . = ALIGN(4); 
+  } > RAM_D3
+
+  .domain_ITCMRAM :
+  {
+    . = ALIGN(4); 
+  } > ITCMRAM
   
   /* Remove information from the standard libraries */
   /DISCARD/ :
