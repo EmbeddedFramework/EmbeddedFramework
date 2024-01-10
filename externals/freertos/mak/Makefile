@@ -50,3 +50,7 @@ ext_freertos_SRC_FILES += $(foreach ext_freertos_SRC, $(ext_freertos_SRC_PATH), 
 ext_freertos_INC_PATH 	= $(ext_freertos_PATH)$(DS)inc                             \
                           $(ext_freertos_PATH)$(DS)portable$(DS)$(CPU)$(DS)
 
+ifeq ($(SKIP_FREERTOS_HEAP), 1)
+	ext_freertos_SRC_FILES := $(filter-out $(ext_freertos_PATH)$(DS)portable$(DS)$(CPU)$(DS)heap_%, $(ext_freertos_SRC_FILES))
+endif
+
