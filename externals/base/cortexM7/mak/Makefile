@@ -41,8 +41,10 @@ AS = arm-none-eabi-gcc
 
 # POST BUILD
 # Generates a .bin image file
-POST_BUILD += arm-none-eabi-objcopy -O ihex --remove-section=.D2_domain_AHB_SRAM $(LD_TARGET) $(TARGET_NAME).hex		\
-	&& arm-none-eabi-size $(LD_TARGET)
+POST_BUILD += arm-none-eabi-objcopy -O ihex \
+	--remove-section=.D2_domain_AHB_SRAM --remove-section=.domain_DTCMRAM \
+	--remove-section=.D3_domain_AHB_SRAM --remove-section=.domain_ITCMRAM \
+	$(LD_TARGET) $(TARGET_NAME).hex	&& arm-none-eabi-size $(LD_TARGET)
 
 # define linker extension
 LD_EXTENSION = axf
