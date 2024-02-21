@@ -12,7 +12,8 @@
 MEMORY
 {
   /* Define each memory region */
-  PROGRAM_FLASH (rx) : ORIGIN = 0x0, LENGTH = 0x40000 /* 256K bytes (alias Flash) */  
+  PROGRAM_FLASH (rx) : ORIGIN = 0x0, 	 LENGTH = 0x38000 /* 224K bytes (alias Flash) */  
+  CONFIG_FLASH  (rx) : ORIGIN = 0x38000, LENGTH = 0x8000  /* 32K bytes */
   SRAM0 (rwx) : ORIGIN = 0x20000000, LENGTH = 0x10000 /* 64K bytes (alias RAM) */  
   SRAMX (rwx) : ORIGIN = 0x4000000, LENGTH = 0x8000 /* 32K bytes (alias RAM2) */  
 }

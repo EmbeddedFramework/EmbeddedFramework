@@ -221,4 +221,9 @@ SECTIONS
     _image_start = LOADADDR(.text);
     _image_end = LOADADDR(.data) + SIZEOF(.data);
     _image_size = _image_end - _image_start;
+    
+    .config_flash_section :
+	{
+	    *(.config_flash_section)
+	} > CONFIG_FLASH
 }
