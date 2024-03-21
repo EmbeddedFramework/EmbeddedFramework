@@ -1,9 +1,10 @@
+/*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
-# Copyright 2014, Mariano Cerdeiro
+# Copyright 2024, Gustavo Muro
+# All rights reserved
 #
-# This file is part of Embedded Firmware
+# This file is part of EmbeddedFirmware.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -30,13 +31,55 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-###############################################################################
-# unit test
-# unit tests include files
-efHal_TST_INC_PATH  = $(efHal_PATH)$(DS)test$(DS)utest$(DS)inc
-# unit tests dependencies
-#efHal_TST_MOD	    = 
+#                                                                             */
 
-efHal_TST_MOD	    = externals$(DS)freertos
+#ifdef TEST
 
+/*==================[inclusions]=============================================*/
+
+#include "unity.h"
+#include "cmock.h"
+
+#include "FreeRTOS.h"
+#include "mock_FreeRTOS.h"
+#include "mock_portmacro.h"
+#include "mock_task.h"
+
+#include "../inc/efHal_gpio.h"
+
+/*==================[macros and typedef]=====================================*/
+
+/*==================[internal functions declaration]=========================*/
+
+/*==================[internal data definition]===============================*/
+
+/*==================[external data definition]===============================*/
+
+/*==================[internal functions definition]==========================*/
+
+/*==================[external functions definition]==========================*/
+
+/** \brief set Up function
+ **
+ ** This function is called before each test case is executed
+ **
+ **/
+void setUp(void) {
+}
+
+/** \brief tear Down function
+ **
+ ** This function is called after each test case is executed
+ **
+ **/
+void tearDown(void) {
+}
+
+void test_template_suma_01(void)
+{
+    efHal_gpio_init();
+}
+
+/*==================[end of file]============================================*/
+
+#endif // TEST

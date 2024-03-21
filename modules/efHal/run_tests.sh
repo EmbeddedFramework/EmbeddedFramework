@@ -21,4 +21,4 @@ fi
 ceedling clean
 ceedling test:all
 ceedling gcov:all
-gcovr -r . --html --html-details -o $HTML_DIR/coverage_report.html --exclude '.*test_.*'
+gcovr -r . --html --html-details -o $HTML_DIR/coverage_report.html --exclude '.*test_.*' --exclude '.*mock_.*'

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Lista de directorios de módulos que contienen scripts de pruebas
-MODULE_DIRS=("modules/template")
+MODULE_DIRS=("modules/template" "modules/efHal")
 
 # Crear directorio para los informes de prueba
 mkdir -p out/testReport
