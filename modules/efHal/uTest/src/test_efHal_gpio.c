@@ -33,7 +33,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
 
-#ifdef TEST
+//#ifdef TEST
 
 /*==================[inclusions]=============================================*/
 
@@ -45,17 +45,47 @@
 #include "mock_portmacro.h"
 #include "mock_task.h"
 
-#include "../inc/efHal_gpio.h"
+#include "efHal_gpio.h"
+#include "efHal_internal.h"
+
 
 /*==================[macros and typedef]=====================================*/
 
 /*==================[internal functions declaration]=========================*/
 
+static void setPin(efHal_gpio_id_t id, bool state);
+static void togPin(efHal_gpio_id_t id);
+static bool getPin(efHal_gpio_id_t id);
+static void confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType);
+static void confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull, bool state);
+static void confBus(efHal_gpio_busid_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull);
+static void writeBus(efHal_gpio_busid_t id, void *pData, size_t length);
+
 /*==================[internal data definition]===============================*/
+
+static const efHal_gpio_callBacks_t cb =
+{
+    .setPin = setPin,
+    .togPin = togPin,
+};
+
+static efHal_gpio_id_t _id;
+static bool _state;
 
 /*==================[external data definition]===============================*/
 
 /*==================[internal functions definition]==========================*/
+
+static void setPin(efHal_gpio_id_t id, bool state)
+{
+    TEST_ASSERT_EQUAL(_id, id);
+    TEST_ASSERT_EQUAL(_state, state);
+}
+
+static void togPin(efHal_gpio_id_t id)
+{
+    TEST_ASSERT_EQUAL(_id, id);
+}
 
 /*==================[external functions definition]==========================*/
 
@@ -75,11 +105,23 @@ void setUp(void) {
 void tearDown(void) {
 }
 
-void test_template_suma_01(void)
+void test_efHal_gpio_setPin_01(void)
 {
     efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+    _id = 1234;
+    _state = true;
+    efHal_gpio_setPin(_id, _state);
+}
+
+void test_efHal_gpio_togglePin_01(void)
+{
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+    _id = 1234;
+    efHal_gpio_togglePin(_id);
 }
 
 /*==================[end of file]============================================*/
 
-#endif // TEST
+//#endif // TEST
