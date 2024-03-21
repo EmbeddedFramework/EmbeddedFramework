@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - 31-add-unit-test
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc
+        gem install ceedling
+
+    - name: Run tests
+      run: |
+        ./run_all_tests.sh
+
