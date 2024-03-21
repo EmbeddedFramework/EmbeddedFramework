@@ -1,11 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
-# Copyright 2014, 2015, Mariano Cerdeiro
-# Copyright 2014, 2015, 2016, Juan Cecconi (Numetron, UTN-FRBA)
-# Copyright 2014, 2015, Esteban Volentini (LabMicro, UNT)
-# Copyright 2017, Gustavo Muro (DIGI CHECK)
+# Copyright 2024, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -36,28 +32,53 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef TEMPLATE_H_
-#define TEMPLATE_H_
+
+#ifdef TEST
 
 /*==================[inclusions]=============================================*/
-#include "stdint.h"
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "unity.h"
+#include "cmock.h"
+
+#include "../inc/template.h"
 
 /*==================[macros and typedef]=====================================*/
 
-/*==================[external data declaration]==============================*/
+/*==================[internal functions declaration]=========================*/
 
-/*==================[external functions declaration]=========================*/
-extern int32_t template_suma(int32_t numA, int32_t numB);
+/*==================[internal data definition]===============================*/
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
+/*==================[external data definition]===============================*/
+
+/*==================[internal functions definition]==========================*/
+
+/*==================[external functions definition]==========================*/
+
+/** \brief set Up function
+ **
+ ** This function is called before each test case is executed
+ **
+ **/
+void setUp(void) {
 }
-#endif
+
+/** \brief tear Down function
+ **
+ ** This function is called after each test case is executed
+ **
+ **/
+void tearDown(void) {
+}
+
+void test_template_suma_01(void)
+{
+    int32_t sum;
+
+    sum = template_suma(112233,332211);
+
+    TEST_ASSERT_EQUAL_INT32(444444, sum);
+}
 
 /*==================[end of file]============================================*/
-#endif /* TEMPLATE_H_ */
+
+#endif // TEST
