@@ -2,8 +2,8 @@
 
 # prepara nombres de directorios
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-HTML_DIR="build/html"
-SUPPORT_DIR="build/support"
+HTML_DIR="uTest/build/html"
+SUPPORT_DIR="uTest/build/support"
 
 # se para sobre el directorio test
 cd "$SCRIPT_DIR" || exit
@@ -18,5 +18,4 @@ fi
 
 ceedling test:all
 ceedling gcov:all
-gcovr -r . --html --html-details -o $HTML_DIR/coverage_report.html
-
+gcovr -r . --html --html-details -o $HTML_DIR/coverage_report.html --exclude '.*test_.*'
