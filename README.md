@@ -1,4 +1,5 @@
-# EmbeddedFramework
+# EmbeddedFramework # [![CI](https://github.com/EmbeddedFramework/EmbeddedFramework/workflows/CI/badge.svg)](https://github.com/EmbeddedFramework/EmbeddedFramework/actions)
+
 # How to use:
 
 Import this project in your Eclipse IDE (for NXP and FLS microcontroller use MCUXpresso)
