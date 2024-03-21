@@ -17,7 +17,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y gcc
-        gem install ceedling
+        sudo gem install ceedling
 
     - name: Run tests
       run: |
