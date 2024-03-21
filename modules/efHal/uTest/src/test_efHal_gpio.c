@@ -146,6 +146,16 @@ void test_efHal_gpio_togglePin_02(void)
     efHal_gpio_togglePin(_id);
 }
 
+void test_efHal_gpio_getPin_01(void)
+{
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+    _id = 1234;
+    _stateR = true;
+    TEST_ASSERT_EQUAL(_stateR, efHal_gpio_getPin(_id));
+}
+
+
 /*==================[end of file]============================================*/
 
 //#endif // TEST
