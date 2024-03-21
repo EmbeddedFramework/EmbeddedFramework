@@ -40,6 +40,7 @@
 #define TEMPLATE_H_
 
 /*==================[inclusions]=============================================*/
+#include "stdint.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -51,6 +52,7 @@ extern "C" {
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
+extern int32_t template_suma(int32_t numA, int32_t numB);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
