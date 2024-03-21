@@ -24,7 +24,10 @@
  *
  * 1 tab == 4 spaces!
  */
-
+/* this include is necesary for mock in ceelding */
+#ifdef TEST
+#include "FreeRTOS.h"
+#endif
 
 #ifndef INC_TASK_H
 #define INC_TASK_H
