@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2024, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -33,40 +33,129 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
 
+//#ifdef TEST
+
 /*==================[inclusions]=============================================*/
+
 #include "unity.h"
+#include "cmock.h"
+
+#include "FreeRTOS.h"
+#include "mock_FreeRTOS.h"
+#include "mock_portmacro.h"
+#include "mock_task.h"
+
 #include "efHal_gpio.h"
+#include "efHal_internal.h"
+
 
 /*==================[macros and typedef]=====================================*/
 
 /*==================[internal functions declaration]=========================*/
 
+static void setPin(efHal_gpio_id_t id, bool state);
+static void togPin(efHal_gpio_id_t id);
+static bool getPin(efHal_gpio_id_t id);
+static void confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType);
+static void confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull, bool state);
+static void confBus(efHal_gpio_busid_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull);
+static void writeBus(efHal_gpio_busid_t id, void *pData, size_t length);
+
 /*==================[internal data definition]===============================*/
+
+static efHal_gpio_callBacks_t cb =
+{
+    .setPin = setPin,
+    .togPin = togPin,
+    .getPin = getPin,
+};
+
+static efHal_gpio_id_t _id;
+static bool _stateW;
+static bool _stateR;
 
 /*==================[external data definition]===============================*/
 
 /*==================[internal functions definition]==========================*/
 
+static void setPin(efHal_gpio_id_t id, bool state)
+{
+    TEST_ASSERT_EQUAL(_id, id);
+    TEST_ASSERT_EQUAL(_stateW, state);
+}
+
+static void togPin(efHal_gpio_id_t id)
+{
+    TEST_ASSERT_EQUAL(_id, id);
+}
+
+static bool getPin(efHal_gpio_id_t id)
+{
+    TEST_ASSERT_EQUAL(_id, id);
+    return _stateR;
+}
+
 /*==================[external functions definition]==========================*/
 
-void setUp(void)
-{
-
+/** \brief set Up function
+ **
+ ** This function is called before each test case is executed
+ **
+ **/
+void setUp(void) {
 }
 
-void tearDown(void)
-{
+/** \brief tear Down function
+ **
+ ** This function is called after each test case is executed
+ **
+ **/
+void tearDown(void) {
 }
 
-void doNothing(void)
+void test_efHal_gpio_setPin_01(void)
 {
-
-
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+    _id = 1234;
+    _stateW = true;
+    efHal_gpio_setPin(_id, _stateW);
 }
 
-void test_efHal_gpio_setPin(void)
+void test_efHal_gpio_togglePin_01(void)
 {
-    TEST_ASSERT_EQUAL_INT(5, 10);
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+    _id = 1234;
+    efHal_gpio_togglePin(_id);
 }
+
+void test_efHal_gpio_togglePin_02(void)
+{
+    vPortEnterCritical_Expect();
+    vPortExitCritical_Expect();
+
+    efHal_gpio_init();
+    cb.togPin = NULL;
+    efHal_internal_gpio_setCallBacks(cb);
+
+    _id = 1234;
+    _stateR = false;
+    _stateW = true;
+
+    efHal_gpio_togglePin(_id);
+}
+
+void test_efHal_gpio_getPin_01(void)
+{
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+    _id = 1234;
+    _stateR = true;
+    TEST_ASSERT_EQUAL(_stateR, efHal_gpio_getPin(_id));
+}
+
 
 /*==================[end of file]============================================*/
+
+//#endif // TEST

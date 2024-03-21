@@ -1,9 +1,10 @@
+/*
 ###############################################################################
 #
 # Copyright 2021, Gustavo Muro
-# Copyright 2014, Mariano Cerdeiro
+# All rights reserved
 #
-# This file is part of Embedded Firmware
+# This file is part of EmbeddedFirmware.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -30,13 +31,35 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
-###############################################################################
-# unit test
-# unit tests include files
-efHal_TST_INC_PATH  = $(efHal_PATH)$(DS)test$(DS)utest$(DS)inc
-# unit tests dependencies
-#efHal_TST_MOD	    = 
+#                                                                             */
+#ifndef EF_HAL_CONFIG_H_
+#define EF_HAL_CONFIG_H_
 
-efHal_TST_MOD	    = externals$(DS)freertos
+/*==================[inclusions]=============================================*/
 
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*==================[macros and typedef]=====================================*/
+
+#define EF_HAL_I2C_TOTAL_DEVICES        1
+
+#define EF_HAL_GPIO_TOTAL_CALL_BACK     5
+
+#define EF_HAL_GPIO_TOTAL_WAIT_FOR_INT  5
+
+#define EF_HAL_UART_TOTAL_DEVICES   2
+
+/*==================[external data declaration]==============================*/
+
+/*==================[external functions declaration]=========================*/
+
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
+}
+#endif
+
+/*==================[end of file]============================================*/
+#endif /* EF_HAL_CONFIG_H_ */
