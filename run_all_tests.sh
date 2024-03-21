@@ -8,13 +8,13 @@ mkdir -p out/testReport
 
 # Itera sobre cada directorio de módulo y ejecuta su script de pruebas
 for module_dir in "${MODULE_DIRS[@]}"; do
-    if [ -f "${module_dir}/test/run_tests.sh" ]; then
+    if [ -f "${module_dir}/run_tests.sh" ]; then
         echo "Ejecutando pruebas para el módulo: ${module_dir}..."
-        (./$module_dir/test/run_tests.sh)
+        (./$module_dir/run_tests.sh)
         
         # Copiar carpeta build/html a out/testReport/
-        if [ -d "${module_dir}/test/build/html" ]; then
-            cp -r "${module_dir}/test/build/html" out/testReport/$(basename $module_dir)
+        if [ -d "${module_dir}/uTest/build/html" ]; then
+            cp -r "${module_dir}/uTest/build/html" out/testReport/$(basename $module_dir)
         else
             echo "No se encontró la carpeta build/html para el módulo: ${module_dir}"
         fi
