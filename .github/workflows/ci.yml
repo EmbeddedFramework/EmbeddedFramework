@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - 31-add-unit-test
+      master
 
 jobs:
   build:
