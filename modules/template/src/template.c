@@ -52,4 +52,9 @@
 
 /*==================[external functions definition]==========================*/
 
+extern int32_t template_suma(int32_t numA, int32_t numB)
+{
+    return numA + numB;
+}
+
 /*==================[end of file]============================================*/
