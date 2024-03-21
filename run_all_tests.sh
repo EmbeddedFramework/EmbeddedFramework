@@ -12,3 +12,4 @@ for module_dir in "${MODULE_DIRS[@]}"; do
         echo "No se encontró el script de pruebas para el módulo: ${module_dir}"
     fi
 done
+
