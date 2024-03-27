@@ -204,6 +204,39 @@ void test_efHal_gpio_confPin_01(void)
     efHal_gpio_confPin(_id, _dir, _pull, _state);
 }
 
+void test_efHal_gpio_waitForInt_01(void)
+{
+    static const TickType_t xTicksToWait = portMAX_DELAY;
+    bool ret;
+
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+
+    xTaskGetCurrentTaskHandle_ExpectAndReturn((TaskHandle_t)0x1234);
+    xTaskNotifyStateClear_ExpectAndReturn((TaskHandle_t)0x1234, 0);
+    ulTaskNotifyTake_ExpectAndReturn(pdTRUE, xTicksToWait, 1);
+
+    ret = efHal_gpio_waitForInt(0, xTicksToWait);
+
+    TEST_ASSERT_EQUAL(true, ret);
+}
+
+void test_efHal_gpio_waitForInt_02(void)
+{
+    static const TickType_t xTicksToWait = 0;
+    bool ret;
+
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+
+    xTaskGetCurrentTaskHandle_ExpectAndReturn((TaskHandle_t)0x1234);
+    xTaskNotifyStateClear_ExpectAndReturn((TaskHandle_t)0x1234, 0);
+    ulTaskNotifyTake_ExpectAndReturn(pdTRUE, xTicksToWait, 0);
+
+    ret = efHal_gpio_waitForInt(0, xTicksToWait);
+
+    TEST_ASSERT_EQUAL(false, ret);
+}
 
 /*==================[end of file]============================================*/
 
