@@ -68,11 +68,13 @@ static efHal_gpio_callBacks_t cb =
     .setPin = setPin,
     .togPin = togPin,
     .getPin = getPin,
+    .confInt = confInt,
 };
 
 static efHal_gpio_id_t _id;
 static bool _stateW;
 static bool _stateR;
+static efHal_gpio_intType_t _intType;
 
 /*==================[external data definition]===============================*/
 
@@ -93,6 +95,12 @@ static bool getPin(efHal_gpio_id_t id)
 {
     TEST_ASSERT_EQUAL(_id, id);
     return _stateR;
+}
+
+static void confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)
+{
+    TEST_ASSERT_EQUAL(_id, id);
+    TEST_ASSERT_EQUAL(_intType, intType);
 }
 
 /*==================[external functions definition]==========================*/
@@ -155,6 +163,23 @@ void test_efHal_gpio_getPin_01(void)
     TEST_ASSERT_EQUAL(_stateR, efHal_gpio_getPin(_id));
 }
 
+void test_efHal_gpio_confInt_01(void)
+{
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+    _id = 1234;
+    _intType = EF_HAL_GPIO_INT_TYPE_DISABLE;
+    efHal_gpio_confInt(_id, _intType);
+}
+
+void test_efHal_gpio_confInt_02(void)
+{
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+    _id = 1234;
+    _intType = EF_HAL_GPIO_INT_TYPE_RISING_EDGE;
+    efHal_gpio_confInt(_id, _intType);
+}
 
 /*==================[end of file]============================================*/
 
