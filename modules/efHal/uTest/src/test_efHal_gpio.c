@@ -68,11 +68,17 @@ static efHal_gpio_callBacks_t cb =
     .setPin = setPin,
     .togPin = togPin,
     .getPin = getPin,
+    .confInt = confInt,
+    .confPin = confPin,
 };
 
 static efHal_gpio_id_t _id;
 static bool _stateW;
 static bool _stateR;
+static efHal_gpio_intType_t _intType;
+static efHal_gpio_dir_t _dir;
+static efHal_gpio_pull_t _pull;
+static bool _state;
 
 /*==================[external data definition]===============================*/
 
@@ -93,6 +99,20 @@ static bool getPin(efHal_gpio_id_t id)
 {
     TEST_ASSERT_EQUAL(_id, id);
     return _stateR;
+}
+
+static void confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)
+{
+    TEST_ASSERT_EQUAL(_id, id);
+    TEST_ASSERT_EQUAL(_intType, intType);
+}
+
+static void confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull, bool state)
+{
+    TEST_ASSERT_EQUAL(_id, id);
+    TEST_ASSERT_EQUAL(_dir, dir);
+    TEST_ASSERT_EQUAL(_pull, pull);
+    TEST_ASSERT_EQUAL(_state, state);
 }
 
 /*==================[external functions definition]==========================*/
@@ -155,6 +175,68 @@ void test_efHal_gpio_getPin_01(void)
     TEST_ASSERT_EQUAL(_stateR, efHal_gpio_getPin(_id));
 }
 
+void test_efHal_gpio_confInt_01(void)
+{
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+    _id = 1234;
+    _intType = EF_HAL_GPIO_INT_TYPE_DISABLE;
+    efHal_gpio_confInt(_id, _intType);
+}
+
+void test_efHal_gpio_confInt_02(void)
+{
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+    _id = 1234;
+    _intType = EF_HAL_GPIO_INT_TYPE_RISING_EDGE;
+    efHal_gpio_confInt(_id, _intType);
+}
+
+void test_efHal_gpio_confPin_01(void)
+{
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+    _id = 1234;
+    _dir = EF_HAL_GPIO_OUTPUT;
+    _pull = EF_HAL_GPIO_PULL_UP;
+    _state = true;
+    efHal_gpio_confPin(_id, _dir, _pull, _state);
+}
+
+void test_efHal_gpio_waitForInt_01(void)
+{
+    static const TickType_t xTicksToWait = portMAX_DELAY;
+    bool ret;
+
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+
+    xTaskGetCurrentTaskHandle_ExpectAndReturn((TaskHandle_t)0x1234);
+    xTaskNotifyStateClear_ExpectAndReturn((TaskHandle_t)0x1234, 0);
+    ulTaskNotifyTake_ExpectAndReturn(pdTRUE, xTicksToWait, 1);
+
+    ret = efHal_gpio_waitForInt(0, xTicksToWait);
+
+    TEST_ASSERT_EQUAL(true, ret);
+}
+
+void test_efHal_gpio_waitForInt_02(void)
+{
+    static const TickType_t xTicksToWait = 0;
+    bool ret;
+
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+
+    xTaskGetCurrentTaskHandle_ExpectAndReturn((TaskHandle_t)0x1234);
+    xTaskNotifyStateClear_ExpectAndReturn((TaskHandle_t)0x1234, 0);
+    ulTaskNotifyTake_ExpectAndReturn(pdTRUE, xTicksToWait, 0);
+
+    ret = efHal_gpio_waitForInt(0, xTicksToWait);
+
+    TEST_ASSERT_EQUAL(false, ret);
+}
 
 /*==================[end of file]============================================*/
 
