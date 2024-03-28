@@ -70,7 +70,7 @@ static efHal_uart_conf_t _uart_conf =
     .stopBits = EF_HAL_UART_STOP_BITS_1,
 };
 static bool cbCalled;
-
+static int countDataReadyTX;
 /*==================[external data definition]===============================*/
 
 /*==================[internal functions definition]==========================*/
@@ -84,7 +84,8 @@ static void confCB(void *param, efHal_uart_conf_t const *cfg)
 
 static void dataReadyTx(void *param)
 {
-
+    TEST_ASSERT_EQUAL(_param, param);
+    countDataReadyTX++;
 }
 
 /*==================[external functions definition]==========================*/
@@ -182,6 +183,44 @@ void test_efHal_uart_getDataLength_04(void)
 
     ret = efHal_uart_getDataLength(efHal_dh_UART);
     TEST_ASSERT_EQUAL(12, ret);
+}
+
+void test_efHal_uart_send_01(void)
+{
+    static const TickType_t xTicksToWait = portMAX_DELAY;
+    uint8_t testData[] = {0x01, 0x02, 0x03};
+    int32_t ret;
+    int i;
+
+    for (i = 0 ; i < sizeof(testData) ; i++)
+        xQueueGenericSend_ExpectAndReturn((QueueHandle_t)0x2000, &testData[i], xTicksToWait, queueSEND_TO_BACK, pdTRUE);
+
+    countDataReadyTX = 0;
+
+    ret = efHal_uart_send(efHal_dh_UART, testData, sizeof(testData), xTicksToWait);
+
+    TEST_ASSERT_EQUAL(sizeof(testData), ret);
+    TEST_ASSERT_EQUAL(1, countDataReadyTX);
+}
+
+void test_efHal_uart_send_02(void)
+{
+    static const TickType_t xTicksToWait = portMAX_DELAY;
+    uint8_t testData[] = {0x01, 0x02, 0x03};
+    int32_t ret;
+    int i;
+
+    for (i = 0 ; i < sizeof(testData)-1 ; i++)
+        xQueueGenericSend_ExpectAndReturn((QueueHandle_t)0x2000, &testData[i], xTicksToWait, queueSEND_TO_BACK, pdTRUE);
+
+    xQueueGenericSend_ExpectAndReturn((QueueHandle_t)0x2000, &testData[i], xTicksToWait, queueSEND_TO_BACK, pdFALSE);
+
+    countDataReadyTX = 0;
+
+    ret = efHal_uart_send(efHal_dh_UART, testData, sizeof(testData), xTicksToWait);
+
+    TEST_ASSERT_EQUAL(sizeof(testData)-1, ret);
+    TEST_ASSERT_EQUAL(1, countDataReadyTX);
 }
 
 /*==================[support functions]============================================*/
