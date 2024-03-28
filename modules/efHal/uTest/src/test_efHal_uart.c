@@ -62,9 +62,12 @@
 /*==================[internal data definition]===============================*/
 static efHal_dh_t efHal_dh_UART;
 static void* _param;
-static const efHal_uart_conf_t _uart_conf =
+static efHal_uart_conf_t _uart_conf =
 {
-        .baudrate = 57600,
+    .baudrate = 57600,
+    .dataBits = EF_HAL_UART_DATA_BITS_8,
+    .parity = EF_HAL_UART_PARITY_EVEN,
+    .stopBits = EF_HAL_UART_STOP_BITS_1,
 };
 static bool cbCalled;
 
@@ -135,6 +138,50 @@ void test_efHal_uart_getBaud(void)
     ret = efHal_uart_getBaud(efHal_dh_UART);
 
     TEST_ASSERT_EQUAL(_uart_conf.baudrate, ret);
+}
+
+void test_efHal_uart_getDataLength_01(void)
+{
+    uint32_t ret;
+    ret = efHal_uart_getDataLength(efHal_dh_UART);
+    TEST_ASSERT_EQUAL(11, ret);
+}
+
+void test_efHal_uart_getDataLength_02(void)
+{
+    uint32_t ret;
+
+    _uart_conf.dataBits = EF_HAL_UART_DATA_BITS_7;
+    efHal_uart_conf(efHal_dh_UART, &_uart_conf);
+
+    ret = efHal_uart_getDataLength(efHal_dh_UART);
+    TEST_ASSERT_EQUAL(10, ret);
+}
+
+void test_efHal_uart_getDataLength_03(void)
+{
+    uint32_t ret;
+
+    _uart_conf.dataBits = EF_HAL_UART_DATA_BITS_8;
+    _uart_conf.parity = EF_HAL_UART_PARITY_NONE;
+    efHal_uart_conf(efHal_dh_UART, &_uart_conf);
+
+    ret = efHal_uart_getDataLength(efHal_dh_UART);
+    TEST_ASSERT_EQUAL(10, ret);
+}
+
+void test_efHal_uart_getDataLength_04(void)
+{
+    uint32_t ret;
+
+    _uart_conf.dataBits = EF_HAL_UART_DATA_BITS_8;
+    _uart_conf.parity = EF_HAL_UART_PARITY_EVEN;
+    _uart_conf.stopBits = EF_HAL_UART_STOP_BITS_2;
+
+    efHal_uart_conf(efHal_dh_UART, &_uart_conf);
+
+    ret = efHal_uart_getDataLength(efHal_dh_UART);
+    TEST_ASSERT_EQUAL(12, ret);
 }
 
 /*==================[support functions]============================================*/
