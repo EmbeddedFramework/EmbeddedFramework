@@ -60,6 +60,7 @@ static void confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType);
 static void confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull, bool state);
 static void confBus(efHal_gpio_busid_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull);
 static void writeBus(efHal_gpio_busid_t id, void *pData, size_t length);
+static void readBus(efHal_gpio_busid_t id, void *pData, size_t length);
 
 /*==================[internal data definition]===============================*/
 
@@ -72,6 +73,7 @@ static efHal_gpio_callBacks_t cb =
     .confPin = confPin,
     .confBus = confBus,
     .writeBus = writeBus,
+    .readBus = readBus,
 };
 
 static efHal_gpio_id_t _id;
@@ -133,6 +135,14 @@ static void confBus(efHal_gpio_busid_t id, efHal_gpio_dir_t dir, efHal_gpio_pull
 }
 
 static void writeBus(efHal_gpio_busid_t id, void *pData, size_t length)
+{
+    cbCalled = true;
+    TEST_ASSERT_EQUAL(_id, id);
+    TEST_ASSERT_EQUAL_PTR(_pData, pData);
+    TEST_ASSERT_EQUAL(_length, length);
+}
+
+static void readBus(efHal_gpio_busid_t id, void *pData, size_t length)
 {
     cbCalled = true;
     TEST_ASSERT_EQUAL(_id, id);
@@ -284,7 +294,7 @@ void test_efHal_gpio_confBus_01(void)
 
 void test_efHal_gpio_writeBus_01(void)
 {
-    uint8_t testData[] = {0x01, 0x02, 0x03}; // Datos de prueba
+    uint8_t testData[] = {0x01, 0x02, 0x03};
 
     efHal_gpio_init();
     efHal_internal_gpio_setCallBacks(cb);
@@ -292,6 +302,19 @@ void test_efHal_gpio_writeBus_01(void)
     _pData = testData;
     _length = sizeof(testData);
     efHal_gpio_writeBus(_id, _pData, _length);
+    TEST_ASSERT_TRUE(cbCalled);
+}
+
+void test_efHal_gpio_readBus_01(void)
+{
+    uint8_t testData[3];
+
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+    _id = 0x1234;
+    _pData = testData;
+    _length = sizeof(testData);
+    efHal_gpio_readBus(_id, _pData, _length);
     TEST_ASSERT_TRUE(cbCalled);
 }
 
