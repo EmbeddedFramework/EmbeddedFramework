@@ -223,6 +223,27 @@ void test_efHal_uart_send_02(void)
     TEST_ASSERT_EQUAL(1, countDataReadyTX);
 }
 
+void test_efHal_uart_recv_01(void)
+{
+    TickType_t xTicksToWait = portMAX_DELAY;
+    uint8_t testData[] = {0x01, 0x02, 0x03};
+    int32_t ret;
+    int i;
+
+    countDataReadyTX = 0;
+
+    for (i = 0 ; i < sizeof(testData) ; i++)
+    {
+        xQueueReceive_ExpectAndReturn((QueueHandle_t)0x2001, &testData[i], xTicksToWait, pdTRUE);
+        xTicksToWait = 0;
+    }
+
+    ret = efHal_uart_recv(efHal_dh_UART, testData, sizeof(testData), portMAX_DELAY);
+
+    TEST_ASSERT_EQUAL(sizeof(testData), ret);
+    TEST_ASSERT_EQUAL(0, countDataReadyTX);
+}
+
 /*==================[support functions]============================================*/
 
 extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)
