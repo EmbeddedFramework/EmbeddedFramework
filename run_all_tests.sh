@@ -4,6 +4,7 @@
 MODULE_DIRS=("modules/template" "modules/efHal")
 
 # Crear directorio para los informes de prueba
+rm -rf out/testReport
 mkdir -p out/testReport
 
 # Itera sobre cada directorio de módulo y ejecuta su script de pruebas
