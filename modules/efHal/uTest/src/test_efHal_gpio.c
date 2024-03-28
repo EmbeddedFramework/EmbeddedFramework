@@ -70,6 +70,7 @@ static efHal_gpio_callBacks_t cb =
     .getPin = getPin,
     .confInt = confInt,
     .confPin = confPin,
+    .confBus = confBus,
 };
 
 static efHal_gpio_id_t _id;
@@ -114,6 +115,14 @@ static void confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t 
     TEST_ASSERT_EQUAL(_pull, pull);
     TEST_ASSERT_EQUAL(_state, state);
 }
+
+static void confBus(efHal_gpio_busid_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull)
+{
+    TEST_ASSERT_EQUAL(_id, id);
+    TEST_ASSERT_EQUAL(_dir, dir);
+    TEST_ASSERT_EQUAL(_pull, pull);
+}
+
 
 /*==================[external functions definition]==========================*/
 
@@ -237,6 +246,17 @@ void test_efHal_gpio_waitForInt_02(void)
 
     TEST_ASSERT_EQUAL(false, ret);
 }
+
+void test_efHal_gpio_confBus_01(void)
+{
+    efHal_gpio_init();
+    efHal_internal_gpio_setCallBacks(cb);
+    _id = 1234;
+    _dir = EF_HAL_GPIO_OUTPUT;
+    _pull = EF_HAL_GPIO_PULL_UP;
+    efHal_gpio_confBus(_id, _dir, _pull);
+}
+
 
 /*==================[end of file]============================================*/
 
