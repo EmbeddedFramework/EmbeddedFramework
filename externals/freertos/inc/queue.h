@@ -25,6 +25,12 @@
  * 1 tab == 4 spaces!
  */
 
+/* this include is necesary for mock in ceelding */
+
+#ifdef TEST
+#include "FreeRTOS.h"
+#endif
+
 
 #ifndef QUEUE_H
 #define QUEUE_H

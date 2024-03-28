@@ -358,6 +358,8 @@ static uint32_t ulTaskNotifyTake_cb(BaseType_t xClearCountOnExit, TickType_t xTi
     clock_gettime(CLOCK_REALTIME, &ts);
     ts.tv_sec += 2; // Tiempo máximo de espera de 2 segundo
 
+    TEST_ASSERT_EQUAL(0, cmock_num_calls);
+
     ret=pthread_mutex_timedlock(&mutex,&ts);
     if(ret != 0)
     {
@@ -370,6 +372,7 @@ static uint32_t ulTaskNotifyTake_cb(BaseType_t xClearCountOnExit, TickType_t xTi
 
 static void vTaskNotifyGiveFromISR_cb(TaskHandle_t xTaskToNotify, BaseType_t* pxHigherPriorityTaskWoken, int cmock_num_calls)
 {
+    TEST_ASSERT_EQUAL(0, cmock_num_calls);
     pthread_mutex_unlock(&mutex);
 }
 
