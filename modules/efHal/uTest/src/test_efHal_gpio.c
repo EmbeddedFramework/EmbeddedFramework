@@ -48,6 +48,10 @@
 #include "efHal_gpio.h"
 #include "efHal_internal.h"
 
+#include <stdio.h>
+#include <stdbool.h>
+#include <pthread.h>
+#include <unistd.h>
 
 /*==================[macros and typedef]=====================================*/
 
@@ -336,6 +340,68 @@ void test_efHal_internal_gpio_InterruptRoutine_01(void)
 
     efHal_internal_gpio_InterruptRoutine(_id);
     TEST_ASSERT_TRUE(cbCalled);
+}
+
+/* TESTEO DE efHal_gpio_waitForInt bloqueante
+ * ------------------------------------------
+ * crea un trhear que luego de un tiempo ejecuta efHal_internal_gpio_InterruptRoutine para
+ * simular que ocurre una interrupción.
+ * Dentro de efHal_internal_gpio_InterruptRoutine llama a vTaskNotifyGiveFromISR y esta
+ * desbloquea el thread (mutex) que quedo bloqueada en ulTaskNotifyTake
+ */
+static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static uint32_t ulTaskNotifyTake_cb(BaseType_t xClearCountOnExit, TickType_t xTicksToWait, int cmock_num_calls)
+{
+    int ret;
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    ts.tv_sec += 2; // Tiempo máximo de espera de 2 segundo
+
+    ret=pthread_mutex_timedlock(&mutex,&ts);
+    if(ret != 0)
+    {
+        fprintf(stderr, "ulTaskNotifyTake_cb: wait timeout\n");
+        TEST_FAIL();
+    }
+
+    return 1;
+}
+
+static void vTaskNotifyGiveFromISR_cb(TaskHandle_t xTaskToNotify, BaseType_t* pxHigherPriorityTaskWoken, int cmock_num_calls)
+{
+    pthread_mutex_unlock(&mutex);
+}
+
+static void* fake_interrupt(void* arg)
+{
+    usleep(100000); // Espera 100 milisegundos (100000 microsegundos)
+    efHal_internal_gpio_InterruptRoutine(_id);
+}
+
+void test_efHal_internal_gpio_InterruptRoutine_02(void)
+{
+    static const TickType_t xTicksToWait = 1000;
+    pthread_t interrupt_thread;
+    bool ret;
+
+    _id = 0x1234;
+    efHal_gpio_init();
+
+    xTaskGetCurrentTaskHandle_ExpectAndReturn((TaskHandle_t)0x1234);
+    xTaskNotifyStateClear_ExpectAndReturn((TaskHandle_t)0x1234, 0);
+    ulTaskNotifyTake_Stub(ulTaskNotifyTake_cb);
+    vTaskNotifyGiveFromISR_Stub(vTaskNotifyGiveFromISR_cb);
+    pthread_mutex_lock(&mutex);
+
+    if (pthread_create(&interrupt_thread, NULL, fake_interrupt, NULL) != 0) {
+        fprintf(stderr, "Error al crear el hilo de interrupción\n");
+        TEST_FAIL();
+    }
+
+    ret = efHal_gpio_waitForInt(_id, xTicksToWait);
+
+    TEST_ASSERT_EQUAL(true, ret);
 }
 
 /*==================[end of file]============================================*/
