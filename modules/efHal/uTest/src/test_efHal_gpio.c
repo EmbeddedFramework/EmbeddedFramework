@@ -150,6 +150,13 @@ static void readBus(efHal_gpio_busid_t id, void *pData, size_t length)
     TEST_ASSERT_EQUAL(_length, length);
 }
 
+static void callBackInt(efHal_gpio_id_t id)
+{
+    cbCalled = true;
+    TEST_ASSERT_EQUAL(_id, id);
+}
+
+
 /*==================[external functions definition]==========================*/
 
 /** \brief set Up function
@@ -315,6 +322,19 @@ void test_efHal_gpio_readBus_01(void)
     _pData = testData;
     _length = sizeof(testData);
     efHal_gpio_readBus(_id, _pData, _length);
+    TEST_ASSERT_TRUE(cbCalled);
+}
+
+void test_efHal_internal_gpio_InterruptRoutine_01(void)
+{
+    _id = 0x1234;
+    efHal_gpio_init();
+    efHal_gpio_setCallBackInt(_id, callBackInt);
+
+    efHal_internal_gpio_InterruptRoutine(_id+1);
+    TEST_ASSERT_FALSE(cbCalled);
+
+    efHal_internal_gpio_InterruptRoutine(_id);
     TEST_ASSERT_TRUE(cbCalled);
 }
 
