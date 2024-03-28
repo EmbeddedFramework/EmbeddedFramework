@@ -128,6 +128,15 @@ void test_efHal_uart_conf(void)
     TEST_ASSERT_TRUE(cbCalled);
 }
 
+void test_efHal_uart_getBaud(void)
+{
+    uint32_t ret;
+
+    ret = efHal_uart_getBaud(efHal_dh_UART);
+
+    TEST_ASSERT_EQUAL(_uart_conf.baudrate, ret);
+}
+
 /*==================[support functions]============================================*/
 
 extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)
