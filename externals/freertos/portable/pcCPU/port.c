@@ -65,7 +65,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "timers.h"
-#include "utils/wait_for_event.h"
+#include "wait_for_event.h"
 /*-----------------------------------------------------------*/
 
 #define SIG_RESUME    SIGUSR1
