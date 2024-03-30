@@ -20,6 +20,10 @@ jobs:
         sudo gem install ceedling
         pip install gcovr
 
+    - name: Build blinky
+      run: |
+        make BOARD=pcSim PROJECT_PATH=examples/blinky
+        
     - name: Run tests
       run: |
         ./run_all_tests.sh
