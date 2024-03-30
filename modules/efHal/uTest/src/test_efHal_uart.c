@@ -267,6 +267,31 @@ void test_efHal_uart_recv_02(void)
     TEST_ASSERT_EQUAL(0, countDataReadyTX);
 }
 
+static BaseType_t xQueueGenericSendFromISR_cb(QueueHandle_t xQueue,
+        const void* const pvItemToQueue,
+        BaseType_t* const pxHigherPriorityTaskWoken,
+        const BaseType_t xCopyPosition,
+        int cmock_num_calls)
+{
+    TEST_ASSERT_EQUAL_PTR((QueueHandle_t)0x2001, xQueue);
+    TEST_ASSERT_EQUAL_PTR((void*)0x1234, pvItemToQueue);
+
+    TEST_ASSERT_EQUAL(queueSEND_TO_BACK, xCopyPosition);
+    TEST_ASSERT_EQUAL(0, cmock_num_calls);
+
+    *pxHigherPriorityTaskWoken = pdTRUE;
+
+    return pdTRUE;
+}
+
+void test_efHal_internal_uart_putDataForRx_01(void)
+{
+    xQueueGenericSendFromISR_Stub(xQueueGenericSendFromISR_cb);
+    vPortYield_Expect();
+
+    efHal_internal_uart_putDataForRx(efHal_dh_UART, (void*)0x1234) ;
+}
+
 /*==================[support functions]============================================*/
 
 extern efHal_dh_t efHal_internal_searchFreeSlot(efHal_internal_dhD_t *p_dhD, size_t size, size_t length)
