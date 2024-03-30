@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2021, 2024, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -54,6 +54,10 @@ extern "C" {
 
 #ifdef BOARD_nucleoF767ZI
 #include "bsp_nucleoF767ZI.h"
+#endif
+
+#ifdef BOARD_pcSim
+#include "bsp_pcSim.h"
 #endif
 
 /*==================[external data declaration]==============================*/
