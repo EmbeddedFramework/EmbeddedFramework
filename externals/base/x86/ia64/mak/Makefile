@@ -1,7 +1,6 @@
-/*
 ###############################################################################
 #
-# Copyright 2021, 2024, Gustavo Muro
+# Copyright 2024, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -31,44 +30,16 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#                                                                             */
-#ifndef APP_BOARD_H_
-#define APP_BOARD_H_
+#
 
-/*==================[inclusions]=============================================*/
+# TOOLCHAIN
+CC = gcc
+LD = gcc
+AR = ar
+AS = as
+GDB = gdb
+NM = nm
+# COMPILER AND LINKER OPTIONS
+CFLAGS += -c -Wall -ggdb3
+LFLAGS += $(LINKSCRIPT) 
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/*==================[macros and typedef]=====================================*/
-
-#ifdef BOARD_frdmkl46z
-#include "bsp_frdmkl46z.h"
-#endif
-
-#ifdef BOARD_frdmkl43z
-#include "bsp_frdmkl43z.h"
-#endif
-
-#ifdef BOARD_nucleoF767ZI
-#include "bsp_nucleoF767ZI.h"
-#endif
-
-#ifdef BOARD_pcSim
-#include "bsp_pcSim.h"
-#endif
-
-/*==================[external data declaration]==============================*/
-
-/*==================[external functions declaration]=========================*/
-extern void appBoard_init(void);
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-}
-#endif
-
-/*==================[end of file]============================================*/
-#endif /* APP_BOARD_H_ */

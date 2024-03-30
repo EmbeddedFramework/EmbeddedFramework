@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, 2024, Gustavo Muro
+# Copyright 2021, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,43 +32,30 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef APP_BOARD_H_
-#define APP_BOARD_H_
 
 /*==================[inclusions]=============================================*/
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+/*==================[macros and definitions]=================================*/
 
-/*==================[macros and typedef]=====================================*/
+/*==================[internal functions declaration]=========================*/
 
-#ifdef BOARD_frdmkl46z
-#include "bsp_frdmkl46z.h"
-#endif
+/*==================[internal data definition]===============================*/
 
-#ifdef BOARD_frdmkl43z
-#include "bsp_frdmkl43z.h"
-#endif
+/*==================[external data definition]===============================*/
 
-#ifdef BOARD_nucleoF767ZI
-#include "bsp_nucleoF767ZI.h"
-#endif
+/*==================[internal functions definition]==========================*/
 
-#ifdef BOARD_pcSim
-#include "bsp_pcSim.h"
-#endif
+/*==================[external functions definition]==========================*/
 
-/*==================[external data declaration]==============================*/
+void timerForRTS_init(void)
+{
 
-/*==================[external functions declaration]=========================*/
-extern void appBoard_init(void);
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
 }
-#endif
+
+unsigned long int timerForRTS_get(void)
+{
+    return 0;
+}
 
 /*==================[end of file]============================================*/
-#endif /* APP_BOARD_H_ */

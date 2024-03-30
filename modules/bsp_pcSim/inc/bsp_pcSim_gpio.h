@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, 2024, Gustavo Muro
+# Copyright 2024, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,10 +32,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef APP_BOARD_H_
-#define APP_BOARD_H_
+#ifndef BSP_PCSIM_GPIO_H
+#define BSP_PCSIM_GPIO_H
 
 /*==================[inclusions]=============================================*/
+#include "efHal_gpio.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -44,26 +45,18 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
-#ifdef BOARD_frdmkl46z
-#include "bsp_frdmkl46z.h"
-#endif
+enum efHal_gpio_id_t
+{
+    EF_HAL_GPIO_LED_RED = 0,
+    EF_HAL_GPIO_LED_GREEN,
 
-#ifdef BOARD_frdmkl43z
-#include "bsp_frdmkl43z.h"
-#endif
-
-#ifdef BOARD_nucleoF767ZI
-#include "bsp_nucleoF767ZI.h"
-#endif
-
-#ifdef BOARD_pcSim
-#include "bsp_pcSim.h"
-#endif
+    EF_HAL_GPIO_TOTAL,
+};
 
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-extern void appBoard_init(void);
+extern void bsp_pcSim_gpio_init(void);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -71,4 +64,4 @@ extern void appBoard_init(void);
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* APP_BOARD_H_ */
+#endif /* BSP_PCSIM_GPIO_H */

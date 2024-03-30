@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, 2024, Gustavo Muro
+# Copyright 2024, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,10 +32,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef APP_BOARD_H_
-#define APP_BOARD_H_
+#ifndef BSP_PCSIM_H
+#define BSP_PCSIM_H
 
 /*==================[inclusions]=============================================*/
+#include "bsp_pcSim_gpio.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -43,27 +44,16 @@ extern "C" {
 #endif
 
 /*==================[macros and typedef]=====================================*/
+// Macro para obtener el nombre del archivo sin la ruta
+#define FILENAME(file) (strrchr(file, '/') ? strrchr(file, '/') + 1 : file)
 
-#ifdef BOARD_frdmkl46z
-#include "bsp_frdmkl46z.h"
-#endif
-
-#ifdef BOARD_frdmkl43z
-#include "bsp_frdmkl43z.h"
-#endif
-
-#ifdef BOARD_nucleoF767ZI
-#include "bsp_nucleoF767ZI.h"
-#endif
-
-#ifdef BOARD_pcSim
-#include "bsp_pcSim.h"
-#endif
+// Macro PRINT_DEBUG que incluye el nombre del archivo sin ruta ni extensión
+#define PRINT_DEBUG(fmt, ...) printf("[%s:%s] " fmt, FILENAME(__FILE__), __func__, ##__VA_ARGS__)
 
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-extern void appBoard_init(void);
+extern void bsp_pcSim_init(void);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
@@ -71,4 +61,4 @@ extern void appBoard_init(void);
 #endif
 
 /*==================[end of file]============================================*/
-#endif /* APP_BOARD_H_ */
+#endif /* BSP_PCSIM_H */

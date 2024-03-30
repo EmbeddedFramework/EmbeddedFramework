@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, 2024, Gustavo Muro
+# Copyright 2024, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,43 +32,76 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef APP_BOARD_H_
-#define APP_BOARD_H_
 
 /*==================[inclusions]=============================================*/
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "efHal_internal.h"
+#include "bsp_pcSim.h"
+#include "stdio.h"
+#include "string.h"
 
 /*==================[macros and typedef]=====================================*/
 
-#ifdef BOARD_frdmkl46z
-#include "bsp_frdmkl46z.h"
-#endif
+/*==================[internal functions declaration]=========================*/
 
-#ifdef BOARD_frdmkl43z
-#include "bsp_frdmkl43z.h"
-#endif
+/*==================[internal data definition]===============================*/
+static int8_t gpioState[EF_HAL_GPIO_TOTAL];
 
-#ifdef BOARD_nucleoF767ZI
-#include "bsp_nucleoF767ZI.h"
-#endif
+static char *gpioName[] =
+{
+    "GPIO_LED_RED",
+    "GPIO_LED_GREEN",
+};
 
-#ifdef BOARD_pcSim
-#include "bsp_pcSim.h"
-#endif
+/*==================[external data definition]===============================*/
 
-/*==================[external data declaration]==============================*/
+/*==================[internal functions definition]==========================*/
 
-/*==================[external functions declaration]=========================*/
-extern void appBoard_init(void);
+static void setPin(efHal_gpio_id_t id, bool state)
+{
+    if (id >= EF_HAL_GPIO_TOTAL)
+    {
+        PRINT_DEBUG("ERROR: setPin id = %d\n", id);
+        return;
+    }
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
+    if (gpioState[id] != state)
+    {
+        gpioState[id] = state;
+        PRINT_DEBUG("%s = %d\n", gpioName[id], state);
+    }
 }
-#endif
+
+static bool getPin(efHal_gpio_id_t id)
+{
+    return gpioState[id];
+}
+
+static void confInt(efHal_gpio_id_t id, efHal_gpio_intType_t intType)
+{
+}
+
+static void confPin(efHal_gpio_id_t id, efHal_gpio_dir_t dir, efHal_gpio_pull_t pull, bool state)
+{
+}
+
+/*==================[external functions definition]==========================*/
+extern void bsp_pcSim_gpio_init(void)
+{
+    efHal_gpio_callBacks_t cb;
+    int i;
+
+    for (i = 0 ; i < EF_HAL_GPIO_TOTAL ; i++)
+        gpioState[i] = -1;
+
+    cb.setPin = setPin;
+    cb.togPin = NULL;
+    cb.getPin = getPin;
+    cb.confInt = confInt;
+    cb.confPin = confPin;
+    cb.confBus = NULL;
+    cb.writeBus = NULL;
+
+    efHal_internal_gpio_setCallBacks(cb);
+}
 
 /*==================[end of file]============================================*/
-#endif /* APP_BOARD_H_ */

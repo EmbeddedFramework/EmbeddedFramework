@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2021, 2024, Gustavo Muro
+# Copyright 2024, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,43 +32,52 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef APP_BOARD_H_
-#define APP_BOARD_H_
 
 /*==================[inclusions]=============================================*/
+#include "FreeRTOS.h"
+#include "task.h"
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "bsp_pcSim.h"
+#include "efHal.h"
+
+#include "stdio.h"
 
 /*==================[macros and typedef]=====================================*/
 
-#ifdef BOARD_frdmkl46z
-#include "bsp_frdmkl46z.h"
-#endif
+/*==================[internal functions declaration]=========================*/
 
-#ifdef BOARD_frdmkl43z
-#include "bsp_frdmkl43z.h"
-#endif
+/*==================[internal data definition]===============================*/
 
-#ifdef BOARD_nucleoF767ZI
-#include "bsp_nucleoF767ZI.h"
-#endif
+/*==================[external data definition]===============================*/
 
-#ifdef BOARD_pcSim
-#include "bsp_pcSim.h"
-#endif
+/*==================[internal functions definition]==========================*/
+static void bsp_init(void)
+{
+    /* Embedded Framework HAL init */
+    efHal_init();
 
-/*==================[external data declaration]==============================*/
-
-/*==================[external functions declaration]=========================*/
-extern void appBoard_init(void);
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
+    bsp_pcSim_gpio_init();
 }
-#endif
+
+/*==================[external functions definition]==========================*/
+int main(void)
+{
+    vTaskStartScheduler();
+    for (;;);
+    return 0;
+}
+
+extern void app_init(void);
+
+void vApplicationDaemonTaskStartupHook(void)
+{
+    bsp_init();
+    app_init();
+}
+
+void vAssertCalled( const char * const pcFileName, unsigned long ulLine )
+{
+
+}
 
 /*==================[end of file]============================================*/
-#endif /* APP_BOARD_H_ */
