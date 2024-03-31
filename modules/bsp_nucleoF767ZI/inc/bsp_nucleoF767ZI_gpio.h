@@ -45,7 +45,7 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
-enum efHal_gpio_id_t
+enum efHal_gpio_id
 {
     EF_HAL_GPIO_LED_LD1 = 0,
     EF_HAL_GPIO_LED_GREEN = EF_HAL_GPIO_LED_LD1,
@@ -81,7 +81,7 @@ enum efHal_gpio_id_t
     EF_HAL_A5,
 };
 
-enum efHal_gpio_busid_t
+enum efHal_gpio_busid
 {
     EF_HAL_BUS_TFT = 0,
 };
