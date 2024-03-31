@@ -34,8 +34,12 @@
 #                                                                             */
 
 /*==================[inclusions]=============================================*/
+#include "FreeRTOS.h"
+#include "task.h"
+
 #include "bsp_frdmkl43z.h"
 #include "efHal.h"
+
 #include "board.h"
 #include "pin_mux.h"
 
@@ -48,25 +52,33 @@
 /*==================[external data definition]===============================*/
 
 /*==================[internal functions definition]==========================*/
+static void bsp_init(void)
+{
+    /* Embedded Framework HAL init */
+    efHal_init();
+
+    bsp_frdmkl43z_gpio_init();
+}
 
 /*==================[external functions definition]==========================*/
-extern void bsp_frdmkl43z_init(void)
+int main(void)
 {
     /* specific board init functions */
     BOARD_InitPins();
     BOARD_BootClockRUN();
     BOARD_InitDebugConsole();
 
-    /* Embedded Framework HAL init */
-    efHal_init();
+    vTaskStartScheduler();
+    for (;;);
+    return 0;
+}
 
-//    bsp_frdmkl43z_i2c_init();
+extern void app_init(void);
 
-    bsp_frdmkl43z_gpio_init();
-//    bsp_frdmkl43z_analog_init();
-
-//    bsp_frdmkl43z_uart_init();
-//    bsp_frdmkl43z_lpsci_init();
+void vApplicationDaemonTaskStartupHook(void)
+{
+    bsp_init();
+    app_init();
 }
 
 /*==================[end of file]============================================*/
