@@ -20,10 +20,10 @@ Copy Makefile.example to Makefile.mine
 
 Edit your Makefile.mine for compiling the project desired:
 
-examples$(DS)kl46z_blinky: Simple blinking example
+examples$(DS)blinky: Simple blinking example (runs on cpSim, frdmkl43, frdmkl46, nucleoF767ZI)
 
-examples$(DS)se2_examples$(DS)kl46z_mma8451_basic: Read acceleration and toggle leds
+examples$(DS)timeStat: runtime statics on FreeRTOS (runs on frdmkl43, frdmkl46, nucleoF767ZI)
 
-examples$(DS)se2_examples$(DS)kl46z_mma8451_int: Configure mma8451 for interruo on acc ready
+examples$(DS)timers: software timers example (runs on frdmkl43, frdmkl46, nucleoF767ZI)
 
 If you want to create your own project, create the folder project and copy some project into this folder.
