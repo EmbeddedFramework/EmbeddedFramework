@@ -47,14 +47,39 @@ SECTIONS
         ASSERT(!(__FLASH_CONFIG_START__ == __FLASH_CONFIG_END__), "Linker Flash Config Support Enabled, but no .FlashConfig section provided within application");
         /* End of Kinetis Flash Configuration data */
         
-    } > PROGRAM_FLASH
-
-    .text : ALIGN(4)
-    {
        *(.text*)
-       KEEP(*freertos*/tasks.o(.rodata*)) /* FreeRTOS Debug Config */
        *(.rodata .rodata.* .constdata .constdata.*)
        . = ALIGN(4);
+            /* C++ constructors etc */
+            . = ALIGN(4);
+            KEEP(*(.init))
+            
+            . = ALIGN(4);
+            __preinit_array_start = .;
+            KEEP (*(.preinit_array))
+            __preinit_array_end = .;
+            
+            . = ALIGN(4);
+            __init_array_start = .;
+            KEEP (*(SORT(.init_array.*)))
+            KEEP (*(.init_array))
+            __init_array_end = .;
+            
+            KEEP(*(.fini));
+            
+            . = ALIGN(4);
+            KEEP (*crtbegin.o(.ctors))
+            KEEP (*(EXCLUDE_FILE (*crtend.o) .ctors))
+            KEEP (*(SORT(.ctors.*)))
+            KEEP (*crtend.o(.ctors))
+            
+            . = ALIGN(4);
+            KEEP (*crtbegin.o(.dtors))
+            KEEP (*(EXCLUDE_FILE (*crtend.o) .dtors))
+            KEEP (*(SORT(.dtors.*)))
+            KEEP (*crtend.o(.dtors))
+            . = ALIGN(4);
+            /* End C++ */
     } > PROGRAM_FLASH
     /*
      * for exception handling/unwind - some Newlib functions (in common
@@ -143,7 +168,7 @@ SECTIONS
 
     /* Reserve and place Heap within memory map */
     _HeapSize = 0x000;
-    .heap :  ALIGN(4)
+    .heap (NOLOAD) :  ALIGN(4)
     {
         _pvHeapStart = .;
         . += _HeapSize;
@@ -153,12 +178,12 @@ SECTIONS
 
      _StackSize = 0x200;
      /* Reserve space in memory for Stack */
-    .heap2stackfill  :
+    .heap2stackfill (NOLOAD) :
     {
         . += _StackSize;
     } > SRAM
     /* Locate actual Stack in memory map */
-    .stack ORIGIN(SRAM) + LENGTH(SRAM) - _StackSize - 0:  ALIGN(4)
+    .stack ORIGIN(SRAM) + LENGTH(SRAM) - _StackSize - 0 (NOLOAD) :  ALIGN(4)
     {
         _vStackBase = .;
         . = ALIGN(4);
