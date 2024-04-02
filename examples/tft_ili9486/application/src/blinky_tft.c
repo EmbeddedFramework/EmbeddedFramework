@@ -47,7 +47,7 @@
 #define MY_DISP_VER_RES 320
 #define MY_DISP_HOR_RES 480
 
-#define BUF_SIZE    (MY_DISP_VER_RES*12) // MY_DISP_HOR_RES * MY_DISP_VER_SER / 20
+#define BUF_SIZE    (MY_DISP_VER_RES*10) // MY_DISP_HOR_RES * MY_DISP_VER_SER / 20
 
 /*==================[internal functions declaration]=========================*/
 
