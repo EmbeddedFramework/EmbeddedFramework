@@ -48,8 +48,4 @@
 
 /*==================[external functions definition]==========================*/
 
-extern void appBoard_init(void)
-{
-}
-
 /*==================[end of file]============================================*/

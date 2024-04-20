@@ -83,8 +83,6 @@ static void task2(void *pvParameters)
 /*==================[external functions definition]==========================*/
 void app_init(void)
 {
-    appBoard_init();
-
     xTaskCreate(task1, "task1", 200, NULL, 1, NULL);
     xTaskCreate(task2, "task2", 200, NULL, 0, NULL);
 }

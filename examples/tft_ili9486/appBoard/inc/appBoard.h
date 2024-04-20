@@ -70,7 +70,6 @@ extern "C" {
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/
-extern void appBoard_init(void);
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus

@@ -110,8 +110,6 @@ static void blinky_task(void *pvParameters)
 /*==================[external functions definition]==========================*/
 void app_init(void)
 {
-    appBoard_init();
-
     xTaskCreate(blinky_task, "blinky_task", 600, NULL, 0, NULL);
 }
 

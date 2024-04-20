@@ -65,34 +65,32 @@ static std::array<float, TOTAL_SHAPES> areas;
 /*==================[internal functions definition]==========================*/
 static void blinky_task(void *pvParameters)
 {
-    size_t i;
-
-    for (i = 0 ; i < shapes.size() ; i++)
+    for (size_t i = 0 ; i < shapes.size() ; i++)
     {
-        if (shapes[i] != NULL)
+        if (shapes[i] != nullptr)
         {
             areas[i] = shapes[i]->area();
             PRINT_DEBUG("Shape %zu, area: %f\n", i+1, areas[i]);
         }
     }
 
-    vTaskDelete(NULL);
+    vTaskDelete(nullptr);
 }
 
 /*==================[external functions definition]==========================*/
 extern "C" void app_init(void)
 {
-    xTaskCreate(blinky_task, "blinky_task", 100, NULL, 0, NULL);
+    xTaskCreate(blinky_task, "blinky_task", 100, nullptr, 0, nullptr);
 }
 
-extern "C" void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
+extern "C" __attribute__((noreturn)) void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
 {
-    while (1);
+    while (true);
 }
 
-extern "C" void vApplicationMallocFailedHook( void )
+extern "C" __attribute__((noreturn)) void vApplicationMallocFailedHook( void )
 {
-    while (1);
+    while (true);
 }
 
 
