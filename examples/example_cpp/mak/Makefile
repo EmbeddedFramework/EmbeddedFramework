@@ -1,6 +1,10 @@
 ###############################################################################
 #
-# Copyright 2024, Gustavo Muro
+# Copyright 2021, Gustavo Muro
+# Copyright 2014, 2015, Mariano Cerdeiro
+# Copyright 2014, 2015, 2016, Juan Cecconi (Numetron, UTN-FRBA)
+# Copyright 2014, 2015, Esteban Volentini (LabMicro, UNT)
+# Copyright 2017, Gustavo Muro (DIGI CHECK)
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -30,9 +34,28 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
+###############################################################################
 
-# COMPILER AND LINKER OPTIONS
-CFLAGS += -c -Wall -ggdb3
-LFLAGS += $(LINKSCRIPT) 
+PROJECT_NAME               = $(lastword $(subst $(DS), , $(PROJECT_PATH)))
+
+# Internal modules
+$(PROJECT_NAME)_SRC_PATH  += $(PROJECT_PATH)$(DS)application$(DS)src \
+							 $(PROJECT_PATH)$(DS)appBoard$(DS)src
+
+SRC_FILES 			 += $(foreach application_SRC, $($(PROJECT_NAME)_SRC_PATH), $(wildcard $(application_SRC)$(DS)*.c)) 
+SRC_FILES 			 += $(foreach application_SRC, $($(PROJECT_NAME)_SRC_PATH), $(wildcard $(application_SRC)$(DS)*.cpp)) 
+
+INC_FILES            += $(PROJECT_PATH)$(DS)application$(DS)inc \
+						$(PROJECT_PATH)$(DS)appBoard$(DS)inc
+						
+
+# Modules needed for this project
+MODS += externals$(DS)drivers
+MODS += externals$(DS)board
+MODS += externals$(DS)freertos
+MODS += externals$(DS)cmsis
+
+MODS += modules$(DS)efHal
+MODS += modules$(DS)efErrorHdl
+MODS += modules$(DS)bsp_$(BOARD)
 

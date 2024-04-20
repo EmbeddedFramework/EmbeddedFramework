@@ -1,7 +1,7 @@
 /*
 ###############################################################################
 #
-# Copyright 2024, Gustavo Muro
+# Copyright 2023, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -32,35 +32,71 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 #                                                                             */
-#ifndef BSP_PCSIM_H
-#define BSP_PCSIM_H
 
 /*==================[inclusions]=============================================*/
-#include "bsp_pcSim_gpio.h"
-#include "stdio.h"
-#include "string.h"
-
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "efHal_gpio.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "Triangle.h"
+#include "Square.h"
+#include "appBoard.h"
 
 /*==================[macros and typedef]=====================================*/
-// Macro para obtener el nombre del archivo sin la ruta
-#define FILENAME(file) (strrchr(file, '/') ? strrchr(file, '/') + 1 : file)
+#define TRIANGLE_BASE_SIZE      10
+#define TRIANGLE_HEIGHT_SIZE    4
+#define SQUARE_BASE_SIZE        3
+#define SQUARE_HEIGHT_SIZE      6
 
-// Macro PRINT_DEBUG que incluye el nombre del archivo sin ruta ni extensión
-#define PRINT_DEBUG(fmt, ...) printf("[%s:%s] " fmt, FILENAME(__FILE__), __func__, ##__VA_ARGS__)
+#define TOTAL_SHAPES            2
 
-/*==================[external data declaration]==============================*/
+/*==================[internal functions declaration]=========================*/
 
-/*==================[external functions declaration]=========================*/
-extern void bsp_pcSim_init(void);
+/*==================[internal data definition]===============================*/
+static Triangle triangle(TRIANGLE_BASE_SIZE, TRIANGLE_HEIGHT_SIZE);
+static Square square(SQUARE_BASE_SIZE, SQUARE_HEIGHT_SIZE);
 
-/*==================[cplusplus]==============================================*/
-#ifdef __cplusplus
+static Shape *shapes[TOTAL_SHAPES] =
+{
+    &triangle,
+    &square,
+};
+
+static float areas[TOTAL_SHAPES];
+
+/*==================[external data definition]===============================*/
+
+/*==================[internal functions definition]==========================*/
+static void blinky_task(void *pvParameters)
+{
+    int i;
+
+    for (i = 0 ; i < TOTAL_SHAPES ; i++)
+    {
+        if (shapes[i] != NULL)
+        {
+            areas[i] = shapes[i]->area();
+            PRINT_DEBUG("Shape %d, area: %f\n", i+1, areas[i]);
+        }
+    }
+
+    vTaskDelete(NULL);
 }
-#endif
+
+/*==================[external functions definition]==========================*/
+extern "C" void app_init(void)
+{
+    xTaskCreate(blinky_task, "blinky_task", 100, NULL, 0, NULL);
+}
+
+extern "C" void vApplicationStackOverflowHook( TaskHandle_t xTask, char *pcTaskName )
+{
+    while (1);
+}
+
+extern "C" void vApplicationMallocFailedHook( void )
+{
+    while (1);
+}
+
 
 /*==================[end of file]============================================*/
-#endif /* BSP_PCSIM_H */

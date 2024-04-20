@@ -45,6 +45,8 @@ extern "C" {
 
 /*==================[macros and typedef]=====================================*/
 
+#define PRINT_DEBUG(fmt, ...)
+
 /*==================[external data declaration]==============================*/
 
 /*==================[external functions declaration]=========================*/

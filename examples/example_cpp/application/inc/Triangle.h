@@ -1,3 +1,4 @@
+/*
 ###############################################################################
 #
 # Copyright 2024, Gustavo Muro
@@ -30,9 +31,39 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
+#                                                                             */
 
-# COMPILER AND LINKER OPTIONS
-CFLAGS += -c -Wall -ggdb3
-LFLAGS += $(LINKSCRIPT) 
+#ifndef TRIANGLE_H
+#define TRIANGLE_H
 
+/*==================[inclusions]=============================================*/
+#include "Shape.h"
+
+/*==================[macros and typedef]=====================================*/
+
+/*==================[external data declaration]==============================*/
+
+/*==================[external functions definition]==========================*/
+
+/*==================[class definition]=======================================*/
+class Triangle : public Shape {
+public:
+    /*==================[constructor and destroyer]==============================*/
+    Triangle(float base, float height);
+
+    /*==================[static methods]=========================================*/
+
+    /*==================[public methods]=========================================*/
+    float area() const override;
+
+    /*==================[private methods]========================================*/
+
+    /*==================[private attributes]====================================*/
+private:
+    float base;
+    float height;
+};
+
+#endif /* TRIANGLE_H */
+
+/*==================[end of file]============================================*/

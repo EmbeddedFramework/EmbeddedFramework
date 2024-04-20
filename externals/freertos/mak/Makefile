@@ -43,6 +43,7 @@ ext_freertos_SRC_PATH 	= $(ext_freertos_PATH)$(DS)src								\
 				          $(ext_freertos_PATH)$(DS)portable$(DS)$(CPU)
 
 ext_freertos_SRC_FILES 	= $(foreach ext_freertos_SRC, $(ext_freertos_SRC_PATH), $(wildcard $(ext_freertos_SRC)$(DS)*.c)) 
+ext_freertos_SRC_FILES += $(foreach ext_freertos_SRC, $(ext_freertos_SRC_PATH), $(wildcard $(ext_freertos_SRC)$(DS)*.cpp)) 
 ext_freertos_SRC_FILES += $(foreach ext_freertos_SRC, $(ext_freertos_SRC_PATH), $(wildcard $(ext_freertos_SRC)$(DS)*.s))
 ext_freertos_SRC_FILES += $(foreach ext_freertos_SRC, $(ext_freertos_SRC_PATH), $(wildcard $(ext_freertos_SRC)$(DS)*.S))
 

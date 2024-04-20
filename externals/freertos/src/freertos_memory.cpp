@@ -1,3 +1,4 @@
+/*
 ###############################################################################
 #
 # Copyright 2024, Gustavo Muro
@@ -30,9 +31,34 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
+#                                                                             */
 
-# COMPILER AND LINKER OPTIONS
-CFLAGS += -c -Wall -ggdb3
-LFLAGS += $(LINKSCRIPT) 
+#include <stdlib.h>
+#include "FreeRTOS.h"
+
+void *operator new(size_t size)
+{
+    return pvPortMalloc(size);
+}
+
+void *operator new[](size_t size)
+{
+    return pvPortMalloc(size);
+}
+
+void operator delete(void *p)
+{
+    vPortFree(p);
+}
+
+void operator delete(void* p, unsigned long)
+{
+    vPortFree(p);
+}
+
+void operator delete[](void *p)
+{
+    vPortFree(p);
+}
+
 

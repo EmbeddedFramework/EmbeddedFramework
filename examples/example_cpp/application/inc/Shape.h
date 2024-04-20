@@ -1,3 +1,4 @@
+/*
 ###############################################################################
 #
 # Copyright 2024, Gustavo Muro
@@ -30,9 +31,36 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
+#                                                                             */
 
-# COMPILER AND LINKER OPTIONS
-CFLAGS += -c -Wall -ggdb3
-LFLAGS += $(LINKSCRIPT) 
+#ifndef SHAPE_H
+#define SHAPE_H
 
+/*==================[inclusions]=============================================*/
+
+/*==================[macros and typedef]=====================================*/
+
+/*==================[external data declaration]==============================*/
+
+/*==================[external functions definition]==========================*/
+
+/*==================[class definition]=======================================*/
+class Shape {
+public:
+    /*==================[constructor and destroyer]==============================*/
+    virtual float area() const = 0;
+    virtual ~Shape() {}
+
+    /*==================[static methods]=========================================*/
+
+    /*==================[public methods]=========================================*/
+
+    /*==================[private methods]========================================*/
+
+    /*==================[private attributes]====================================*/
+
+};
+
+#endif /* SHAPE_H */
+
+/*==================[end of file]============================================*/

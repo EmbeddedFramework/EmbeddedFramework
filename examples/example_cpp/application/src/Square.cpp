@@ -1,3 +1,4 @@
+/*
 ###############################################################################
 #
 # Copyright 2024, Gustavo Muro
@@ -30,9 +31,37 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
+#                                                                             */
 
-# COMPILER AND LINKER OPTIONS
-CFLAGS += -c -Wall -ggdb3
-LFLAGS += $(LINKSCRIPT) 
+/*==================[inclusions]=============================================*/
 
+#include "Square.h"
+
+/*==================[macros and definitions]=================================*/
+
+/*==================[internal functions declaration]=========================*/
+
+/*==================[internal data definition]===============================*/
+
+/*==================[external data definition]===============================*/
+
+/*==================[internal functions definition]==========================*/
+
+/*==================[external functions definition]==========================*/
+
+/*==================[constructor and destroyer]==============================*/
+Square::Square(float base, float height) : base(base), height(height)
+{
+}
+
+/*==================[static methods]=========================================*/
+
+/*==================[private methods]========================================*/
+
+/*==================[public methods]=========================================*/
+float Square::area() const
+{
+    return base * height;
+}
+
+/*==================[end of file]============================================*/
