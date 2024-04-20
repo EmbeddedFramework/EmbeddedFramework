@@ -40,42 +40,39 @@
 #include "Triangle.h"
 #include "Square.h"
 #include "appBoard.h"
+#include <array>
 
 /*==================[macros and typedef]=====================================*/
-#define TRIANGLE_BASE_SIZE      10
-#define TRIANGLE_HEIGHT_SIZE    4
-#define SQUARE_BASE_SIZE        3
-#define SQUARE_HEIGHT_SIZE      6
+constexpr float TRIANGLE_BASE_SIZE = 10;
+constexpr float TRIANGLE_HEIGHT_SIZE = 4;
+constexpr float SQUARE_BASE_SIZE = 3;
+constexpr float SQUARE_HEIGHT_SIZE = 6;
 
-#define TOTAL_SHAPES            2
+constexpr int TOTAL_SHAPES = 2;
 
 /*==================[internal functions declaration]=========================*/
 
 /*==================[internal data definition]===============================*/
-static Triangle triangle(TRIANGLE_BASE_SIZE, TRIANGLE_HEIGHT_SIZE);
-static Square square(SQUARE_BASE_SIZE, SQUARE_HEIGHT_SIZE);
+static const Triangle triangle(TRIANGLE_BASE_SIZE, TRIANGLE_HEIGHT_SIZE);
+static const Square square(SQUARE_BASE_SIZE, SQUARE_HEIGHT_SIZE);
 
-static Shape *shapes[TOTAL_SHAPES] =
-{
-    &triangle,
-    &square,
-};
+static std::array<const Shape*, TOTAL_SHAPES> shapes = {&triangle, &square};
 
-static float areas[TOTAL_SHAPES];
+static std::array<float, TOTAL_SHAPES> areas;
 
 /*==================[external data definition]===============================*/
 
 /*==================[internal functions definition]==========================*/
 static void blinky_task(void *pvParameters)
 {
-    int i;
+    size_t i;
 
-    for (i = 0 ; i < TOTAL_SHAPES ; i++)
+    for (i = 0 ; i < shapes.size() ; i++)
     {
         if (shapes[i] != NULL)
         {
             areas[i] = shapes[i]->area();
-            PRINT_DEBUG("Shape %d, area: %f\n", i+1, areas[i]);
+            PRINT_DEBUG("Shape %zu, area: %f\n", i+1, areas[i]);
         }
     }
 
