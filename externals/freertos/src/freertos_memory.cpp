@@ -1,6 +1,7 @@
+/*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2024, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -30,28 +31,34 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
+#                                                                             */
 
-# library
-LIBS 				  += ext_freertos
-# version
-ext_freertos_VERSION      = 10.3.1
-# library path
-ext_freertos_PATH 			= $(ROOT_DIR)$(DS)externals$(DS)freertos
-# library source path
-ext_freertos_SRC_PATH 	= $(ext_freertos_PATH)$(DS)src								\
-				          $(ext_freertos_PATH)$(DS)portable$(DS)$(CPU)
+#include <stdlib.h>
+#include "FreeRTOS.h"
 
-ext_freertos_SRC_FILES 	= $(foreach ext_freertos_SRC, $(ext_freertos_SRC_PATH), $(wildcard $(ext_freertos_SRC)$(DS)*.c)) 
-ext_freertos_SRC_FILES += $(foreach ext_freertos_SRC, $(ext_freertos_SRC_PATH), $(wildcard $(ext_freertos_SRC)$(DS)*.cpp)) 
-ext_freertos_SRC_FILES += $(foreach ext_freertos_SRC, $(ext_freertos_SRC_PATH), $(wildcard $(ext_freertos_SRC)$(DS)*.s))
-ext_freertos_SRC_FILES += $(foreach ext_freertos_SRC, $(ext_freertos_SRC_PATH), $(wildcard $(ext_freertos_SRC)$(DS)*.S))
+void *operator new(size_t size)
+{
+    return pvPortMalloc(size);
+}
 
-# library include path
-ext_freertos_INC_PATH 	= $(ext_freertos_PATH)$(DS)inc                             \
-                          $(ext_freertos_PATH)$(DS)portable$(DS)$(CPU)$(DS)
+void *operator new[](size_t size)
+{
+    return pvPortMalloc(size);
+}
 
-ifeq ($(SKIP_FREERTOS_HEAP), 1)
-	ext_freertos_SRC_FILES := $(filter-out $(ext_freertos_PATH)$(DS)portable$(DS)$(CPU)$(DS)heap_%, $(ext_freertos_SRC_FILES))
-endif
+void operator delete(void *p)
+{
+    vPortFree(p);
+}
+
+void operator delete(void* p, unsigned long)
+{
+    vPortFree(p);
+}
+
+void operator delete[](void *p)
+{
+    vPortFree(p);
+}
+
 
