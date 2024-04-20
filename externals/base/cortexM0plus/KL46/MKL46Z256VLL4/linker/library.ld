@@ -10,8 +10,13 @@
  */
 
 GROUP (
-  "libcr_semihost_nf.a"
-  "libcr_c.a"
-  "libcr_eabihelpers.a"
   "libgcc.a"
+  "libc.a"
+  "libstdc++.a"
+  "libm.a"
+  "libcr_newlib_semihost.a"
+  "crti.o"
+  "crtn.o"
+  "crtbegin.o"
+  "crtend.o"
 )

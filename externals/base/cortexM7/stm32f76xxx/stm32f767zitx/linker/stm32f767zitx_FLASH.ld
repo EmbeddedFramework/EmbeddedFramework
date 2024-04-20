@@ -31,6 +31,16 @@
 **
 ******************************************************************************
 */
+/*
+GROUP (
+  "libgcc.a"
+  "libc.a"
+  "libstdc++.a"
+  "libm.a"
+  "crtn.o"
+  "crtend.o"
+)
+*/
 
 /* Entry Point */
 ENTRY(Reset_Handler)

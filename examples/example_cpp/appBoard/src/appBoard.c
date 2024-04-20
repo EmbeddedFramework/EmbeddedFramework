@@ -1,3 +1,4 @@
+/*
 ###############################################################################
 #
 # Copyright 2021, Gustavo Muro
@@ -30,30 +31,21 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
+#                                                                             */
 
-CPP = arm-none-eabi-g++
-CC = arm-none-eabi-gcc
-LD = arm-none-eabi-gcc
-AR = arm-none-eabi-ar
-GDB = arm-none-eabi-gdb
-NM = arm-none-eabi-nm
-AS = arm-none-eabi-gcc
+/*==================[inclusions]=============================================*/
+#include "appBoard.h"
 
-# POST BUILD
-# Generates a .bin image file
-POST_BUILD += arm-none-eabi-objcopy -O ihex \
-	--remove-section=.D2_domain_AHB_SRAM --remove-section=.domain_DTCMRAM \
-	--remove-section=.D3_domain_AHB_SRAM --remove-section=.domain_ITCMRAM \
-	$(LD_TARGET) $(TARGET_NAME).hex	&& arm-none-eabi-size $(LD_TARGET)
+/*==================[macros and typedef]=====================================*/
 
-# define linker extension
-LD_EXTENSION = axf
+/*==================[internal functions declaration]=========================*/
 
-START_GROUP += -Wl,--whole-archive
-END_GROUP   += -Wl,--no-whole-archive
+/*==================[internal data definition]===============================*/
 
--include $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)mak$(DS)Makefile
+/*==================[external data definition]===============================*/
 
+/*==================[internal functions definition]==========================*/
 
+/*==================[external functions definition]==========================*/
 
+/*==================[end of file]============================================*/

@@ -1,6 +1,10 @@
 ###############################################################################
 #
 # Copyright 2021, Gustavo Muro
+# Copyright 2014, 2015, Mariano Cerdeiro
+# Copyright 2014, 2015, 2016, Juan Cecconi (Numetron, UTN-FRBA)
+# Copyright 2014, 2015, Esteban Volentini (LabMicro, UNT)
+# Copyright 2017, Gustavo Muro (DIGI CHECK)
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -30,30 +34,28 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
+###############################################################################
 
-CPP = arm-none-eabi-g++
-CC = arm-none-eabi-gcc
-LD = arm-none-eabi-gcc
-AR = arm-none-eabi-ar
-GDB = arm-none-eabi-gdb
-NM = arm-none-eabi-nm
-AS = arm-none-eabi-gcc
+PROJECT_NAME               = $(lastword $(subst $(DS), , $(PROJECT_PATH)))
 
-# POST BUILD
-# Generates a .bin image file
-POST_BUILD += arm-none-eabi-objcopy -O ihex \
-	--remove-section=.D2_domain_AHB_SRAM --remove-section=.domain_DTCMRAM \
-	--remove-section=.D3_domain_AHB_SRAM --remove-section=.domain_ITCMRAM \
-	$(LD_TARGET) $(TARGET_NAME).hex	&& arm-none-eabi-size $(LD_TARGET)
+# Internal modules
+$(PROJECT_NAME)_SRC_PATH  += $(PROJECT_PATH)$(DS)application$(DS)src \
+							 $(PROJECT_PATH)$(DS)appBoard$(DS)src
 
-# define linker extension
-LD_EXTENSION = axf
+SRC_FILES 			 += $(foreach application_SRC, $($(PROJECT_NAME)_SRC_PATH), $(wildcard $(application_SRC)$(DS)*.c)) 
+SRC_FILES 			 += $(foreach application_SRC, $($(PROJECT_NAME)_SRC_PATH), $(wildcard $(application_SRC)$(DS)*.cpp)) 
 
-START_GROUP += -Wl,--whole-archive
-END_GROUP   += -Wl,--no-whole-archive
+INC_FILES            += $(PROJECT_PATH)$(DS)application$(DS)inc \
+						$(PROJECT_PATH)$(DS)appBoard$(DS)inc
+						
 
--include $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)mak$(DS)Makefile
+# Modules needed for this project
+MODS += externals$(DS)drivers
+MODS += externals$(DS)board
+MODS += externals$(DS)freertos
+MODS += externals$(DS)cmsis
 
-
+MODS += modules$(DS)efHal
+MODS += modules$(DS)efErrorHdl
+MODS += modules$(DS)bsp_$(BOARD)
 

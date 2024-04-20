@@ -108,6 +108,12 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
+    /* IMPORTANT: added the next line because in cpp, the framework can call malloc
+     * and free functions, and if this functions are implemented in Heap FreeRTOS, disable
+     * interrupts and doesn't enabled it
+     */
+    vPortSetBASEPRI(0);
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/

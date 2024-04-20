@@ -32,10 +32,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+# TOOLCHAIN
 CPP = g++
 CC = gcc
-LD = gcc
+LD = g++
 AR = ar
+AS = as
 GDB = gdb
 NM = nm
 

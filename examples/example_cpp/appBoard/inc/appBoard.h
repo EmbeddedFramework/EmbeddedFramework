@@ -1,6 +1,7 @@
+/*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2021, 2024, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -30,30 +31,43 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
+#                                                                             */
+#ifndef APP_BOARD_H_
+#define APP_BOARD_H_
 
-CPP = arm-none-eabi-g++
-CC = arm-none-eabi-gcc
-LD = arm-none-eabi-gcc
-AR = arm-none-eabi-ar
-GDB = arm-none-eabi-gdb
-NM = arm-none-eabi-nm
-AS = arm-none-eabi-gcc
+/*==================[inclusions]=============================================*/
 
-# POST BUILD
-# Generates a .bin image file
-POST_BUILD += arm-none-eabi-objcopy -O ihex \
-	--remove-section=.D2_domain_AHB_SRAM --remove-section=.domain_DTCMRAM \
-	--remove-section=.D3_domain_AHB_SRAM --remove-section=.domain_ITCMRAM \
-	$(LD_TARGET) $(TARGET_NAME).hex	&& arm-none-eabi-size $(LD_TARGET)
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-# define linker extension
-LD_EXTENSION = axf
+/*==================[macros and typedef]=====================================*/
 
-START_GROUP += -Wl,--whole-archive
-END_GROUP   += -Wl,--no-whole-archive
+#ifdef BOARD_frdmkl46z
+#include "bsp_frdmkl46z.h"
+#endif
 
--include $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)mak$(DS)Makefile
+#ifdef BOARD_frdmkl43z
+#include "bsp_frdmkl43z.h"
+#endif
 
+#ifdef BOARD_nucleoF767ZI
+#include "bsp_nucleoF767ZI.h"
+#endif
 
+#ifdef BOARD_pcSim
+#include "bsp_pcSim.h"
+#endif
 
+/*==================[external data declaration]==============================*/
+
+/*==================[external functions declaration]=========================*/
+
+/*==================[cplusplus]==============================================*/
+#ifdef __cplusplus
+}
+#endif
+
+/*==================[end of file]============================================*/
+#endif /* APP_BOARD_H_ */

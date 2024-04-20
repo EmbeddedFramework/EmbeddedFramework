@@ -1,6 +1,7 @@
+/*
 ###############################################################################
 #
-# Copyright 2021, Gustavo Muro
+# Copyright 2024, Gustavo Muro
 # All rights reserved
 #
 # This file is part of EmbeddedFirmware.
@@ -30,30 +31,34 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-#
+#                                                                             */
 
-CPP = arm-none-eabi-g++
-CC = arm-none-eabi-gcc
-LD = arm-none-eabi-gcc
-AR = arm-none-eabi-ar
-GDB = arm-none-eabi-gdb
-NM = arm-none-eabi-nm
-AS = arm-none-eabi-gcc
+#include <stdlib.h>
+#include "FreeRTOS.h"
 
-# POST BUILD
-# Generates a .bin image file
-POST_BUILD += arm-none-eabi-objcopy -O ihex \
-	--remove-section=.D2_domain_AHB_SRAM --remove-section=.domain_DTCMRAM \
-	--remove-section=.D3_domain_AHB_SRAM --remove-section=.domain_ITCMRAM \
-	$(LD_TARGET) $(TARGET_NAME).hex	&& arm-none-eabi-size $(LD_TARGET)
+void *operator new(size_t size)
+{
+    return pvPortMalloc(size);
+}
 
-# define linker extension
-LD_EXTENSION = axf
+void *operator new[](size_t size)
+{
+    return pvPortMalloc(size);
+}
 
-START_GROUP += -Wl,--whole-archive
-END_GROUP   += -Wl,--no-whole-archive
+void operator delete(void *p)
+{
+    vPortFree(p);
+}
 
--include $(ext_base_PATH)$(DS)$(ARCH)$(DS)$(CPUTYPE)$(DS)mak$(DS)Makefile
+void operator delete(void* p, unsigned long)
+{
+    vPortFree(p);
+}
 
+void operator delete[](void *p)
+{
+    vPortFree(p);
+}
 
 
