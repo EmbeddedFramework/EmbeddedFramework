@@ -37,6 +37,8 @@
 
 /*==================[inclusions]=============================================*/
 #include "bsp_pcSim_gpio.h"
+#include "stdio.h"
+#include "string.h"
 
 /*==================[cplusplus]==============================================*/
 #ifdef __cplusplus
