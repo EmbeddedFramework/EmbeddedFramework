@@ -60,6 +60,9 @@ static void gpio_callBackInt(efHal_gpio_id_t id)
         case EF_HAL_GPIO_SW_3:
             efHal_gpio_setPin(EF_HAL_GPIO_LED_RED, true);
             break;
+
+        default:
+            break;
     }
 
 }

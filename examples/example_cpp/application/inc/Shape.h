@@ -48,12 +48,11 @@
 class Shape {
 public:
     /*==================[constructor and destroyer]==============================*/
-    virtual float area() const = 0;
-    virtual ~Shape() {}
 
     /*==================[static methods]=========================================*/
 
     /*==================[public methods]=========================================*/
+    virtual float area() const = 0;
 
     /*==================[private methods]========================================*/
 
