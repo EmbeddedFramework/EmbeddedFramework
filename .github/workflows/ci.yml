@@ -22,8 +22,14 @@ jobs:
 
     - name: Build blinky
       run: |
+        make clean
         make BOARD=pcSim PROJECT_PATH=examples/blinky
-        
+
+    - name: Build example_cpp
+      run: |
+        make clean
+        make BOARD=pcSim PROJECT_PATH=examples/example_cpp
+
     - name: Run tests
       run: |
         ./run_all_tests.sh
