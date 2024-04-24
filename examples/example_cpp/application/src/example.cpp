@@ -45,8 +45,7 @@
 /*==================[macros and typedef]=====================================*/
 constexpr float TRIANGLE_BASE_SIZE = 10;
 constexpr float TRIANGLE_HEIGHT_SIZE = 4;
-constexpr float SQUARE_BASE_SIZE = 3;
-constexpr float SQUARE_HEIGHT_SIZE = 6;
+constexpr float SQUARE_SIDE_SIZE = 3;
 
 constexpr int TOTAL_SHAPES = 2;
 
@@ -54,7 +53,7 @@ constexpr int TOTAL_SHAPES = 2;
 
 /*==================[internal data definition]===============================*/
 static const Triangle triangle(TRIANGLE_BASE_SIZE, TRIANGLE_HEIGHT_SIZE);
-static const Square square(SQUARE_BASE_SIZE, SQUARE_HEIGHT_SIZE);
+static const Square square(SQUARE_SIDE_SIZE);
 
 static std::array<const Shape*, TOTAL_SHAPES> shapes = {&triangle, &square};
 

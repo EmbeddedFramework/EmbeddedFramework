@@ -50,7 +50,7 @@
 /*==================[external functions definition]==========================*/
 
 /*==================[constructor and destroyer]==============================*/
-Square::Square(float base, float height) : base(base), height(height)
+Square::Square(float side) : side(side)
 {
 }
 
@@ -61,7 +61,7 @@ Square::Square(float base, float height) : base(base), height(height)
 /*==================[public methods]=========================================*/
 float Square::area() const
 {
-    return base * height;
+    return side * side;
 }
 
 /*==================[end of file]============================================*/

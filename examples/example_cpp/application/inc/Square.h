@@ -49,7 +49,7 @@
 class Square : public Shape {
 public:
     /*==================[constructor and destroyer]==============================*/
-    Square(float base, float height);
+    Square(float side);
 
     /*==================[static methods]=========================================*/
 
@@ -60,8 +60,7 @@ public:
 
     /*==================[private attributes]====================================*/
 private:
-    float base;
-    float height;
+    float side;
 };
 
 #endif /* SQUARE_H */
