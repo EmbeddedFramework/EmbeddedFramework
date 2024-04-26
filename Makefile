@@ -277,12 +277,9 @@ $(PROJECT_NAME) : $(LIBS_WITH_SRC) $(OBJ_FILES)
 
 ###############################################################################
 # version
-ifeq ($(MAKECMDGOALS),version)
-#include $(foreach module, $(ALL_MODS), modules$(DS)$(module)$(DS)mak$(DS)Makefile)
-endif
 version:
 	@echo EmbeddedFirmware version: $(EMBEDDED_FRAMEWORK_VER)
-	@$(MULTILINE_ECHO) " $(foreach mod, $(ALL_MODS), $(mod): $($(mod)_VERSION)\n)"
+	@$(MULTILINE_ECHO) " $(foreach mod, $(ALL_MODS), $(mod): $(mod_$(mod)_VERSION)\n)"
 
 ###############################################################################
 # help
@@ -291,18 +288,8 @@ help:
 	@echo "|               General Help                                                  |"
 	@echo "+-----------------------------------------------------------------------------+"
 	@echo info................: general information about the make environment
-	@echo info_\<mod\>..........: same as info but reporting information of a library
-	@echo info_ext_\<mod\>......: same as info_\<mod\> but for an external library
+	@echo info_dir \"path\".....: same as info but reporting information of a library
 	@echo version.............: dislpays the version of each module
-	@echo "+-----------------------------------------------------------------------------+"
-	@echo "|               Unit Tests                                                    |"
-	@echo "+-----------------------------------------------------------------------------+"
-	@echo mocks...............: generate the mocks for all header files
-	@echo tst.................: displays possible tests
-	@echo tst_\<mod\>...........: shows all unit test of a specific module
-	@echo tst_\<mod\>_\<unit\>....: runs the specific unit test
-	@echo tst_\<mod\>_all.......: runs all unit tests of a specific module
-	@echo results.............: create results report
 	@echo "+-----------------------------------------------------------------------------+"
 	@echo "|               Debugging / Running / Programming                             |"
 	@echo "+-----------------------------------------------------------------------------+"
