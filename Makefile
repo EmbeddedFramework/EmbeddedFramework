@@ -313,44 +313,27 @@ help:
 	@echo clean...............: cleans generated, object, binary, etc. files
 	@echo all.................: performs make clean and make
 
+
 ###############################################################################
-# info for  aspecific module
-ifeq ($(findstring info_, $(MAKECMDGOALS)),info_)
-info_mod = $(subst info_,,$(MAKECMDGOALS))
-ext = 0
-
-ifeq ($(findstring info_ext_, $(MAKECMDGOALS)),info_ext_)
-info_mod = $(subst info_ext_,,$(MAKECMDGOALS))
-ext = 1
+# directory information
+ifeq ($(filter info_dir,$(firstword $(MAKECMDGOALS))),info_dir)
+    MODULE := $(wordlist 2,2,$(MAKECMDGOALS))
+    $(eval $(MODULE):;@:)
+    $(info $(MODULE))
+    $(eval MAKECMDGOALS := $(filter-out $(MODULE),$(MAKECMDGOALS)))
+    LIBS =
+    include $(MODULE)$(DS)mak$(DS)Makefile
 endif
 
-ifeq ($(ext),1)
-# include corresponding makefile
-include externals$(DS)$(info_mod)$(DS)mak$(DS)Makefile
-else
-# include corresponding makefile
-include modules$(DS)$(info_mod)$(DS)mak$(DS)Makefile
-endif
-
-# create the corresponding info_<mod> rule
-info_ext_$(info_mod) :
+info_dir:
 	@echo ===============================================================================
-	@echo Info of ext_$(info_mod)
-	@echo Path........: $(ext_$(info_mod)_PATH)
-	@$(MULTILINE_ECHO) "Include path: \n $(foreach inc, $(ext_$(info_mod)_INC_PATH),     $(inc)\n)"
-	@echo Source path.: $(ext_$(info_mod)_SRC_PATH)
-	@$(MULTILINE_ECHO) "Source files:\n $(foreach src, $(ext_$(info_mod)_SRC_FILES),     $(src)\n)"
-
-# create the corresponding info_<mod> rule
-info_$(info_mod) :
-	@echo ===============================================================================
-	@echo Info of $(info_mod)
-	@echo Path........: $($(info_mod)_PATH)
-	@$(MULTILINE_ECHO) "Include path: \n $(foreach inc, $($(info_mod)_INC_PATH),     $(inc)\n)"
-	@echo Source path.: $($(info_mod)_SRC_PATH)
-	@echo $(INC_FILES)
-	@$(MULTILINE_ECHO) "Source files:\n $(foreach src, $($(info_mod)_SRC_FILES),     $(src)\n)"
-endif
+	@echo Info of $(MODULE)
+	@echo VERSION:....:  $($(LIBS)_VERSION)
+	@echo PATH:.......:  $($(LIBS)_PATH)
+	@echo SRC_PATH:...:  $($(LIBS)_SRC_PATH)
+	@echo INC_PATH:...:  $($(LIBS)_INC_PATH)
+	@echo SRC_FILES:..:  $($(LIBS)_SRC_FILES)
+###############################################################################
 
 ###############################################################################
 # information
@@ -365,10 +348,6 @@ info:
 	@echo libraries..........: $(LIBS)
 	@echo libraris with srcs.: $(LIBS_WITH_SRC)
 	@echo external libraries.: $(EXTERN_LIBS)
-#	@echo Lib Src dirs.......: $(LIBS_SRC_DIRS)
-#	@echo Lib Src Files......: $(LIBS_SRC_FILES)
-#	@echo Lib Obj Files......: $(LIBS_OBJ_FILES)
-#	@echo Project Src Path...: $($(PROJECT_NAME)_SRC_PATH)
 	@$(MULTILINE_ECHO) "Includes libs......: \n $(foreach inc, $(INCLUDE),     $(inc)\n)"
 	@$(MULTILINE_ECHO) "Includes proj......: \n $(foreach inc, $(INC_FILES),     $(inc)\n)"
 	@echo use make info_\<mod\>: to get information of a specific module. eg: make info_posix
