@@ -5,17 +5,18 @@ This is a very simple example to compile a project in C with a file written in A
 
 1. Install gprbuild by running:
 sudo apt install gprbuild
+sudo apt install gnat
 
-2. Navigate to the directory of the EmbeddedFramework:
+3. Navigate to the directory of the EmbeddedFramework:
 cd path/to/EmbeddedFramework
 
-3. Build the library with the following command:
+4. Build the library with the following command:
 make BOARD=pcSim PROJECT_PATH=examples/ada/blinky ada_build
 
-4. Compile the project using:
+5. Compile the project using:
 make BOARD=pcSim PROJECT_PATH=examples/ada/blinky
 
-5. Finally, run the project with:
+6. Finally, run the project with:
 make BOARD=pcSim PROJECT_PATH=examples/ada/blinky run
 
 Enjoy!
