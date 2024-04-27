@@ -1,0 +1,16 @@
+
+project Example is
+
+   for Languages use ("Ada");
+
+   for Source_Dirs use ("application/ada_src");
+   for Object_Dir use "obj";
+   for Target use "arm-eabi";
+   
+   for Runtime ("ada") use "zfp-cortex-m7f";
+   
+   package Compiler is
+      for Default_Switches ("ada") use ("-O0", "-gnatwa", "-gnatQ", "-gnatw.X");
+   end Compiler;
+  
+end Example;
