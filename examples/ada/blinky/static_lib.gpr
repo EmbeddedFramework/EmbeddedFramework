@@ -5,6 +5,6 @@ library project Static_Lib is
    for Library_Dir  use "lib";
    for Library_Kind use "static";
    for Library_Name use "l1";
-   for Runtime ("Ada") use external ("RUNTIME", "");
+   -- for Runtime ("Ada") use external ("RUNTIME", "");
    for Target use external ("TARGET", "");
 end Static_Lib;
