@@ -1,0 +1,10 @@
+library project Static_Lib is
+   for Languages    use ("Ada");
+   for Source_Dirs  use ("application/ada_src");
+   for Object_Dir   use "obj";
+   for Library_Dir  use "lib";
+   for Library_Kind use "static";
+   for Library_Name use "l1";
+   for Runtime ("ada") use external ("RUNTIME", "default");
+   for Target use external ("TARGET", "");
+end Static_Lib;
