@@ -19,6 +19,7 @@ jobs:
         sudo apt-get install -y gcc
         sudo gem install ceedling
         pip install gcovr
+        sudo apt install gprbuild
 
     - name: Build blinky
       run: |
@@ -29,6 +30,12 @@ jobs:
       run: |
         make clean
         make BOARD=pcSim PROJECT_PATH=examples/example_cpp
+
+    - name: Build blinky Ada
+      run: |
+        make clean
+        make BOARD=pcSim PROJECT_PATH=examples/ada/blinky ada_build
+        make BOARD=pcSim PROJECT_PATH=examples/ada/blinky
 
     - name: Run tests
       run: |
