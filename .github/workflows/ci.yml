@@ -20,6 +20,7 @@ jobs:
         sudo gem install ceedling
         pip install gcovr
         sudo apt install gprbuild
+        sudo apt install gnat
 
     - name: Build blinky
       run: |
