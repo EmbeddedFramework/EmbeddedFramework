@@ -19,9 +19,11 @@
 
 typedef int ptrdiff_t;
 
+#ifndef __cplusplus
 #ifndef WCHAR_T_DEFINED
 #define WCHAR_T_DEFINED
 typedef __WCHAR_TYPE__ wchar_t;
+#endif
 #endif
 
 #ifndef NULL
