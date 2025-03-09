@@ -7,6 +7,8 @@
 *.cproject
 *.project
 .settings
+.ruby-version
+.vscode/
 
 # Own makefile or mine template
 *.mine
