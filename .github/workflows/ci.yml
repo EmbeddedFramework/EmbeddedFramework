@@ -42,9 +42,5 @@ jobs:
       run: |
         ./run_all_tests.sh
 
-    - name: Save coverage reports
-      uses: actions/upload-artifact@v3.1.0
-      with:
-        name: coverage-reports
-        path: out/testReport
+
 
